@@ -905,6 +905,65 @@ pub fn run() {
                     .background_color(paper_color(theme == "dark"));
             }
             let window = builder.build()?;
+            // ── Tray keep-alive: the caption X hides instead of quitting ─────
+            // The window stays alive in the tray so sync keeps running; the
+            // tray menu restores it or exits for real.
+            #[cfg(desktop)]
+            {
+                use tauri::menu::{Menu, MenuItem};
+                use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
+
+                let show_item =
+                    MenuItem::with_id(app, "tray-show", "Show ReadAware", true, None::<&str>)?;
+                let quit_item = MenuItem::with_id(app, "tray-quit", "Quit", true, None::<&str>)?;
+                let menu = Menu::with_items(app, &[&show_item, &quit_item])?;
+
+                let _tray = TrayIconBuilder::with_id("readaware-tray")
+                    .icon(app.default_window_icon().cloned().ok_or("no default window icon")?)
+                    .menu(&menu)
+                    .show_menu_on_left_click(false)
+                    .on_tray_icon_event(|tray, event| {
+                        if let TrayIconEvent::Click {
+                            button: MouseButton::Left,
+                            button_state: MouseButtonState::Up,
+                            ..
+                        } = event
+                        {
+                            if let Some(window) = tray.app_handle().get_webview_window("main") {
+                                let _ = window.show();
+                                let _ = window.unminimize();
+                                let _ = window.set_focus();
+                            }
+                        }
+                    })
+                    .on_menu_event(|app, event| match event.id.as_ref() {
+                        "tray-show" => {
+                            if let Some(window) = app.get_webview_window("main") {
+                                let _ = window.show();
+                                let _ = window.unminimize();
+                                let _ = window.set_focus();
+                            }
+                        }
+                        "tray-quit" => app.exit(0),
+                        _ => {}
+                    })
+                    .build(app)?;
+            }
+
+            // X (or the window manager's close) hides the window; real exit
+            // goes through the tray menu.
+            #[cfg(desktop)]
+            {
+                let handle = app.handle().clone();
+                window.on_window_event(move |event| {
+                    if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+                        api.prevent_close();
+                        if let Some(window) = handle.get_webview_window("main") {
+                            let _ = window.hide();
+                        }
+                    }
+                });
+            }
 
             // macOS: the native title bar is hidden (titleBarStyle "Overlay"), so
             // nudge the traffic lights down to sit centered in our custom top bar.

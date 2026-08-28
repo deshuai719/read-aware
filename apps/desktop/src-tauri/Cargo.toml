@@ -15,7 +15,7 @@ tauri-build = { version = "2", features = [] }
 
 [dependencies]
 # image-png: decode the PNG bytes the webview hands to clipboard writeImage.
-tauri = { version = "2", features = ["image-png"] }
+tauri = { version = "2", features = ["image-png", "tray-icon"] }
 # The app's only production trace: a rotating log file in the OS log dir
 # (webview logs are forwarded into the same file over IPC). Release builds have
 # no console and no DevTools — without this file a failure leaves nothing to

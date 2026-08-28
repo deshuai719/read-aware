@@ -130,7 +130,7 @@
       ]
     },
     "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDNCNTBDNjU1QzE1RkNENkYKUldSdnpWL0JWY1pRTytYRE5xNE5tekRQVG9UcWcvbGpNWTdJdGwwejB1WUtrdjlycTdaWEhvUmIK",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDE3NDY3N0Q0ODEwQUNFQkIKUldTN3pncUIxSGRHRjhlR0llZ291UDRGUVljQmhFY3Q3UTZFTjBwUnAwVDNwWlN5cHNFOU1PdEgK",
       "endpoints": [
         "https://github.com/ahpxex/read-aware/releases/latest/download/latest.json"
       ],

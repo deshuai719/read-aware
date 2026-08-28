@@ -93,6 +93,13 @@ function defaultRelayUrl(): string {
 const PULL_INTERVAL_MS = 5 * 60_000;
 const PUSH_DEBOUNCE_MS = 3_000;
 
+/** Persist a custom relay URL (self-hosted deployments); empty clears it. */
+export function setRelayBaseUrl(url: string): void {
+  const trimmed = url.trim();
+  if (trimmed) localKV.setItem(RELAY_URL_KV_KEY, JSON.stringify(trimmed));
+  else localKV.removeItem(RELAY_URL_KV_KEY);
+}
+
 export function relayBaseUrl(): string {
   const raw = localKV.getItem(RELAY_URL_KV_KEY);
   if (!raw) return defaultRelayUrl();

@@ -140,6 +140,27 @@ export async function verifySignInToken(
 }
 
 /**
+ * Personal self-hosted Phase 1: username + password login (relay's
+ * /v1/auth/password). Same verification shape as the magic-link token —
+ * the UI still shows the account email before any key derivation happens.
+ */
+export async function loginWithPassword(
+  relay: Pick<RelayClient, "login">,
+  username: string,
+  password: string,
+): Promise<SignInVerification> {
+  let response: unknown;
+  try {
+    response = await relay.login(username.trim(), password);
+  } catch (error) {
+    if (error instanceof SyntaxError) throw new InvalidSignInResponseError();
+    throw error;
+  }
+  if (!isSignInVerification(response)) throw new InvalidSignInResponseError();
+  return response;
+}
+
+/**
  * Phase 2: passphrase → master key. `relay` MUST already serve
  * `verification.session` (its 409-conflict path calls the authenticated
  * account endpoint); wire the client with the session provider before

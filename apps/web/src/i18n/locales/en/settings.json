@@ -379,6 +379,12 @@
       "dismiss": "Dismiss sign-in reminder"
     },
     "connect": {
+      "serverUrlLabel": "Server address",
+      "serverUrlPlaceholder": "https://relay.example.com",
+      "usernameLabel": "Username",
+      "passwordLabel": "Password",
+      "passwordLogin": "Connect",
+      "invalidCredentials": "Wrong username or password.",
       "emailLabel": "Email",
       "emailPlaceholder": "you@example.com",
       "send": "Send sign-in link",

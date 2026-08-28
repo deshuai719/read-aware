@@ -102,6 +102,12 @@ export function createRelayClient(options: RelayClientOptions) {
     async verifyMagicLink(token: string): Promise<AuthVerifyResponse> {
       return (await (await json("POST", "/v1/auth/verify", { token })).json()) as AuthVerifyResponse;
     },
+    /** Personal self-hosted login: username + password (/v1/auth/password). */
+    async login(username: string, password: string): Promise<AuthVerifyResponse> {
+      return (
+        await (await json("POST", "/v1/auth/password", { username, password })).json()
+      ) as AuthVerifyResponse;
+    },
     async account(): Promise<AccountResponse> {
       return (await (await json("GET", "/v1/account")).json()) as AccountResponse;
     },

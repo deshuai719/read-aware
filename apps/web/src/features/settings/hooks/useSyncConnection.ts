@@ -9,6 +9,7 @@ import { isTauri } from "../../../platform/environment";
 import {
   establishEncryption,
   verifySignInToken,
+  loginWithPassword as relayLoginWithPassword,
   WrongPassphraseError,
   type SignInVerification,
 } from "../../../platform/sync/connect";
@@ -93,6 +94,20 @@ export function useSyncConnection() {
     [],
   );
 
+  /** Personal self-hosted Phase 1: username + password → which account it
+   *  opened (same identity gate as the token flow). */
+  const loginWithPassword = useCallback(
+    (username: string, password: string): Promise<SignInVerification> =>
+      runSyncConnectionOperation(() =>
+        relayLoginWithPassword(
+          createRelayClient({ baseUrl: relayBaseUrl(), session: () => null }),
+          username,
+          password,
+        ),
+      ),
+    [],
+  );
+
   /** Phase 2: passphrase → master key → durable connection. Takes the
    *  verification phase 1 returned — there is no path to a passphrase that
    *  didn't pass through the email being shown. */
@@ -142,6 +157,7 @@ export function useSyncConnection() {
     sendLink,
     verifyToken,
     finishConnect,
+    loginWithPassword,
     disconnect,
     requestSyncNow,
   };

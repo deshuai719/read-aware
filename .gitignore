@@ -40,3 +40,6 @@ target
 *.sln
 *.sw?
 demo
+
+# Local build deliverables (installers live in GitHub Releases)
+/installers/

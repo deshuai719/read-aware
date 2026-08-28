@@ -18,6 +18,7 @@ const meta = {
     count: 12,
     onRename: () => {},
     onDelete: () => {},
+    onManageLock: () => {},
   },
   decorators: [
     (Story) => (

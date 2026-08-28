@@ -75,7 +75,9 @@
     "title_other": "Add {{count}} books to…",
     "newLabel": "New collection",
     "newPlaceholder": "e.g. To read",
-    "removeFromCollection": "Remove from collection"
+    "removeFromCollection": "Remove from collection",
+    "passwordLabel": "Folder password (optional)",
+    "passwordPlaceholder": "Optional — locks this folder on every device"
   },
   "collection": {
     "nameLabel": "Collection name",
@@ -83,6 +85,21 @@
     "renameAction": "Rename collection",
     "deleteTooltip": "Delete collection",
     "deleteAction": "Delete collection",
+    "lockedTooltip": "Locked folder — enter its password to open",
+    "lockTooltip": "Folder lock",
+    "lockAction": "Manage folder lock",
+    "lockUnlockTitle": "Unlock folder",
+    "lockManageTitle": "Folder lock",
+    "lockPasswordLabel": "Password",
+    "lockUnlock": "Unlock",
+    "lockVerifying": "Verifying…",
+    "lockWrongPassword": "Wrong password.",
+    "lockNewPasswordLabel": "New password",
+    "lockNewPasswordHint": "At least 4 characters. The same password unlocks this folder on every device.",
+    "lockChange": "Change password",
+    "lockSet": "Set password",
+    "lockCurrentPasswordLabel": "Current password",
+    "lockClear": "Remove password",
     "deleteTitle": "Delete collection?",
     "deleteBody": "Delete <strong>{{name}}</strong>? The books stay in your library — they’re just ungrouped."
   },

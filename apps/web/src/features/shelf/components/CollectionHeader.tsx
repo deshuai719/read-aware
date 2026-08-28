@@ -1,4 +1,4 @@
-import { PencilSimple, Trash } from "@phosphor-icons/react";
+import { LockSimple, PencilSimple, Trash } from "@phosphor-icons/react";
 import { Body, Button, Dialog, Heading, IconButton, Tooltip } from "@read-aware/ui";
 import { useLocalAtom } from "@read-aware/ui/state";
 import { Trans, useTranslation } from "../../../i18n";
@@ -9,6 +9,8 @@ type CollectionHeaderProps = {
   count: number;
   onRename: (name: string) => void;
   onDelete: () => void;
+  /** Open the folder-lock (password) management dialog. */
+  onManageLock: () => void;
 };
 
 /**
@@ -16,7 +18,7 @@ type CollectionHeaderProps = {
  * book count, and a delete action. Back to the shelf lives in the app header.
  * Mount with a `key` of the collection id so the inline draft resets per group.
  */
-export function CollectionHeader({ collection, count, onRename, onDelete }: CollectionHeaderProps) {
+export function CollectionHeader({ collection, count, onRename, onDelete, onManageLock }: CollectionHeaderProps) {
   const { t } = useTranslation("shelf");
   const [editing, setEditing] = useLocalAtom(false);
   const [draft, setDraft] = useLocalAtom(collection.name);
@@ -65,7 +67,14 @@ export function CollectionHeader({ collection, count, onRename, onDelete }: Coll
             />
           </Tooltip>
         )}
-        <Tooltip content={t("collection.deleteTooltip")} side="bottom">
+        <Tooltip content={t("collection.lockTooltip")} side="bottom">
+          <IconButton
+            label={t("collection.lockAction")}
+            size="sm"
+            onClick={onManageLock}
+            icon={<LockSimple size={16} weight="regular" aria-hidden="true" />}
+          />
+        </Tooltip>        <Tooltip content={t("collection.deleteTooltip")} side="bottom">
           <IconButton
             label={t("collection.deleteAction")}
             size="sm"

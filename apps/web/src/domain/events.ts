@@ -25,6 +25,7 @@ export const LIBRARY_EVENTS = [
   "collection.created",
   "collection.renamed",
   "collection.removed",
+  "collection.passwordChanged",
   "book.addedToCollection",
   "book.removedFromCollection",
 ] as const;

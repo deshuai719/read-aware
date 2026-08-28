@@ -530,6 +530,14 @@ pub(crate) const MIGRATIONS: &[(i64, &str, &str)] = &[
         // 都会按它补一次重放,幂等。
         "ALTER TABLE sync_profile ADD COLUMN projections_stale INTEGER NOT NULL DEFAULT 0;",
     ),
+    (
+        24,
+        "collections_password_hash",
+        // [projection] collection.passwordChanged 的物化:收藏夹加密口令的
+        // Argon2id 哈希(含 salt/params),随收藏夹事件跨设备同步;
+        // NULL = 未加密。哈希本身即验证材料,客户端用同一口令派生比对。
+        "ALTER TABLE collections ADD COLUMN password_hash TEXT;",
+    ),
 ];
 
 /// Apply migrations newer than the highest recorded version, up to `max_version`

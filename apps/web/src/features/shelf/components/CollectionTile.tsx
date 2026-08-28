@@ -1,4 +1,4 @@
-import { CaretRight, FolderSimple } from "@phosphor-icons/react";
+import { CaretRight, FolderSimple, LockSimple } from "@phosphor-icons/react";
 import { cn } from "@read-aware/ui/cn";
 import { useTranslation } from "../../../i18n";
 import type { ShelfLayout } from "../lib/shelf-view";
@@ -9,6 +9,8 @@ export type CollectionTileData = {
   count: number;
   /** Up to four member cover URLs for the montage (may be fewer). */
   coverUrls: string[];
+  /** Folder is password-locked and not yet unlocked this session. */
+  locked?: boolean;
 };
 
 type CollectionTileProps = {
@@ -18,7 +20,22 @@ type CollectionTileProps = {
 };
 
 /** A 2×2 montage of member covers, padded with blanks; a folder glyph when empty. */
-function Montage({ coverUrls, className }: { coverUrls: string[]; className?: string }) {
+function Montage({
+  coverUrls,
+  locked,
+  className,
+}: {
+  coverUrls: string[];
+  locked?: boolean;
+  className?: string;
+}) {
+  if (locked) {
+    return (
+      <div className={cn("flex items-center justify-center bg-fill-strong text-fg-muted", className)}>
+        <LockSimple size={26} weight="fill" aria-hidden="true" />
+      </div>
+    );
+  }
   if (coverUrls.length === 0) {
     return (
       <div className={cn("flex items-center justify-center text-fg-subtle", className)}>
@@ -47,19 +64,26 @@ function Montage({ coverUrls, className }: { coverUrls: string[]; className?: st
 export function CollectionTile({ data, layout, onOpen }: CollectionTileProps) {
   const { t } = useTranslation("shelf");
   const countLabel = t("books", { count: data.count });
+  const lockLabel = data.locked ? t("collection.lockedTooltip") : undefined;
 
   if (layout === "list") {
     return (
       <button
         type="button"
         onClick={onOpen}
+        aria-label={lockLabel ?? data.name}
         className="group flex w-full items-center gap-4 rounded-sm px-2 py-2 text-left transition-colors hover:bg-fg/5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-fg"
       >
         <div className="relative h-16 w-11 shrink-0 overflow-hidden rounded-sm border border-border bg-fill">
-          <Montage coverUrls={data.coverUrls} className="h-full w-full" />
+          <Montage coverUrls={data.coverUrls} locked={data.locked} className="h-full w-full" />
         </div>
         <div className="min-w-0 flex-1">
-          <span className="block truncate font-serif text-sm font-medium text-fg">{data.name}</span>
+          <span className="block truncate font-serif text-sm font-medium text-fg">
+            {data.locked && (
+              <LockSimple size={12} weight="fill" aria-hidden="true" className="mr-1 inline -translate-y-px text-fg-muted" />
+            )}
+            {data.name}
+          </span>
           <span className="mt-0.5 block font-sans text-[13px] tabular-nums text-fg-muted">
             {countLabel}
           </span>
@@ -73,18 +97,27 @@ export function CollectionTile({ data, layout, onOpen }: CollectionTileProps) {
     <button
       type="button"
       onClick={onOpen}
+      aria-label={lockLabel ?? data.name}
       className="group flex w-full max-w-32 justify-self-start flex-col text-left focus-visible:outline-none sm:max-w-36 lg:max-w-44"
     >
       <div className="relative aspect-[2/3] w-full overflow-hidden rounded-sm border border-border bg-fill transition-shadow group-hover:shadow-md group-focus-within:shadow-md">
-        <Montage coverUrls={data.coverUrls} className="h-full w-full" />
+        <Montage coverUrls={data.coverUrls} locked={data.locked} className="h-full w-full" />
         <div className="absolute inset-x-0 bottom-0 bg-stone-950/70 px-2 py-1.5">
-          <span className="block truncate font-serif text-xs font-medium leading-tight text-white">
+          <span className="block truncate font-serif text-sm font-medium text-stone-50">
             {data.name}
           </span>
-          <span className="mt-0.5 block font-sans text-[10px] tabular-nums text-white/70">
+          <span className="mt-0.5 block font-sans text-[11px] tabular-nums text-stone-300">
             {countLabel}
           </span>
         </div>
+        {data.locked && (
+          <LockSimple
+            size={18}
+            weight="fill"
+            aria-hidden="true"
+            className="absolute left-1.5 top-1.5 text-stone-100 drop-shadow"
+          />
+        )}
       </div>
     </button>
   );

@@ -764,6 +764,19 @@ export async function renameCollection(
  * `collection.removed` implies the membership clearing on replay — no per-book
  * `book.removedFromCollection` events are emitted for it.
  */
+/** Set or clear a collection's folder lock (password hash syncs to every
+ *  device via collection.passwordChanged; null clears it). */
+export async function setCollectionPassword(
+  id: string,
+  passwordHash: string | null,
+  origin?: EventOrigin,
+): Promise<void> {
+  await commitDomainEvents({
+    type: "collection.passwordChanged",
+    payload: { collectionId: id, passwordHash },
+    origin,
+  });
+}
 export async function deleteCollection(id: string, origin?: EventOrigin) {
   assertDesktop("Deleting a collection");
   await commitDomainEvents({

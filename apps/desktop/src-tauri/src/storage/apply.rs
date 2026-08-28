@@ -404,9 +404,16 @@ pub fn apply_event(tx: &Transaction<'_>, ev: &EventRow) -> Result<bool, String> 
         // ── Collections ─────────────────────────────────────────────────────
         "collection.created" => {
             tx.execute(
-                "INSERT INTO collections (id, name, created_at) VALUES (?1, ?2, ?3)
-                 ON CONFLICT(id) DO UPDATE SET name = excluded.name",
-                params![require(p, "collectionId", t)?, require(p, "name", t)?, at],
+                "INSERT INTO collections (id, name, created_at, password_hash)
+                 VALUES (?1, ?2, ?3, ?4)
+                 ON CONFLICT(id) DO UPDATE SET
+                    name = excluded.name, password_hash = excluded.password_hash",
+                params![
+                    require(p, "collectionId", t)?,
+                    require(p, "name", t)?,
+                    at,
+                    str_of(p, "passwordHash"),
+                ],
             )
             .map_err(|e| e.to_string())?;
         }
@@ -426,6 +433,13 @@ pub fn apply_event(tx: &Transaction<'_>, ev: &EventRow) -> Result<bool, String> 
             .map_err(|e| e.to_string())?;
             tx.execute("DELETE FROM collections WHERE id = ?1", params![id])
                 .map_err(|e| e.to_string())?;
+        }
+        "collection.passwordChanged" => {
+            tx.execute(
+                "UPDATE collections SET password_hash = ?2 WHERE id = ?1",
+                params![require(p, "collectionId", t)?, str_of(p, "passwordHash")],
+            )
+            .map_err(|e| e.to_string())?;
         }
 
         // ── Reading ─────────────────────────────────────────────────────────

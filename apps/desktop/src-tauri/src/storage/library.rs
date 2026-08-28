@@ -50,6 +50,8 @@ pub struct Collection {
     pub id: String,
     pub name: String,
     pub created_at: String,
+    #[serde(default)]
+    pub password_hash: Option<String>,
 }
 
 pub(crate) fn row_to_library_book(row: &rusqlite::Row) -> rusqlite::Result<LibraryBook> {
@@ -203,7 +205,7 @@ pub fn library_release_book_files(
 pub fn library_list_collections(db: State<'_, Db>) -> Result<Vec<Collection>, String> {
     let conn = db.0.lock().map_err(|e| e.to_string())?;
     let mut stmt = conn
-        .prepare("SELECT id, name, created_at FROM collections")
+        .prepare("SELECT id, name, created_at, password_hash FROM collections")
         .map_err(|e| e.to_string())?;
     let rows = stmt
         .query_map([], |row| {
@@ -211,6 +213,7 @@ pub fn library_list_collections(db: State<'_, Db>) -> Result<Vec<Collection>, St
                 id: row.get(0)?,
                 name: row.get(1)?,
                 created_at: row.get(2)?,
+                password_hash: row.get(3)?,
             })
         })
         .map_err(|e| e.to_string())?;
@@ -227,9 +230,9 @@ pub fn library_list_collections(db: State<'_, Db>) -> Result<Vec<Collection>, St
 pub fn library_put_collection(collection: Collection, db: State<'_, Db>) -> Result<(), String> {
     let conn = db.0.lock().map_err(|e| e.to_string())?;
     conn.execute(
-        "INSERT INTO collections (id, name, created_at) VALUES (?1, ?2, ?3)
-         ON CONFLICT(id) DO UPDATE SET name = excluded.name",
-        params![collection.id, collection.name, collection.created_at],
+        "INSERT INTO collections (id, name, created_at, password_hash) VALUES (?1, ?2, ?3, ?4)
+         ON CONFLICT(id) DO UPDATE SET name = excluded.name, password_hash = excluded.password_hash",
+        params![collection.id, collection.name, collection.created_at, collection.password_hash],
     )
     .map_err(|e| e.to_string())?;
     Ok(())

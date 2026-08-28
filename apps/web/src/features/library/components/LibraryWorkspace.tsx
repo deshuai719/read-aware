@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAtom, useAtomValue } from "jotai";
 import { Books } from "@phosphor-icons/react";
 import { Body, Button, EmptyState, Skeleton } from "@read-aware/ui";
@@ -12,6 +12,15 @@ import { deriveShelfView } from "../../shelf/lib/derive-shelf-view";
 import { useShelfSelection } from "../../shelf/hooks/useShelfSelection";
 import { activeCollectionAtom, shelfViewAtom } from "../../../state/ui";
 import type { BookMetadataPatch, Collection, LibraryBook } from "../lib/library-types";
+import { CollectionLockDialog, type CollectionLockMode } from "../../shelf/components/CollectionLockDialog";
+import {
+  hashCollectionPassword,
+  isCollectionUnlocked,
+  lockCollection,
+  unlockCollection,
+  verifyCollectionPassword,
+} from "../lib/collection-lock";
+import { setCollectionPassword } from "../lib/library-db";
 
 type LibraryWorkspaceProps = {
   isReady: boolean;
@@ -58,6 +67,7 @@ export function LibraryWorkspace({
   const [activeCollectionId, setActiveCollectionId] = useAtom(activeCollectionAtom);
   const { active, ids, selectedIds, exit, clear, toggle, selectAll } = useShelfSelection();
   const [showPendingBooks, setShowPendingBooks] = useState(false);
+  const [lockTarget, setLockTarget] = useState<{ mode: CollectionLockMode; collection: Collection } | null>(null);
 
   // Native imports normally finish before feedback is useful. Slow imports use
   // their fully prepared book record as a sorted placeholder, so the reserved
@@ -130,6 +140,7 @@ export function LibraryWorkspace({
         id: collection.id,
         name: collection.name,
         count: inside.length,
+        locked: Boolean(collection.passwordHash) && !isCollectionUnlocked(collection.id),
         coverUrls: inside
           .map((b) => b.coverUrl)
           .filter((url): url is string => Boolean(url))
@@ -141,6 +152,49 @@ export function LibraryWorkspace({
   const collectionCount = activeCollection
     ? books.filter((b) => b.collectionId === activeCollection.id).length
     : 0;
+
+  /** Open a collection — unless it's password-locked, which routes to unlock. */
+  const handleOpenCollection = useCallback(
+    (id: string) => {
+      const collection = collections.find((c) => c.id === id);
+      if (!collection) return;
+      if (collection.passwordHash && !isCollectionUnlocked(id)) {
+        setLockTarget({ mode: "unlock", collection });
+        return;
+      }
+      setActiveCollectionId(id);
+    },
+    [collections, setActiveCollectionId],
+  );
+
+  const handleUnlock = async (password: string): Promise<boolean> => {
+    const target = lockTarget;
+    if (!target?.collection.passwordHash) return false;
+    const ok = verifyCollectionPassword(target.collection.passwordHash, password);
+    if (ok) {
+      unlockCollection(target.collection.id);
+      setActiveCollectionId(target.collection.id);
+    }
+    return ok;
+  };
+
+  const handleSetPassword = async (password: string | null): Promise<void> => {
+    const target = lockTarget;
+    if (!target) return;
+    await setCollectionPassword(target.collection.id, password ? hashCollectionPassword(password) : null);
+    lockCollection(target.collection.id);
+  };
+
+  const handleClearPassword = async (currentPassword: string): Promise<boolean> => {
+    const target = lockTarget;
+    if (!target?.collection.passwordHash) return false;
+    const ok = verifyCollectionPassword(target.collection.passwordHash, currentPassword);
+    if (ok) {
+      await setCollectionPassword(target.collection.id, null);
+      lockCollection(target.collection.id);
+    }
+    return ok;
+  };
 
   return (
     <div
@@ -206,6 +260,7 @@ export function LibraryWorkspace({
               collection={activeCollection}
               count={collectionCount}
               onRename={(name) => onRenameCollection(activeCollection.id, name)}
+              onManageLock={() => setLockTarget({ mode: "manage", collection: activeCollection })}
               onDelete={() => {
                 onDeleteCollection(activeCollection.id);
                 setActiveCollectionId(null);
@@ -224,7 +279,7 @@ export function LibraryWorkspace({
               collections={collectionTiles}
               pendingBookIds={pendingBookIds}
               openingBookId={openingBookId}
-              onOpenCollection={(id) => setActiveCollectionId(id)}
+              onOpenCollection={handleOpenCollection}
               selecting={active}
               selectedIds={selectedIds}
               onSelect={onOpenBook}
@@ -235,6 +290,17 @@ export function LibraryWorkspace({
             />
           )}
         </div>
+      )}
+      {lockTarget && (
+        <CollectionLockDialog
+          open
+          mode={lockTarget.mode}
+          collection={lockTarget.collection}
+          onClose={() => setLockTarget(null)}
+          onUnlock={handleUnlock}
+          onSetPassword={handleSetPassword}
+          onClearPassword={handleClearPassword}
+        />
       )}
     </div>
   );

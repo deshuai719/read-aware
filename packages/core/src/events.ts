@@ -170,6 +170,8 @@ export type DomainEvent =
   | DomainEventEnvelope<"collection.created", { collectionId: Id; name: string }>
   | DomainEventEnvelope<"collection.renamed", { collectionId: Id; name: string }>
   | DomainEventEnvelope<"collection.removed", { collectionId: Id }>
+  /** Collection folder lock: argon2id hash (or null to clear) syncs to every device. */
+  | DomainEventEnvelope<"collection.passwordChanged", { collectionId: Id; passwordHash: string | null }>
   | DomainEventEnvelope<
       "book.addedToCollection",
       { bookId: Id; collectionId: Id }

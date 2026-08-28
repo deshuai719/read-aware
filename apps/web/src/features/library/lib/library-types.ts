@@ -75,6 +75,8 @@ export interface Collection {
   id: string;
   name: string;
   createdAt: string;
+  /** Argon2id hash (with salt/params) synced via collection.passwordChanged; null = unlocked. */
+  passwordHash?: string | null;
 }
 
 export type ShelfSection = {

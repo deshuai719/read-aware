@@ -3,6 +3,8 @@ import { Button, Dialog, TextField } from "@read-aware/ui";
 import { useLocalAtom } from "@read-aware/ui/state";
 import { useTranslation } from "../../../i18n";
 import type { Collection } from "../../library/lib/library-types";
+import { hashCollectionPassword } from "../../library/lib/collection-lock";
+import { setCollectionPassword } from "../../library/lib/library-db";
 
 type AddToCollectionDialogProps = {
   open: boolean;
@@ -26,6 +28,7 @@ export function AddToCollectionDialog({
 }: AddToCollectionDialogProps) {
   const { t } = useTranslation("shelf");
   const [name, setName] = useLocalAtom("");
+  const [password, setPassword] = useLocalAtom("");
   const [creating, setCreating] = useLocalAtom(false);
 
   function assign(collectionId: string | null) {
@@ -40,7 +43,13 @@ export function AddToCollectionDialog({
     const collection = await onCreate(trimmed);
     setCreating(false);
     if (collection) {
+      const secret = password.trim();
+      if (secret) {
+        // Folder lock syncs to every device via collection.passwordChanged.
+        await setCollectionPassword(collection.id, hashCollectionPassword(secret));
+      }
       setName("");
+      setPassword("");
       assign(collection.id);
     }
   }
@@ -74,6 +83,14 @@ export function AddToCollectionDialog({
             {t("actions.create")}
           </Button>
         </div>
+        <TextField
+          label={t("collectionDialog.passwordLabel")}
+          type="password"
+          value={password}
+          placeholder={t("collectionDialog.passwordPlaceholder")}
+          onChange={(event) => setPassword(event.target.value)}
+          autoComplete="new-password"
+        />
 
         {collections.length > 0 && (
           <div className="-mx-1 flex max-h-60 flex-col overflow-y-auto">

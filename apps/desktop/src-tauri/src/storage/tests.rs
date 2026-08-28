@@ -2193,3 +2193,46 @@ fn namespaced_kv_restore_replaces_only_the_target_namespace() {
     assert_eq!(restored, "restored");
     assert_eq!(untouched, "keep");
 }
+
+#[test]
+fn collection_password_hash_applies_and_clears() {
+    let mut conn = migrated_conn();
+    commit_events_inner(
+        &mut conn,
+        &[
+            ev(
+                "e0",
+                1_000,
+                "collection.created",
+                serde_json::json!({ "collectionId": "c1", "name": "私密" }),
+            ),
+            ev(
+                "e1",
+                1_001,
+                "collection.passwordChanged",
+                serde_json::json!({ "collectionId": "c1", "passwordHash": "$argon2id$fake-hash" }),
+            ),
+        ],
+    )
+    .unwrap();
+    let stored: String = conn
+        .query_row("SELECT password_hash FROM collections WHERE id='c1'", [], |r| r.get(0))
+        .unwrap();
+    assert_eq!(stored, "$argon2id$fake-hash");
+
+    // Clearing (null) removes the lock on every device via the same event.
+    commit_events_inner(
+        &mut conn,
+        &[ev(
+            "e2",
+            1_002,
+            "collection.passwordChanged",
+            serde_json::json!({ "collectionId": "c1", "passwordHash": null }),
+        )],
+    )
+    .unwrap();
+    let cleared: Option<String> = conn
+        .query_row("SELECT password_hash FROM collections WHERE id='c1'", [], |r| r.get(0))
+        .unwrap();
+    assert!(cleared.is_none());
+}

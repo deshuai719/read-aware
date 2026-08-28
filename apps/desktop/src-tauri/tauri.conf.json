@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "ReadAware",
-  "version": "0.5.0-6",
+  "version": "0.5.0-7",
   "identifier": "com.readaware.app",
   "build": {
     "frontendDist": "../../web/dist",
@@ -132,7 +132,7 @@
     "updater": {
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDE3NDY3N0Q0ODEwQUNFQkIKUldTN3pncUIxSGRHRjhlR0llZ291UDRGUVljQmhFY3Q3UTZFTjBwUnAwVDNwWlN5cHNFOU1PdEgK",
       "endpoints": [
-        "https://github.com/ahpxex/read-aware/releases/latest/download/latest.json"
+        "https://github.com/deshuai719/read-aware/releases/latest/download/latest.json"
       ],
       "windows": {
         "installMode": "passive"

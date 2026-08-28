@@ -462,6 +462,34 @@ export function createRelayHandler(ports: RelayPorts): (req: Request) => Promise
     return json(200, { session, accountId: account.id, email: account.email, keys: account.keys });
   }
 
+  /**
+   * Personal self-hosted login: username + password (Argon2id hash in env)
+   * instead of magic links or OAuth. Issues the same session/account shape
+   * as handleAuthVerify — the client's password form calls this endpoint.
+   */
+  async function handlePasswordLogin(req: Request): Promise<Response> {
+    if (!ports.passwordLogin) return failure(501, 'password login is not configured');
+    if (!(await ipThrottled(req, 'auth-ip', HOUR, config.authRequestPerIpPerHour))) {
+      return failure(429, 'too many authentication attempts');
+    }
+    const body = await readJson(req);
+    const username =
+      typeof body === 'object' && body !== null
+        ? (body as Record<string, unknown>).username
+        : undefined;
+    const password =
+      typeof body === 'object' && body !== null
+        ? (body as Record<string, unknown>).password
+        : undefined;
+    if (!isString(username) || username.length === 0) return failure(400, 'username is required');
+    if (!isString(password) || password.length === 0) return failure(400, 'password is required');
+    const email = await ports.passwordLogin(username, password);
+    if (!email) return failure(401, 'invalid username or password');
+    const account = await accounts.findOrCreateByEmail(email, nowIso());
+    const session = randomToken();
+    await accounts.putSession(await tokenHash(session), account.id, nowIso());
+    return json(200, { session, accountId: account.id, email: account.email, keys: account.keys });
+  }
   async function handlePushEvents(account: Account, req: Request): Promise<Response> {
     const body = await readJson(req);
     const events =
@@ -871,6 +899,7 @@ export function createRelayHandler(ports: RelayPorts): (req: Request) => Promise
     if (req.method === "POST" && path === "/v1/report") return handleReport(req);
     if (req.method === "POST" && path === "/v1/auth/request") return handleAuthRequest(req);
     if (req.method === "POST" && path === "/v1/auth/verify") return handleAuthVerify(req);
+    if (req.method === "POST" && path === "/v1/auth/password") return handlePasswordLogin(req);
     if (req.method === "POST" && path === "/v1/admin/tier") return handleAdminTier(req);
     if (req.method === "POST" && path === "/v1/billing/webhook") return handleBillingWebhook(req);
     // Optional auth: signed-in checkout binds the account, signed-out is the

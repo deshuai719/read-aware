@@ -361,5 +361,11 @@ export type RelayPorts = {
   /** Upstream HTTP for the AI proxy — injectable so tests fake the LLM side. */
   aiFetch?: typeof fetch;
   /** Cloudflare's ctx.waitUntil — keeps post-stream accounting writes alive. */
-  waitUntil?(promise: Promise<unknown>): void;
+    waitUntil?(promise: Promise<unknown>): void;
+  /**
+   * Personal password login (self-hosted): username + password → account
+   * email, or null on a mismatch. Absent ⇒ POST /v1/auth/password answers
+   * 501. Sessions/keys flow through the same account machinery as magic-link.
+   */
+  passwordLogin?(username: string, password: string): Promise<string | null>;
 };

@@ -98,6 +98,7 @@ export function makeRelay(
   ai: { models?: AiModel[]; fetch?: typeof fetch } = {},
   stripe: RelayPorts["stripe"] = null,
   magicLink: RelayPorts["magicLink"] = null,
+  passwordLogin: RelayPorts["passwordLogin"] = undefined,
 ) {
   const db = new Database(":memory:");
   for (const migration of MIGRATIONS) db.exec(migration);
@@ -130,6 +131,7 @@ export function makeRelay(
     aiFetch: ai.fetch,
     stripe,
     magicLink,
+    passwordLogin,
     oauthProviders,
     config: { ...DEFAULT_CONFIG, echoMagicToken: true, ...config },
     now: () => nowMs,

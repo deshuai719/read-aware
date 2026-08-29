@@ -71,6 +71,7 @@
       "showAll": "显示全部 {{count}} 条",
       "showFewer": "收起",
       "missingBook": "已不在书架上",
+      "locked": "已锁定收藏夹，解锁后可见",
       "openBook": "打开《{{title}}》",
       "saveWord": "加入词汇表",
       "removeWord": "从词汇表移除"

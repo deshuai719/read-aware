@@ -5,6 +5,7 @@ import { useLocalAtom } from "@read-aware/ui/state";
 import { formatPercent, useTranslation } from "../../../i18n";
 import type { BookMetadataPatch, LibraryBook } from "../../library/lib/library-types";
 import { useLongPress } from "../hooks/useLongPress";
+import { type DragEvent } from "react";
 import { BookCoverPlaceholder } from "./BookCoverPlaceholder";
 import { BookDetailsDialog, BookRemoveDialog } from "./BookDialogs";
 
@@ -19,6 +20,11 @@ type BookCoverProps = {
   onToggleSelect?: () => void;
   /** This book is being opened: show a quiet spinner over the cover. */
   opening?: boolean;
+  /** Allow dragging this book (or the active selection) onto a collection tile. */
+  draggable?: boolean;
+  onDragStart?: (event: DragEvent<HTMLButtonElement>) => void;
+  /** Called when the drag ends (drop or cancel) — clears in-flight drag state. */
+  onDragEnd?: () => void;
   className?: string;
 };
 
@@ -30,6 +36,9 @@ export function BookCover({
   onRemove,
   onToggleStar,
   onUpdateMetadata,
+  draggable = false,
+  onDragStart,
+  onDragEnd,
   onToggleSelect,
   opening = false,
   className,
@@ -55,6 +64,9 @@ export function BookCover({
         type="button"
         onClick={selecting ? onToggleSelect : onClick}
         aria-pressed={selecting ? selected : undefined}
+        draggable={draggable}
+        onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
         className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fg focus-visible:ring-offset-2 focus-visible:ring-offset-fill"
         {...longPress}
       >

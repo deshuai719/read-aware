@@ -3,6 +3,7 @@ import {
   lazy,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -14,6 +15,7 @@ import { dismissBootSplash } from "./boot-splash";
 import { DropImportOverlay } from "./features/library/components/DropImportOverlay";
 import { LibraryWorkspace } from "./features/library/components/LibraryWorkspace";
 import { useDropBookImport } from "./features/library/hooks/useDropBookImport";
+import { isBookInLockedCollection } from "./features/library/lib/collection-lock";
 import { useExternalBookOpens } from "./features/library/hooks/useExternalBookOpens";
 import { useLibraryController } from "./features/library/hooks/useLibraryController";
 import { BOOK_FILE_ACCEPT } from "./features/library/lib/pick-book-files";
@@ -265,8 +267,15 @@ function App() {
     if (shelfHandoff === "idle") setHeldShelfBooks(null);
   }, [shelfHandoff]);
 
+  // Password-hidden folders keep their books off every non-shelf preview
+  // surface (stats, the annotations popover); the shelf itself gates internally.
+  const visibleBooks = useMemo(
+    () => library.books.filter((book) => !isBookInLockedCollection(book, library.collections)),
+    [library.books, library.collections],
+  );
+
   const agentHeaderActions = useAgentHeaderActions({
-    books: library.books,
+    books: visibleBooks,
     onOpenBook: handleOpenBook,
     onNewConversation: createGlobalConversation,
   });
@@ -603,7 +612,7 @@ function App() {
               <FeatureErrorBoundary surface="stats" resetKey={activeTopNav}>
                 <Suspense fallback={<SurfaceFallback />}>
                   <StatsWorkspace
-                    books={library.books}
+                    books={visibleBooks}
                     onOpenBook={handleOpenBook}
                   />
                 </Suspense>

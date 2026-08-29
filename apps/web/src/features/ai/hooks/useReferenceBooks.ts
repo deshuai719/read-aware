@@ -6,37 +6,57 @@
  * persisted snapshot).
  */
 import { useEffect, useState } from "react";
-import { listLibraryBooks } from "../../library/lib/library-db";
-import type { LibraryBook } from "../../library/lib/library-types";
+import { listCollections, listLibraryBooks } from "../../library/lib/library-db";
+import { isBookInLockedCollection } from "../../library/lib/collection-lock";
+import type { Collection, LibraryBook } from "../../library/lib/library-types";
 
-let inFlight: Promise<LibraryBook[]> | null = null;
+let inFlight: Promise<{ books: LibraryBook[]; collections: Collection[] }> | null = null;
 
-function loadShelfShared(): Promise<LibraryBook[]> {
+function loadShelfShared(): Promise<{ books: LibraryBook[]; collections: Collection[] }> {
   if (!inFlight) {
-    inFlight = listLibraryBooks().finally(() => {
-      inFlight = null;
-    });
+    inFlight = Promise.all([listLibraryBooks(), listCollections()])
+      .then(([books, collections]) => ({ books, collections }))
+      .finally(() => {
+        inFlight = null;
+      });
   }
   return inFlight;
 }
 
-export function useReferenceBooks(bookIds: string[]): Map<string, LibraryBook> | null {
+export type ReferenceBooks = {
+  /** Live shelf records for visible (non-locked) books; null while loading. */
+  hydrated: Map<string, LibraryBook> | null;
+  /** Referenced ids whose collection is password-locked this session. */
+  lockedBookIds: Set<string>;
+};
+
+export function useReferenceBooks(bookIds: string[]): ReferenceBooks {
   const [books, setBooks] = useState<Map<string, LibraryBook> | null>(null);
+  const [lockedIds, setLockedIds] = useState<Set<string>>(new Set());
   const key = bookIds.join("\n");
 
   useEffect(() => {
     let alive = true;
-    void loadShelfShared().then((shelf) => {
+    void loadShelfShared().then(({ books: shelf, collections }) => {
       if (!alive) return;
       const wanted = new Set(key.split("\n").filter(Boolean));
-      setBooks(
-        new Map(shelf.filter((book) => wanted.has(book.id)).map((book) => [book.id, book])),
-      );
+      const locked = new Set<string>();
+      const visible = new Map<string, LibraryBook>();
+      for (const book of shelf) {
+        if (!wanted.has(book.id)) continue;
+        if (isBookInLockedCollection(book, collections)) {
+          locked.add(book.id);
+          continue;
+        }
+        visible.set(book.id, book);
+      }
+      setBooks(visible);
+      setLockedIds(locked);
     });
     return () => {
       alive = false;
     };
   }, [key]);
 
-  return books;
+  return { hydrated: books, lockedBookIds: lockedIds };
 }

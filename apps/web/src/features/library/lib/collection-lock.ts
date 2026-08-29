@@ -6,6 +6,7 @@
  * verified client-side with @noble — the relay never sees any of it, and a
  * restart re-locks every folder.
  */
+import type { Collection, LibraryBook } from "./library-types";
 import { argon2id } from "@noble/hashes/argon2.js";
 import { randomBytes } from "@noble/hashes/utils.js";
 import { equalBytes } from "@noble/ciphers/utils.js";
@@ -67,4 +68,25 @@ export function lockCollection(id: string): void {
 
 export function isCollectionUnlocked(id: string): boolean {
   return unlocked.has(id);
+}
+/**
+ * Whether a collection is currently password-hidden: it carries a hash and the
+ * session has not unlocked it. Single source of truth for every preview
+ * surface (tiles, internal view, search, stats, reference cards).
+ */
+export function isCollectionLocked(collection: Pick<Collection, "id" | "passwordHash">): boolean {
+  return Boolean(collection.passwordHash) && !isCollectionUnlocked(collection.id);
+}
+
+/**
+ * Whether a book lives inside a password-hidden collection (no `collectionId`
+ * or an unlocked/missing collection is never hidden).
+ */
+export function isBookInLockedCollection(
+  book: Pick<LibraryBook, "collectionId">,
+  collections: readonly Pick<Collection, "id" | "passwordHash">[],
+): boolean {
+  if (!book.collectionId) return false;
+  const collection = collections.find((c) => c.id === book.collectionId);
+  return collection ? isCollectionLocked(collection) : false;
 }

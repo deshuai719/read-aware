@@ -79,7 +79,17 @@
     "deleteTooltip": "删除收藏集",
     "deleteAction": "删除收藏集",
     "deleteTitle": "删除收藏集？",
-    "deleteBody": "删除 <strong>{{name}}</strong>？书籍仍会保留在你的书库中——只是不再分组。"
+    "deleteBody": "删除 <strong>{{name}}</strong>？书籍仍会保留在你的书库中——只是不再分组。",
+    "lockedEmpty": "该收藏夹已锁定，输入密码后可见内容。"
+  },
+  "dropZone": {
+    "ungroupTitle": "未分组",
+    "ungroupHint": "把书拖到这里，移出收藏夹",
+    "ungroupActive": "松开以移出收藏夹"
+  },
+  "dropFeedback": {
+    "added": "已加入 {{name}}",
+    "ungrouped": "已移出收藏夹"
   },
   "manage": {
     "trigger": "书架管理",

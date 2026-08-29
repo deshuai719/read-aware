@@ -2,6 +2,7 @@ import { Check, Info, Star, Trash } from "@phosphor-icons/react";
 import { IconButton, Progress, Spinner } from "@read-aware/ui";
 import { cn } from "@read-aware/ui/cn";
 import { useLocalAtom } from "@read-aware/ui/state";
+import { type DragEvent } from "react";
 import { formatPercent, useTranslation } from "../../../i18n";
 import type { BookMetadataPatch, LibraryBook } from "../../library/lib/library-types";
 import { BookCoverPlaceholder } from "./BookCoverPlaceholder";
@@ -19,6 +20,11 @@ type BookRowProps = {
   /** This book is being opened: show a quiet spinner over the thumbnail. */
   opening?: boolean;
   className?: string;
+  /** Allow dragging this book (or the active selection) onto a collection tile. */
+  draggable?: boolean;
+  onDragStart?: (event: DragEvent<HTMLButtonElement>) => void;
+  /** Called when the drag ends (drop or cancel) — clears in-flight drag state. */
+  onDragEnd?: () => void;
 };
 
 export function BookRow({
@@ -31,6 +37,9 @@ export function BookRow({
   onUpdateMetadata,
   onToggleSelect,
   opening = false,
+  draggable = false,
+  onDragStart,
+  onDragEnd,
   className,
 }: BookRowProps) {
   const { t } = useTranslation("shelf");
@@ -49,6 +58,9 @@ export function BookRow({
         type="button"
         onClick={selecting ? onToggleSelect : onClick}
         aria-pressed={selecting ? selected : undefined}
+        draggable={draggable}
+        onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
         className="flex min-w-0 flex-1 items-center gap-4 text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-fg rounded-sm"
       >
         {selecting && (

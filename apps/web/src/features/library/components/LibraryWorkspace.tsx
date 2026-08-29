@@ -1,11 +1,12 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, type DragEvent } from "react";
 import { useAtom, useAtomValue } from "jotai";
-import { Books } from "@phosphor-icons/react";
-import { Body, Button, EmptyState, Skeleton } from "@read-aware/ui";
+import { Books, LockSimple } from "@phosphor-icons/react";
+import { Body, Button, EmptyState, Skeleton, useToast } from "@read-aware/ui";
 import { cn } from "@read-aware/ui/cn";
 import { useTranslation } from "../../../i18n";
 import { Shelf } from "../../shelf/components/Shelf";
 import { CollectionHeader } from "../../shelf/components/CollectionHeader";
+import { CollectionUngroupDropZone } from "../../shelf/components/CollectionUngroupDropZone";
 import type { CollectionTileData } from "../../shelf/components/CollectionTile";
 import { ShelfSelectionToolbar } from "../../shelf/components/ShelfSelectionToolbar";
 import { deriveShelfView } from "../../shelf/lib/derive-shelf-view";
@@ -15,12 +16,15 @@ import type { BookMetadataPatch, Collection, LibraryBook } from "../lib/library-
 import { CollectionLockDialog, type CollectionLockMode } from "../../shelf/components/CollectionLockDialog";
 import {
   hashCollectionPassword,
-  isCollectionUnlocked,
+  isCollectionLocked,
   lockCollection,
   unlockCollection,
   verifyCollectionPassword,
 } from "../lib/collection-lock";
 import { setCollectionPassword } from "../lib/library-db";
+
+/** Custom MIME type for in-app book drags (never collides with OS file drops). */
+const BOOK_DRAG_MIME = "application/x-read-aware-book-ids";
 
 type LibraryWorkspaceProps = {
   isReady: boolean;
@@ -68,6 +72,10 @@ export function LibraryWorkspace({
   const { active, ids, selectedIds, exit, clear, toggle, selectAll } = useShelfSelection();
   const [showPendingBooks, setShowPendingBooks] = useState(false);
   const [lockTarget, setLockTarget] = useState<{ mode: CollectionLockMode; collection: Collection } | null>(null);
+  // In-flight book drag (ids being dragged); non-null only during our own drags.
+  const [dragBookIds, setDragBookIds] = useState<string[] | null>(null);
+  const dragActive = dragBookIds !== null;
+  const { toast } = useToast();
 
   // Native imports normally finish before feedback is useful. Slow imports use
   // their fully prepared book record as a sorted placeholder, so the reserved
@@ -101,6 +109,8 @@ export function LibraryWorkspace({
   const activeCollection = activeCollectionId
     ? collections.find((c) => c.id === activeCollectionId) ?? null
     : null;
+  // Password-hidden folders render nothing (no covers, no books) until unlocked.
+  const activeCollectionLocked = activeCollection ? isCollectionLocked(activeCollection) : false;
 
   // Pop back to the top level if the open collection was deleted.
   useEffect(() => {
@@ -117,9 +127,11 @@ export function LibraryWorkspace({
   const visible = useMemo(
     () =>
       activeCollection
-        ? shelfBooks.filter((b) => b.collectionId === activeCollection.id)
+        ? activeCollectionLocked
+          ? []
+          : shelfBooks.filter((b) => b.collectionId === activeCollection.id)
         : shelfBooks.filter((b) => !b.collectionId),
-    [activeCollection, shelfBooks],
+    [activeCollection, activeCollectionLocked, shelfBooks],
   );
 
   const sections = deriveShelfView(visible, shelfView, t);
@@ -140,7 +152,7 @@ export function LibraryWorkspace({
         id: collection.id,
         name: collection.name,
         count: inside.length,
-        locked: Boolean(collection.passwordHash) && !isCollectionUnlocked(collection.id),
+        locked: isCollectionLocked(collection),
         coverUrls: inside
           .map((b) => b.coverUrl)
           .filter((url): url is string => Boolean(url))
@@ -149,16 +161,17 @@ export function LibraryWorkspace({
     });
   }, [activeCollectionId, books, collections]);
 
-  const collectionCount = activeCollection
-    ? books.filter((b) => b.collectionId === activeCollection.id).length
-    : 0;
+  const collectionCount =
+    activeCollection && !activeCollectionLocked
+      ? books.filter((b) => b.collectionId === activeCollection.id).length
+      : 0;
 
   /** Open a collection — unless it's password-locked, which routes to unlock. */
   const handleOpenCollection = useCallback(
     (id: string) => {
       const collection = collections.find((c) => c.id === id);
       if (!collection) return;
-      if (collection.passwordHash && !isCollectionUnlocked(id)) {
+      if (isCollectionLocked(collection)) {
         setLockTarget({ mode: "unlock", collection });
         return;
       }
@@ -195,6 +208,37 @@ export function LibraryWorkspace({
     }
     return ok;
   };
+
+  const handleStartBookDrag = useCallback(
+    (ids: string[], event: DragEvent<HTMLButtonElement>) => {
+      event.dataTransfer.setData(BOOK_DRAG_MIME, JSON.stringify(ids));
+      event.dataTransfer.effectAllowed = "move";
+      setDragBookIds(ids);
+    },
+    [],
+  );
+
+  const handleEndBookDrag = useCallback(() => setDragBookIds(null), []);
+
+  const handleDropOnCollection = useCallback(
+    (collectionId: string) => {
+      if (!dragBookIds || dragBookIds.length === 0) return;
+      const ids = dragBookIds;
+      setDragBookIds(null);
+      onSetBooksCollection(ids, collectionId);
+      const collection = collections.find((c) => c.id === collectionId);
+      toast({ description: t("dropFeedback.added", { name: collection?.name ?? "" }) });
+    },
+    [dragBookIds, collections, onSetBooksCollection, toast, t],
+  );
+
+  const handleDropUngroup = useCallback(() => {
+    if (!dragBookIds || dragBookIds.length === 0) return;
+    const ids = dragBookIds;
+    setDragBookIds(null);
+    onSetBooksCollection(ids, null);
+    toast({ description: t("dropFeedback.ungrouped") });
+  }, [dragBookIds, onSetBooksCollection, toast, t]);
 
   return (
     <div
@@ -268,7 +312,24 @@ export function LibraryWorkspace({
             />
           )}
 
-          {visible.length === 0 && collectionTiles.length === 0 ? (
+          {dragActive && !activeCollectionLocked && (
+            <CollectionUngroupDropZone onDrop={handleDropUngroup} />
+          )}
+
+          {activeCollectionLocked ? (
+            <div className="flex flex-col items-center gap-4 py-16 text-center">
+              <LockSimple size={32} weight="fill" aria-hidden="true" className="text-fg-muted" />
+              <Body className="text-sm text-fg-muted">{t("collection.lockedEmpty")}</Body>
+              <Button
+                size="sm"
+                onClick={() => {
+                  if (activeCollection) setLockTarget({ mode: "unlock", collection: activeCollection });
+                }}
+              >
+                {t("collection.lockUnlock")}
+              </Button>
+            </div>
+          ) : visible.length === 0 && collectionTiles.length === 0 ? (
             <Body className="py-16 text-center text-sm text-fg-muted">
               {activeCollection ? t("workspace.emptyCollection") : t("workspace.nothingToShow")}
             </Body>
@@ -280,6 +341,10 @@ export function LibraryWorkspace({
               pendingBookIds={pendingBookIds}
               openingBookId={openingBookId}
               onOpenCollection={handleOpenCollection}
+              dragActive={dragActive}
+              onDropOnCollection={handleDropOnCollection}
+              onBookDragStart={handleStartBookDrag}
+              onBookDragEnd={handleEndBookDrag}
               selecting={active}
               selectedIds={selectedIds}
               onSelect={onOpenBook}

@@ -4,6 +4,7 @@
  * once the shelf hydrates. Clicking opens the book in the reader (dispatched
  * via openBookRequestAtom — the reader session lives far up the tree in App).
  */
+import { LockSimple } from "@phosphor-icons/react";
 import { useSetAtom } from "jotai";
 import { Progress } from "@read-aware/ui";
 import { formatPercent, useTranslation } from "../../../../i18n";
@@ -15,16 +16,30 @@ import { openBookRequestAtom } from "../../state/chat-intent";
 export function BookReferenceCard({
   reference,
   book,
+  locked = false,
 }: {
   reference: ChatBookReference;
   /** Hydrated shelf record; null = still loading, undefined = off the shelf. */
   book: LibraryBook | null | undefined;
+  /** The referenced book sits in a password-locked collection this session. */
+  locked?: boolean;
 }) {
   const { t } = useTranslation("ai");
   const dispatchOpen = useSetAtom(openBookRequestAtom);
   const title = book?.title ?? reference.title;
   const author = book?.author ?? reference.author;
   const missing = book === undefined;
+
+  // Password-hidden folder: render a neutral placeholder, no cover, title or
+  // progress, and never offer a click-through to the reader.
+  if (locked) {
+    return (
+      <div className="flex w-full items-center gap-3 rounded-md border border-border px-2.5 py-2 opacity-70">
+        <LockSimple size={16} weight="fill" aria-hidden="true" className="shrink-0 text-fg-muted" />
+        <span className="font-sans text-xs text-fg-muted">{t("chat.references.locked")}</span>
+      </div>
+    );
+  }
 
   const body = (
     <>

@@ -101,7 +101,17 @@
     "lockCurrentPasswordLabel": "Current password",
     "lockClear": "Remove password",
     "deleteTitle": "Delete collection?",
-    "deleteBody": "Delete <strong>{{name}}</strong>? The books stay in your library — they’re just ungrouped."
+    "deleteBody": "Delete <strong>{{name}}</strong>? The books stay in your library — they’re just ungrouped.",
+    "lockedEmpty": "This folder is locked — enter its password to see its books."
+  },
+  "dropZone": {
+    "ungroupTitle": "Ungroup",
+    "ungroupHint": "Drop books here to move them out of collections",
+    "ungroupActive": "Release to ungroup"
+  },
+  "dropFeedback": {
+    "added": "Added to {{name}}",
+    "ungrouped": "Moved out of collections"
   },
   "manage": {
     "trigger": "Shelf management",

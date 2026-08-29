@@ -30,7 +30,7 @@ export function ReferenceStack({ part }: { part: ChatReferencePart }) {
 }
 
 function BookStack({ books }: { books: ChatBookReference[] }) {
-  const hydrated = useReferenceBooks(books.map((book) => book.bookId));
+  const { hydrated, lockedBookIds } = useReferenceBooks(books.map((book) => book.bookId));
   const { visible, expander } = useStackCollapse(books.length);
   return (
     <div className="flex flex-col gap-1">
@@ -39,6 +39,7 @@ function BookStack({ books }: { books: ChatBookReference[] }) {
           key={book.bookId}
           reference={book}
           book={hydrated === null ? null : hydrated.get(book.bookId)}
+          locked={lockedBookIds.has(book.bookId)}
         />
       ))}
       {expander}

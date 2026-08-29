@@ -15,6 +15,7 @@ import {
 import type { ReactNode } from "react";
 import type { TFunction } from "i18next";
 import type { Collection, LibraryBook } from "../../library/lib/library-types";
+import { isBookInLockedCollection } from "../../library/lib/collection-lock";
 import type {
   ShelfGroup,
   ShelfLayout,
@@ -217,9 +218,11 @@ export function buildCommands(
   }
 
   // ── Books (most recently opened first, so the empty-query default is useful) ─
-  const booksByRecency = [...ctx.books].sort(
-    (a, b) => recencyTime(b) - recencyTime(a),
-  );
+  // Books inside password-locked collections stay off the palette until the
+  // folder is unlocked this session — no titles, no covers, no previews.
+  const booksByRecency = [...ctx.books]
+    .filter((book) => !isBookInLockedCollection(book, ctx.collections))
+    .sort((a, b) => recencyTime(b) - recencyTime(a));
   for (const book of booksByRecency) {
     items.push({
       id: `book-${book.id}`,

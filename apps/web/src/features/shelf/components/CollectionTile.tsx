@@ -1,4 +1,5 @@
 import { CaretRight, FolderSimple, LockSimple } from "@phosphor-icons/react";
+import { useState, type DragEvent } from "react";
 import { cn } from "@read-aware/ui/cn";
 import { useTranslation } from "../../../i18n";
 import type { ShelfLayout } from "../lib/shelf-view";
@@ -17,6 +18,10 @@ type CollectionTileProps = {
   data: CollectionTileData;
   layout: ShelfLayout;
   onOpen: () => void;
+  /** A book drag is in flight; tiles act as drop targets only then. */
+  dragActive?: boolean;
+  /** Assign the dragged books to this collection on drop. */
+  onDropBooks?: (collectionId: string) => void;
 };
 
 /** A 2×2 montage of member covers, padded with blanks; a folder glyph when empty. */
@@ -59,10 +64,37 @@ function Montage({
 /**
  * A collection rendered as a shelf peer — same footprint as a book, a montage of
  * its covers, and an always-on name/count label so it reads as a folder. Opens
- * the collection on click.
+ * the collection on click, and accepts dragged books as a drop target.
  */
-export function CollectionTile({ data, layout, onOpen }: CollectionTileProps) {
+export function CollectionTile({ data, layout, onOpen, dragActive = false, onDropBooks }: CollectionTileProps) {
   const { t } = useTranslation("shelf");
+  const [dragOver, setDragOver] = useState(false);
+
+  // Only intercept drag events for in-app book drags; OS file imports keep
+  // flowing to the window-level importer (their types carry "Files", not ours).
+  const handleDragOver = (event: DragEvent<HTMLButtonElement>) => {
+    if (!dragActive) return;
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "move";
+    setDragOver(true);
+  };
+  const handleDragLeave = () => setDragOver(false);
+  const handleDrop = (event: DragEvent<HTMLButtonElement>) => {
+    if (!dragActive) return;
+    event.preventDefault();
+    setDragOver(false);
+    onDropBooks?.(data.id);
+  };
+
+  const dropHandlers = {
+    onDragOver: handleDragOver,
+    onDragLeave: handleDragLeave,
+    onDrop: handleDrop,
+  };
+  const dropHighlight = dragActive && dragOver
+    ? "ring-2 ring-fg ring-offset-2 ring-offset-paper"
+    : undefined;
+
   const countLabel = t("books", { count: data.count });
   const lockLabel = data.locked ? t("collection.lockedTooltip") : undefined;
 
@@ -71,8 +103,12 @@ export function CollectionTile({ data, layout, onOpen }: CollectionTileProps) {
       <button
         type="button"
         onClick={onOpen}
+        {...dropHandlers}
         aria-label={lockLabel ?? data.name}
-        className="group flex w-full items-center gap-4 rounded-sm px-2 py-2 text-left transition-colors hover:bg-fg/5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-fg"
+        className={cn(
+          "group flex w-full items-center gap-4 rounded-sm px-2 py-2 text-left transition-colors hover:bg-fg/5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-fg",
+          dropHighlight,
+        )}
       >
         <div className="relative h-16 w-11 shrink-0 overflow-hidden rounded-sm border border-border bg-fill">
           <Montage coverUrls={data.coverUrls} locked={data.locked} className="h-full w-full" />
@@ -97,8 +133,12 @@ export function CollectionTile({ data, layout, onOpen }: CollectionTileProps) {
     <button
       type="button"
       onClick={onOpen}
+      {...dropHandlers}
       aria-label={lockLabel ?? data.name}
-      className="group flex w-full max-w-32 justify-self-start flex-col text-left focus-visible:outline-none sm:max-w-36 lg:max-w-44"
+      className={cn(
+        "group flex w-full max-w-32 justify-self-start flex-col text-left focus-visible:outline-none sm:max-w-36 lg:max-w-44",
+        dropHighlight,
+      )}
     >
       <div className="relative aspect-[2/3] w-full overflow-hidden rounded-sm border border-border bg-fill transition-shadow group-hover:shadow-md group-focus-within:shadow-md">
         <Montage coverUrls={data.coverUrls} locked={data.locked} className="h-full w-full" />

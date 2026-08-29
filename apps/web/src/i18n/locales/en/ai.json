@@ -71,6 +71,7 @@
       "showAll": "Show all {{count}}",
       "showFewer": "Show fewer",
       "missingBook": "No longer on the shelf",
+      "locked": "Locked folder — unlock to preview",
       "openBook": "Open {{title}}",
       "saveWord": "Add to vocabulary",
       "removeWord": "Remove from vocabulary"

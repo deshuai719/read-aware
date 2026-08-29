@@ -1,3 +1,4 @@
+import { type DragEvent } from "react";
 import { Eyebrow, Skeleton } from "@read-aware/ui";
 import { cn } from "@read-aware/ui/cn";
 import type {
@@ -26,6 +27,12 @@ type SectionBodyProps = {
   onToggleSelect?: (book: LibraryBook) => void;
   /** Book currently being opened (spinner feedback on its cover). */
   openingBookId?: string | null;
+  /** A book drag is in flight: tiles highlight and accept drops. */
+  dragActive?: boolean;
+  onDropOnCollection?: (collectionId: string) => void;
+  onBookDragStart?: (ids: string[], event: DragEvent<HTMLButtonElement>) => void;
+  /** Called when the drag ends (drop or cancel) — clears in-flight drag state. */
+  onBookDragEnd?: () => void;
 };
 
 function PendingBookPlaceholder({ layout }: { layout: ShelfLayout }) {
@@ -66,6 +73,10 @@ function SectionBody({
   onUpdateMetadata,
   onToggleSelect,
   openingBookId,
+  dragActive = false,
+  onDropOnCollection,
+  onBookDragStart,
+  onBookDragEnd,
 }: SectionBodyProps) {
   const tiles = collections.map((data) => (
     <CollectionTile
@@ -73,8 +84,22 @@ function SectionBody({
       data={data}
       layout={layout}
       onOpen={() => onOpenCollection?.(data.id)}
+      dragActive={dragActive}
+      onDropBooks={onDropOnCollection}
     />
   ));
+
+  // Dragging a selected book carries the whole selection; otherwise just the
+  // book itself. Unselected books are not draggable while selection is active.
+  const dragProps = (book: LibraryBook, selected: boolean) => {
+    if (selecting && !selected) return { draggable: false, onDragStart: undefined };
+    const ids = selecting && selected ? Array.from(selectedIds ?? []) : [book.id];
+    return {
+      draggable: true,
+      onDragStart: (event: DragEvent<HTMLButtonElement>) => onBookDragStart?.(ids, event),
+      onDragEnd: onBookDragEnd,
+    };
+  };
 
   if (layout === "list") {
     return (
@@ -95,6 +120,7 @@ function SectionBody({
               onToggleStar={() => onToggleStar?.(book)}
               onUpdateMetadata={(patch) => onUpdateMetadata?.(book, patch)}
               onToggleSelect={() => onToggleSelect?.(book)}
+              {...dragProps(book, selectedIds?.has(book.id) ?? false)}
             />
           )
         ))}
@@ -122,6 +148,7 @@ function SectionBody({
             onToggleStar={() => onToggleStar?.(book)}
             onUpdateMetadata={(patch) => onUpdateMetadata?.(book, patch)}
             onToggleSelect={() => onToggleSelect?.(book)}
+            {...dragProps(book, selectedIds?.has(book.id) ?? false)}
           />
         )
       ))}
@@ -146,6 +173,12 @@ type ShelfProps = {
   onToggleSelect?: (book: LibraryBook) => void;
   /** Book currently being opened (spinner feedback on its cover). */
   openingBookId?: string | null;
+  /** A book drag is in flight: tiles highlight and accept drops. */
+  dragActive?: boolean;
+  onDropOnCollection?: (collectionId: string) => void;
+  onBookDragStart?: (ids: string[], event: DragEvent<HTMLButtonElement>) => void;
+  /** Called when the drag ends (drop or cancel) — clears in-flight drag state. */
+  onBookDragEnd?: () => void;
   className?: string;
 };
 
@@ -163,6 +196,10 @@ export function Shelf({
   onUpdateMetadata,
   onToggleSelect,
   openingBookId,
+  dragActive = false,
+  onDropOnCollection,
+  onBookDragStart,
+  onBookDragEnd,
   className,
 }: ShelfProps) {
   // Collections lead the first section so they sit in the same grid as the books;
@@ -193,6 +230,10 @@ export function Shelf({
             onUpdateMetadata={onUpdateMetadata}
             onToggleSelect={onToggleSelect}
             openingBookId={openingBookId}
+            dragActive={dragActive}
+            onDropOnCollection={onDropOnCollection}
+            onBookDragStart={onBookDragStart}
+            onBookDragEnd={onBookDragEnd}
           />
         </section>
       ))}

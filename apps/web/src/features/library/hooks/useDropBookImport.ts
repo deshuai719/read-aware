@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { BOOK_FILE_EXTENSIONS } from "../lib/pick-book-files";
+import { BOOK_DRAG_MIME } from "../lib/book-drag";
 import type { BookImportSource } from "../lib/library-types";
 
 function isBookFile(file: File): boolean {
@@ -30,8 +31,12 @@ export function useDropBookImport(
     // enter/leave fire per DOM node crossed; the counter nets them out so the
     // overlay survives moving across children and clears on leaving the window.
     let depth = 0;
+    // Native image drags and OS file drags both carry "Files"; in-app book
+    // drags carry only our custom type. Ignore the latter so the import
+    // overlay never covers a book drag.
     const hasFiles = (event: DragEvent) =>
-      event.dataTransfer?.types.includes("Files") ?? false;
+      (event.dataTransfer?.types.includes("Files") ?? false) &&
+      !(event.dataTransfer?.types.includes(BOOK_DRAG_MIME) ?? false);
 
     function onDragEnter(event: DragEvent) {
       if (!hasFiles(event)) return;

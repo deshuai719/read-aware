@@ -159,7 +159,7 @@ export function CommandPalette({ isOpen, onClose, ctx, extraItems }: CommandPale
                       )}
                       <span className="flex h-9 w-7 shrink-0 items-center justify-center overflow-hidden rounded-sm">
                         {item.kind === "book" && item.coverUrl ? (
-                          <img src={item.coverUrl} alt="" className="h-full w-full object-cover" />
+                          <img src={item.coverUrl} draggable={false} alt="" className="h-full w-full object-cover" />
                         ) : (
                           <span className="flex h-7 w-7 items-center justify-center text-fg-muted">
                             {item.icon}

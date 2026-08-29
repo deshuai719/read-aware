@@ -71,6 +71,7 @@ export function BookBreakdown({
             {book.coverUrl ? (
               <img
                 src={book.coverUrl}
+                draggable={false}
                 alt=""
                 className="h-12 w-9 shrink-0 rounded-sm border border-border object-cover"
               />

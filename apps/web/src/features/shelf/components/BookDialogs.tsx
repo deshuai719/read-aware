@@ -108,7 +108,7 @@ export function BookDetailsDialog({ book, open, onClose, onUpdateMetadata }: Boo
         <div className="flex gap-4">
           <div className="relative aspect-[2/3] w-24 shrink-0 overflow-hidden rounded-sm shadow-md">
             {book.coverUrl ? (
-              <img src={book.coverUrl} alt="" className="h-full w-full object-cover" />
+              <img src={book.coverUrl} draggable={false} alt="" className="h-full w-full object-cover" />
             ) : (
               <BookCoverPlaceholder title={book.title} author={book.author} format={book.format} />
             )}

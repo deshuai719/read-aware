@@ -52,7 +52,7 @@ function Montage({
     <div className={cn("grid grid-cols-2 grid-rows-2 gap-px", className)}>
       {Array.from({ length: 4 }).map((_, i) =>
         coverUrls[i] ? (
-          <img key={i} src={coverUrls[i]} alt="" className="h-full w-full object-cover" />
+          <img key={i} src={coverUrls[i]} draggable={false} alt="" className="h-full w-full object-cover" />
         ) : (
           <div key={i} className="bg-fill-strong" />
         ),

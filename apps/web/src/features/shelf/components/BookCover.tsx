@@ -76,6 +76,7 @@ export function BookCover({
           {book.coverUrl ? (
             <img
               src={book.coverUrl}
+              draggable={false}
               alt={t("book.cover", { title: book.title })}
               className="h-full w-full object-cover"
             />

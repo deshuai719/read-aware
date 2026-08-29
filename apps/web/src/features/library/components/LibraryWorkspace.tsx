@@ -22,9 +22,7 @@ import {
   verifyCollectionPassword,
 } from "../lib/collection-lock";
 import { setCollectionPassword } from "../lib/library-db";
-
-/** Custom MIME type for in-app book drags (never collides with OS file drops). */
-const BOOK_DRAG_MIME = "application/x-read-aware-book-ids";
+import { BOOK_DRAG_MIME } from "../lib/book-drag";
 
 type LibraryWorkspaceProps = {
   isReady: boolean;

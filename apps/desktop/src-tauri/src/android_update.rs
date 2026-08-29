@@ -5,7 +5,7 @@ use std::sync::Mutex;
 use serde::{Deserialize, Serialize};
 
 const MANIFEST_URL: &str =
-    "https://github.com/ahpxex/read-aware/releases/latest/download/latest-android.json";
+    "https://github.com/deshuai719/read-aware/releases/latest/download/latest-android.json";
 const MAX_MANIFEST_BYTES: u64 = 64 * 1024;
 const MAX_APK_BYTES: u64 = 250 * 1024 * 1024;
 
@@ -60,10 +60,10 @@ fn validate_manifest(manifest: &AndroidUpdateManifest) -> Result<(), String> {
     // Release assets carry the platform in the name since v0.2.8; the legacy
     // name stays accepted so an older manifest (or a rollback) still validates.
     let expected_path = format!(
-        "/ahpxex/read-aware/releases/download/v{version}/ReadAware-v{version}-android-arm64.apk"
+        "/deshuai719/read-aware/releases/download/v{version}/ReadAware-v{version}-android-arm64.apk"
     );
     let legacy_path =
-        format!("/ahpxex/read-aware/releases/download/v{version}/ReadAware-v{version}-arm64.apk");
+        format!("/deshuai719/read-aware/releases/download/v{version}/ReadAware-v{version}-arm64.apk");
     if url.scheme() != "https"
         || url.host_str() != Some("github.com")
         || (url.path() != expected_path && url.path() != legacy_path)
@@ -107,7 +107,7 @@ fn validate_manifest_source(raw: &str) -> Result<(), String> {
     let url = reqwest::Url::parse(raw).map_err(|err| format!("Invalid manifest URL: {err}"))?;
     let path_ok = url
         .path()
-        .strip_prefix("/ahpxex/read-aware/releases/download/v")
+        .strip_prefix("/deshuai719/read-aware/releases/download/v")
         .is_some_and(|rest| rest.ends_with("/latest-android.json"));
     if url.scheme() != "https"
         || url.host_str() != Some("github.com")

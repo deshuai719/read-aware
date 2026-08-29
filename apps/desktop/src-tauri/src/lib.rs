@@ -11,6 +11,8 @@ mod native_path;
 mod pdf_metadata;
 mod plugins;
 mod secrets;
+#[cfg(all(desktop, target_os = "windows"))]
+mod single_instance_guard;
 mod storage;
 
 use std::sync::Mutex;
@@ -805,6 +807,16 @@ pub fn run() {
         .manage(storage::BlobReadSessions::default())
         .manage(storage::BlobWriteSessions::default())
         .setup(|app| {
+            // Single-instance backstop before any window or DB work: the
+            // plugin can leave its mutex without the hidden window when
+            // launches overlap; a losing launch focuses the existing
+            // window and exits here.
+            #[cfg(all(desktop, target_os = "windows"))]
+            {
+                if let Some(handle) = single_instance_guard::acquire(app.handle()) {
+                    app.manage(single_instance_guard::GuardState(Mutex::new(Some(handle))));
+                }
+            }
             // A deep link landing while the app runs should bring the window
             // forward — the user just clicked a sign-in link in their browser
             // or mail client. The URLs themselves are consumed by the
@@ -1120,6 +1132,12 @@ pub fn run() {
         .build(tauri::generate_context!())
         .expect("error while building ReadAware desktop application");
     app.run(|_app_handle, _event| {
+        // Release the guard mutex on the way out so the next launch owns
+        // the singleton immediately (a broken plugin state must not linger).
+        #[cfg(all(desktop, target_os = "windows"))]
+        if let tauri::RunEvent::Exit = &_event {
+            single_instance_guard::release(_app_handle);
+        }
         // macOS file associations deliver documents as Apple Events (cold and
         // warm start alike), never as argv — park them like every other path.
         #[cfg(target_os = "macos")]

@@ -112,6 +112,10 @@ block = "0.1"
 windows = { version = "0.61", features = [
   "Win32_Graphics_DirectWrite",
   "Win32_Globalization",
+  "Win32_Foundation",
+  "Win32_System_Threading",
+  "Win32_Security",
+  "Win32_UI_WindowsAndMessaging",
 ] }
 
 [dev-dependencies]

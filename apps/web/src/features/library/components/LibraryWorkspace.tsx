@@ -6,6 +6,7 @@ import { cn } from "@read-aware/ui/cn";
 import { useTranslation } from "../../../i18n";
 import { Shelf } from "../../shelf/components/Shelf";
 import { CollectionHeader } from "../../shelf/components/CollectionHeader";
+import { AddToCollectionDialog } from "../../shelf/components/AddToCollectionDialog";
 import { CollectionUngroupDropZone } from "../../shelf/components/CollectionUngroupDropZone";
 import type { CollectionTileData } from "../../shelf/components/CollectionTile";
 import { ShelfSelectionToolbar } from "../../shelf/components/ShelfSelectionToolbar";
@@ -72,6 +73,8 @@ export function LibraryWorkspace({
   const [lockTarget, setLockTarget] = useState<{ mode: CollectionLockMode; collection: Collection } | null>(null);
   // In-flight book drag (ids being dragged); non-null only during our own drags.
   const [dragBookIds, setDragBookIds] = useState<string[] | null>(null);
+  // Drop-onto-book merge: ids waiting to be named as a new collection.
+  const [createFromDropIds, setCreateFromDropIds] = useState<string[] | null>(null);
   const dragActive = dragBookIds !== null;
   const { toast } = useToast();
 
@@ -238,6 +241,18 @@ export function LibraryWorkspace({
     toast({ description: t("dropFeedback.ungrouped") });
   }, [dragBookIds, onSetBooksCollection, toast, t]);
 
+  /** Drop onto another book: merge dragged ids + target into a new collection. */
+  const handleDropOnBook = useCallback(
+    (targetBookId: string) => {
+      if (!dragBookIds || dragBookIds.length === 0) return;
+      const ids = [...new Set([...dragBookIds, targetBookId])];
+      setDragBookIds(null);
+      if (ids.length < 2) return; // dropping a book onto itself — nothing to merge
+      setCreateFromDropIds(ids);
+    },
+    [dragBookIds],
+  );
+
   return (
     <div
       className={cn(
@@ -343,6 +358,7 @@ export function LibraryWorkspace({
               onDropOnCollection={handleDropOnCollection}
               onBookDragStart={handleStartBookDrag}
               onBookDragEnd={handleEndBookDrag}
+              onDropOnBook={handleDropOnBook}
               selecting={active}
               selectedIds={selectedIds}
               onSelect={onOpenBook}
@@ -353,6 +369,19 @@ export function LibraryWorkspace({
             />
           )}
         </div>
+      )}
+      {createFromDropIds && (
+        <AddToCollectionDialog
+          open
+          count={createFromDropIds.length}
+          collections={collections}
+          onClose={() => setCreateFromDropIds(null)}
+          onAssign={(collectionId) => {
+            onSetBooksCollection(createFromDropIds, collectionId);
+            setCreateFromDropIds(null);
+          }}
+          onCreate={onCreateCollection}
+        />
       )}
       {lockTarget && (
         <CollectionLockDialog

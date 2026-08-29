@@ -33,6 +33,8 @@ type SectionBodyProps = {
   onBookDragStart?: (ids: string[], event: DragEvent<HTMLButtonElement>) => void;
   /** Called when the drag ends (drop or cancel) — clears in-flight drag state. */
   onBookDragEnd?: () => void;
+  /** Drop the dragged books onto this book to create a new collection. */
+  onDropOnBook?: (bookId: string) => void;
 };
 
 function PendingBookPlaceholder({ layout }: { layout: ShelfLayout }) {
@@ -77,6 +79,7 @@ function SectionBody({
   onDropOnCollection,
   onBookDragStart,
   onBookDragEnd,
+  onDropOnBook,
 }: SectionBodyProps) {
   const tiles = collections.map((data) => (
     <CollectionTile
@@ -121,6 +124,8 @@ function SectionBody({
               onUpdateMetadata={(patch) => onUpdateMetadata?.(book, patch)}
               onToggleSelect={() => onToggleSelect?.(book)}
               {...dragProps(book, selectedIds?.has(book.id) ?? false)}
+              dragActive={dragActive}
+              onDropOnBook={() => onDropOnBook?.(book.id)}
             />
           )
         ))}
@@ -149,6 +154,8 @@ function SectionBody({
             onUpdateMetadata={(patch) => onUpdateMetadata?.(book, patch)}
             onToggleSelect={() => onToggleSelect?.(book)}
             {...dragProps(book, selectedIds?.has(book.id) ?? false)}
+            dragActive={dragActive}
+            onDropOnBook={() => onDropOnBook?.(book.id)}
           />
         )
       ))}
@@ -179,6 +186,8 @@ type ShelfProps = {
   onBookDragStart?: (ids: string[], event: DragEvent<HTMLButtonElement>) => void;
   /** Called when the drag ends (drop or cancel) — clears in-flight drag state. */
   onBookDragEnd?: () => void;
+  /** Drop the dragged books onto this book to create a new collection. */
+  onDropOnBook?: (bookId: string) => void;
   className?: string;
 };
 
@@ -200,6 +209,7 @@ export function Shelf({
   onDropOnCollection,
   onBookDragStart,
   onBookDragEnd,
+  onDropOnBook,
   className,
 }: ShelfProps) {
   // Collections lead the first section so they sit in the same grid as the books;
@@ -234,6 +244,7 @@ export function Shelf({
             onDropOnCollection={onDropOnCollection}
             onBookDragStart={onBookDragStart}
             onBookDragEnd={onBookDragEnd}
+            onDropOnBook={onDropOnBook}
           />
         </section>
       ))}

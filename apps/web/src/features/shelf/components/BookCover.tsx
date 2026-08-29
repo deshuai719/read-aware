@@ -5,7 +5,7 @@ import { useLocalAtom } from "@read-aware/ui/state";
 import { formatPercent, useTranslation } from "../../../i18n";
 import type { BookMetadataPatch, LibraryBook } from "../../library/lib/library-types";
 import { useLongPress } from "../hooks/useLongPress";
-import { type DragEvent } from "react";
+import { type DragEvent, useState } from "react";
 import { BookCoverPlaceholder } from "./BookCoverPlaceholder";
 import { BookDetailsDialog, BookRemoveDialog } from "./BookDialogs";
 
@@ -25,6 +25,10 @@ type BookCoverProps = {
   onDragStart?: (event: DragEvent<HTMLButtonElement>) => void;
   /** Called when the drag ends (drop or cancel) — clears in-flight drag state. */
   onDragEnd?: () => void;
+  /** While a book drag is in flight this cover accepts a drop onto the book. */
+  dragActive?: boolean;
+  /** Merge the dragged books with this one into a new collection. */
+  onDropOnBook?: () => void;
   className?: string;
 };
 
@@ -39,6 +43,8 @@ export function BookCover({
   draggable = false,
   onDragStart,
   onDragEnd,
+  dragActive = false,
+  onDropOnBook,
   onToggleSelect,
   opening = false,
   className,
@@ -52,6 +58,31 @@ export function BookCover({
   const longPress = useLongPress(() => {
     if (!selecting) setMenuOpen(true);
   });
+
+  // Drop target while a book drag is in flight (drag one book onto another to
+  // create a collection). Guarded by dragActive so OS file drops keep flowing
+  // to the window-level importer.
+  const [dragOver, setDragOver] = useState(false);
+  const handleDragOver = (event: DragEvent<HTMLButtonElement>) => {
+    if (!dragActive) return;
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "move";
+    setDragOver(true);
+  };
+  const handleDragLeave = () => setDragOver(false);
+  const handleDrop = (event: DragEvent<HTMLButtonElement>) => {
+    if (!dragActive) return;
+    event.preventDefault();
+    setDragOver(false);
+    onDropOnBook?.();
+  };
+  const dropHandlers = {
+    onDragOver: handleDragOver,
+    onDragLeave: handleDragLeave,
+    onDrop: handleDrop,
+  };
+  const dropHighlight =
+    dragActive && dragOver ? "ring-2 ring-fg ring-offset-2 ring-offset-paper" : undefined;
 
   return (
     <div
@@ -67,7 +98,11 @@ export function BookCover({
         draggable={draggable}
         onDragStart={onDragStart}
         onDragEnd={onDragEnd}
-        className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fg focus-visible:ring-offset-2 focus-visible:ring-offset-fill"
+        {...dropHandlers}
+        className={cn(
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fg focus-visible:ring-offset-2 focus-visible:ring-offset-fill",
+          dropHighlight,
+        )}
         {...longPress}
       >
         {/* Hover shadow is a pointer-fine affordance; on touch a tap's focus

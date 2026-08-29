@@ -2,7 +2,7 @@ import { Check, Info, Star, Trash } from "@phosphor-icons/react";
 import { IconButton, Progress, Spinner } from "@read-aware/ui";
 import { cn } from "@read-aware/ui/cn";
 import { useLocalAtom } from "@read-aware/ui/state";
-import { type DragEvent } from "react";
+import { type DragEvent, useState } from "react";
 import { formatPercent, useTranslation } from "../../../i18n";
 import type { BookMetadataPatch, LibraryBook } from "../../library/lib/library-types";
 import { BookCoverPlaceholder } from "./BookCoverPlaceholder";
@@ -25,6 +25,10 @@ type BookRowProps = {
   onDragStart?: (event: DragEvent<HTMLButtonElement>) => void;
   /** Called when the drag ends (drop or cancel) — clears in-flight drag state. */
   onDragEnd?: () => void;
+  /** While a book drag is in flight this row accepts a drop onto the book. */
+  dragActive?: boolean;
+  /** Merge the dragged books with this one into a new collection. */
+  onDropOnBook?: () => void;
 };
 
 export function BookRow({
@@ -40,11 +44,37 @@ export function BookRow({
   draggable = false,
   onDragStart,
   onDragEnd,
+  dragActive = false,
+  onDropOnBook,
   className,
 }: BookRowProps) {
   const { t } = useTranslation("shelf");
   const [infoOpen, setInfoOpen] = useLocalAtom(false);
   const [removeOpen, setRemoveOpen] = useLocalAtom(false);
+  const [dragOver, setDragOver] = useState(false);
+
+  // Drop target while a book drag is in flight (drag one book onto another to
+  // create a collection). Guarded by dragActive so OS file drops keep flowing.
+  const handleDragOver = (event: DragEvent<HTMLButtonElement>) => {
+    if (!dragActive) return;
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "move";
+    setDragOver(true);
+  };
+  const handleDragLeave = () => setDragOver(false);
+  const handleDrop = (event: DragEvent<HTMLButtonElement>) => {
+    if (!dragActive) return;
+    event.preventDefault();
+    setDragOver(false);
+    onDropOnBook?.();
+  };
+  const dropHandlers = {
+    onDragOver: handleDragOver,
+    onDragLeave: handleDragLeave,
+    onDrop: handleDrop,
+  };
+  const dropHighlight =
+    dragActive && dragOver ? "ring-2 ring-fg ring-offset-2 ring-offset-paper" : undefined;
 
   return (
     <div
@@ -61,7 +91,11 @@ export function BookRow({
         draggable={draggable}
         onDragStart={onDragStart}
         onDragEnd={onDragEnd}
-        className="flex min-w-0 flex-1 items-center gap-4 text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-fg rounded-sm"
+        {...dropHandlers}
+        className={cn(
+          "flex min-w-0 flex-1 items-center gap-4 text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-fg rounded-sm",
+          dropHighlight,
+        )}
       >
         {selecting && (
           <span

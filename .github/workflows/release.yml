@@ -283,8 +283,8 @@ jobs:
               ;;
             windows-*)
               cp "release-assets/$BASE-setup.exe" release-assets/ReadAware-windows-x64-setup.exe
-              cp "release-assets/$BASE.msi" release-assets/ReadAware-windows-x64.msi"
-              cp "release-assets/$BASE-portable.zip" release-assets/ReadAware-windows-x64-portable.zip"
+              cp "release-assets/$BASE.msi" release-assets/ReadAware-windows-x64.msi
+              cp "release-assets/$BASE-portable.zip" release-assets/ReadAware-windows-x64-portable.zip
               ;;
           esac
           ls -la release-assets

@@ -112,6 +112,8 @@ export function BookCover({
             <img
               src={book.coverUrl}
               draggable={false}
+              loading="lazy"
+              decoding="async"
               alt={t("book.cover", { title: book.title })}
               className="h-full w-full object-cover"
             />

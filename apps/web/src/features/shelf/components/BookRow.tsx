@@ -110,7 +110,7 @@ export function BookRow({
         )}
         <div className="relative h-16 w-11 shrink-0 overflow-hidden rounded-sm shadow-sm">
           {book.coverUrl ? (
-            <img src={book.coverUrl} draggable={false} alt="" className="h-full w-full object-cover" />
+            <img src={book.coverUrl} loading="lazy" decoding="async" draggable={false} alt="" className="h-full w-full object-cover" />
           ) : (
             <BookCoverPlaceholder title={book.title} author={book.author} format={book.format} />
           )}

@@ -224,7 +224,10 @@ export function Shelf({
   return (
     <div className={cn(layout === "list" ? "space-y-8" : "space-y-12", className)}>
       {effectiveSections.map((section, index) => (
-        <section key={section.label || `section-${index}`}>
+        <section
+          key={section.label || `section-${index}`}
+          style={{ contentVisibility: "auto", containIntrinsicSize: "auto 600px" }}
+        >
           {section.label && <Eyebrow className="mb-4 block">{section.label}</Eyebrow>}
           <SectionBody
             books={section.books}

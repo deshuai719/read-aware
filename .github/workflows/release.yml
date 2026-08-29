@@ -1,9 +1,9 @@
 # Release builds — run ONLY when a version tag (v*) is pushed. This fork's CI
-# builds a single signed arm64 Android APK. Desktop artifacts (Windows
-# msi/nsis installers plus the latest.json update manifest) are built locally
-# on a maintainer's Windows machine and uploaded to the same release, not by
-# this workflow. Either the CI run or the local desktop upload may create
-# the release first; assets from both sides merge into it.
+# builds a signed arm64 Android APK plus the full desktop matrix (macOS
+# .dmg/.app.zip per chip, Windows x64 .msi/.exe + a portable zip, Linux x64
+# .AppImage/.deb/.rpm); the updater-manifest job then assembles latest.json
+# from the uploaded updater payloads. Desktop releases are built on CI, not
+# locally.
 #
 # Fork tags are always of the form v0.5.0-x (with a "-"), which would make
 # upstream's "tag contains '-' -> prerelease" rule mark every release as a
@@ -15,11 +15,15 @@
 # Android signing comes from two repository secrets:
 #   ANDROID_KEYSTORE_B64      — base64 of the release keystore (.jks)
 #   ANDROID_KEYSTORE_PASSWORD — store/key password (alias is "readaware")
+# Desktop updater artifacts are signed through TAURI_SIGNING_PRIVATE_KEY and
+# TAURI_SIGNING_PRIVATE_KEY_PASSWORD (the fork's key has an empty password).
+# The matching public key is embedded in tauri.conf.json. Desktop OS code
+# signing is still not configured.
 #
 # Every `uses:` is pinned to a full commit SHA with the human-readable version
 # in a trailing comment — a floating tag like `@v3` can be repointed at any
 # commit by whoever owns the action, and these jobs hold `contents: write`, the
-# Android keystore. Dependabot (.github/dependabot.yml)
+# Android keystore, and the updater signing key. Dependabot (.github/dependabot.yml)
 # bumps the SHAs and rewrites the comment. dtolnay/rust-toolchain normally
 # selects its toolchain from the ref name (`@stable`), which a SHA pin destroys,
 # so every use passes `toolchain: stable` explicitly instead.
@@ -141,3 +145,216 @@ jobs:
             latest-android.json
           generate_release_notes: true
           prerelease: false
+
+  desktop:
+    needs: marketplace-contract
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            platform: macos-arm64
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            platform: macos-x64
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            platform: linux-x64
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            platform: windows-x64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Require signing secrets
+        shell: bash
+        run: |
+          if [ -z "${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}" ]; then
+            echo "TAURI_SIGNING_PRIVATE_KEY secret is missing" >&2
+            exit 1
+          fi
+
+      - name: Install Linux system dependencies
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file \
+            libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev patchelf
+
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+
+      - uses: dtolnay/rust-toolchain@4360b52568e2003a75bf9bc1d59f33a8e3fc893c # stable
+        with:
+          toolchain: stable
+          targets: ${{ matrix.target }}
+
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          workspaces: apps/desktop/src-tauri
+          key: ${{ matrix.target }}
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Verify tag matches the desktop app version
+        shell: bash
+        run: |
+          APP_VERSION="$(bun -e "console.log(require('./apps/desktop/src-tauri/tauri.conf.json').version)")"
+          if [ "${GITHUB_REF_NAME#v}" != "$APP_VERSION" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match tauri.conf.json version $APP_VERSION" >&2
+            exit 1
+          fi
+
+      - name: Build desktop bundles
+        working-directory: apps/desktop
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        run: bun run tauri build --target ${{ matrix.target }}
+
+      # Tauri cannot place extra files inside the DMG, so the Gatekeeper help
+      # file is injected as a post-step (see dmg/finalize-dmg.sh).
+      - name: Inject Gatekeeper notes into the DMG
+        if: startsWith(matrix.platform, 'macos')
+        run: apps/desktop/src-tauri/dmg/finalize-dmg.sh apps/desktop/src-tauri/target/${{ matrix.target }}/release/bundle/dmg/*.dmg
+
+      # One naming scheme for everything on the release page:
+      #   ReadAware-vX.Y.Z-<platform>-<arch>.<ext>
+      # Every fork tag is published as a stable release (prerelease is
+      # hard-coded false — see the header note), so the installers are always
+      # duplicated under version-less aliases (ReadAware-<platform>-<arch>.<ext>):
+      # the landing page hard-codes `releases/latest/download/<alias>` URLs,
+      # which GitHub resolves to the newest non-prerelease release.
+      # macOS additionally ships the .app as a plain .zip alongside the .dmg;
+      # Windows ships a portable .zip of the bare exe (Tauri embeds the
+      # frontend, so it is self-contained; WebView2 comes with Windows 10/11 —
+      # only the installers carry its bootstrapper).
+      # The .app.tar.gz (+ .sig) files are the signed updater payloads that
+      # latest.json points at — renamed to the same scheme, they stay per-chip.
+      - name: Collect release assets
+        shell: bash
+        run: |
+          BUNDLE="apps/desktop/src-tauri/target/${{ matrix.target }}/release/bundle"
+          BASE="ReadAware-${{ github.ref_name }}-${{ matrix.platform }}"
+          mkdir -p release-assets
+          case "${{ matrix.platform }}" in
+            macos-*)
+              cp "$BUNDLE"/dmg/*.dmg "release-assets/$BASE.dmg"
+              ditto -c -k --sequesterRsrc --keepParent "$BUNDLE/macos/ReadAware.app" "release-assets/$BASE.zip"
+              cp "$BUNDLE"/macos/*.app.tar.gz "release-assets/$BASE.app.tar.gz"
+              cp "$BUNDLE"/macos/*.app.tar.gz.sig "release-assets/$BASE.app.tar.gz.sig"
+              ;;
+            linux-*)
+              cp "$BUNDLE"/appimage/*.AppImage "release-assets/$BASE.AppImage"
+              cp "$BUNDLE"/appimage/*.AppImage.sig "release-assets/$BASE.AppImage.sig"
+              cp "$BUNDLE"/deb/*.deb "release-assets/$BASE.deb"
+              cp "$BUNDLE"/deb/*.deb.sig "release-assets/$BASE.deb.sig"
+              cp "$BUNDLE"/rpm/*.rpm "release-assets/$BASE.rpm"
+              cp "$BUNDLE"/rpm/*.rpm.sig "release-assets/$BASE.rpm.sig"
+              ;;
+            windows-*)
+              cp "$BUNDLE"/nsis/*-setup.exe "release-assets/$BASE-setup.exe"
+              cp "$BUNDLE"/nsis/*-setup.exe.sig "release-assets/$BASE-setup.exe.sig"
+              cp "$BUNDLE"/msi/*.msi "release-assets/$BASE.msi"
+              cp "$BUNDLE"/msi/*.msi.sig "release-assets/$BASE.msi.sig"
+              # The exe in target/ keeps its cargo name; only the installers
+              # ship it renamed. Restage it as ReadAware.exe for the zip.
+              EXE_DIR="apps/desktop/src-tauri/target/${{ matrix.target }}/release"
+              if [ ! -f "$EXE_DIR/read-aware-desktop.exe" ]; then
+                echo "portable exe not found; contents of $EXE_DIR:" >&2
+                ls "$EXE_DIR" >&2
+                exit 1
+              fi
+              mkdir -p "$RUNNER_TEMP/portable"
+              cp "$EXE_DIR/read-aware-desktop.exe" "$RUNNER_TEMP/portable/ReadAware.exe"
+              (cd "$RUNNER_TEMP/portable" && 7z a "$OLDPWD/release-assets/$BASE-portable.zip" ReadAware.exe)
+              ;;
+          esac
+          case "${{ matrix.platform }}" in
+            macos-*)
+              cp "release-assets/$BASE.dmg" "release-assets/ReadAware-${{ matrix.platform }}.dmg"
+              ;;
+            linux-*)
+              cp "release-assets/$BASE.AppImage" release-assets/ReadAware-linux-x64.AppImage
+              cp "release-assets/$BASE.deb" release-assets/ReadAware-linux-x64.deb
+              cp "release-assets/$BASE.rpm" release-assets/ReadAware-linux-x64.rpm
+              ;;
+            windows-*)
+              cp "release-assets/$BASE-setup.exe" release-assets/ReadAware-windows-x64-setup.exe
+              cp "release-assets/$BASE.msi" release-assets/ReadAware-windows-x64.msi"
+              cp "release-assets/$BASE-portable.zip" release-assets/ReadAware-windows-x64-portable.zip"
+              ;;
+          esac
+          ls -la release-assets
+
+      - name: Attach to release
+        uses: softprops/action-gh-release@3d0d9888cb7fd7b750713d6e236d1fcb99157228 # v3.0.2
+        with:
+          name: ReadAware ${{ github.ref_name }}
+          files: release-assets/*
+          generate_release_notes: true
+          prerelease: false
+
+  # latest.json must exist once, after every desktop artifact is uploaded —
+  # composing it in a dedicated job avoids the cross-job merge races the
+  # per-job approach would have. Mirrors the platform-key shape tauri-action
+  # produced, with darwin split per chip now that universal is gone.
+  updater-manifest:
+    needs: desktop
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Compose and upload latest.json
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          VERSION="${TAG#v}"
+          BASE_URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG}"
+          mkdir sigs && cd sigs
+          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --pattern '*.sig'
+          cd ..
+          # Fork divergence: this fork's in-app desktop updater has only ever
+          # been exercised against the nsis setup.exe payload, so the main
+          # windows-x86_64 key points at the nsis installer (upstream points
+          # it at the msi); the -msi / -nsis alias keys keep their own files.
+          PUB_DATE="$(date -u +%Y-%m-%dT%H:%M:%SZ)" TAG="$TAG" VERSION="$VERSION" BASE_URL="$BASE_URL" python3 - <<'EOF'
+          import json, os
+
+          tag = os.environ["TAG"]
+          base = os.environ["BASE_URL"]
+
+          def entry(name):
+              with open(f"sigs/{name}.sig", encoding="utf-8") as f:
+                  return {"signature": f.read(), "url": f"{base}/{name}"}
+
+          arm = entry(f"ReadAware-{tag}-macos-arm64.app.tar.gz")
+          intel = entry(f"ReadAware-{tag}-macos-x64.app.tar.gz")
+          appimage = entry(f"ReadAware-{tag}-linux-x64.AppImage")
+          deb = entry(f"ReadAware-{tag}-linux-x64.deb")
+          rpm = entry(f"ReadAware-{tag}-linux-x64.rpm")
+          msi = entry(f"ReadAware-{tag}-windows-x64.msi")
+          nsis = entry(f"ReadAware-{tag}-windows-x64-setup.exe")
+
+          manifest = {
+              "version": os.environ["VERSION"],
+              "notes": "",
+              "pub_date": os.environ["PUB_DATE"],
+              "platforms": {
+                  "darwin-aarch64": arm,
+                  "darwin-x86_64": intel,
+                  "linux-x86_64": appimage,
+                  "linux-x86_64-appimage": appimage,
+                  "linux-x86_64-deb": deb,
+                  "linux-x86_64-rpm": rpm,
+                  "windows-x86_64": nsis,
+                  "windows-x86_64-msi": msi,
+                  "windows-x86_64-nsis": nsis,
+              },
+          }
+          with open("latest.json", "w", encoding="utf-8") as f:
+              json.dump(manifest, f, indent=2)
+          EOF
+          python3 -m json.tool latest.json
+          gh release upload "$TAG" latest.json --repo "$GITHUB_REPOSITORY" --clobber

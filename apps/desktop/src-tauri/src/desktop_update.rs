@@ -37,13 +37,13 @@ struct DesktopUpdateProgress {
 }
 
 /// Only manifests that live under our own repo's release assets are accepted
-/// as endpoint overrides: https://github.com/ahpxex/read-aware/releases/download/v…/latest.json
+/// as endpoint overrides: https://github.com/deshuai719/read-aware/releases/download/v…/latest.json
 #[cfg(desktop)]
 fn validate_manifest_url(raw: &str) -> Result<url::Url, String> {
     let url = url::Url::parse(raw).map_err(|err| format!("Invalid manifest URL: {err}"))?;
     let path_ok = url
         .path()
-        .strip_prefix("/ahpxex/read-aware/releases/download/v")
+        .strip_prefix("/deshuai719/read-aware/releases/download/v")
         .is_some_and(|rest| rest.ends_with("/latest.json"));
     if url.scheme() != "https"
         || url.host_str() != Some("github.com")
@@ -68,7 +68,10 @@ pub async fn desktop_update_check(
     use tauri::Manager;
     use tauri_plugin_updater::UpdaterExt;
 
-    let mut builder = app.updater_builder();
+    let cleanup_app = app.clone();
+    let mut builder = app.updater_builder().on_before_exit(move || {
+        cleanup_app.cleanup_before_exit();
+    });
     if let Some(raw) = endpoint {
         let url = validate_manifest_url(&raw)?;
         builder = builder

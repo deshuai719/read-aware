@@ -120,7 +120,9 @@ export async function installSoftwareUpdate(
   }
 
   desktopUpdateReady = false;
-  const { relaunch } = await import("@tauri-apps/plugin-process");
-  await relaunch();
+  // Windows: the updater plugin ShellExecutes the NSIS installer (/UPDATE)
+  // and then exits the process via std::process::exit(0); the installer
+  // relaunches the app when it finishes. No JS relaunch here - the process
+  // is already gone once install() runs, so this invoke never resolves.
   return "installer-started";
 }

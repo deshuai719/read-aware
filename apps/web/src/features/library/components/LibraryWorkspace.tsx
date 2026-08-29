@@ -221,6 +221,20 @@ export function LibraryWorkspace({
 
   const handleEndBookDrag = useCallback(() => setDragBookIds(null), []);
 
+  // Safety net: clear the in-flight drag state whenever a drag actually ends,
+  // even if WebView2 skipped the source element's dragend (drop outside a
+  // handled target, cancelled drag, re-render unmounting the source). Without
+  // this the drop zone/highlights can stay stuck in "dragging" mode.
+  useEffect(() => {
+    const clear = () => setDragBookIds(null);
+    window.addEventListener("dragend", clear);
+    window.addEventListener("drop", clear);
+    return () => {
+      window.removeEventListener("dragend", clear);
+      window.removeEventListener("drop", clear);
+    };
+  }, []);
+
   const handleDropOnCollection = useCallback(
     (collectionId: string) => {
       if (!dragBookIds || dragBookIds.length === 0) return;

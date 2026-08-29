@@ -63,16 +63,24 @@ export function useDropBookImport(
       if (files.length === 0) return;
       void importRef.current(files.map((file) => ({ kind: "file" as const, file })));
     }
+    // Any drag that ends resets the counter, so a missed dragleave can never
+    // leave the import overlay stuck on screen.
+    function onDragEnd() {
+      depth = 0;
+      setDragActive(false);
+    }
 
     window.addEventListener("dragenter", onDragEnter);
     window.addEventListener("dragover", onDragOver);
     window.addEventListener("dragleave", onDragLeave);
     window.addEventListener("drop", onDrop);
+    window.addEventListener("dragend", onDragEnd);
     return () => {
       window.removeEventListener("dragenter", onDragEnter);
       window.removeEventListener("dragover", onDragOver);
       window.removeEventListener("dragleave", onDragLeave);
       window.removeEventListener("drop", onDrop);
+      window.removeEventListener("dragend", onDragEnd);
     };
   }, []);
 

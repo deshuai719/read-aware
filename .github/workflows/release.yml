@@ -2,7 +2,8 @@
 # builds a single signed arm64 Android APK. Desktop artifacts (Windows
 # msi/nsis installers plus the latest.json update manifest) are built locally
 # on a maintainer's Windows machine and uploaded to the same release, not by
-# this workflow.
+# this workflow. Either the CI run or the local desktop upload may create
+# the release first; assets from both sides merge into it.
 #
 # Fork tags are always of the form v0.5.0-x (with a "-"), which would make
 # upstream's "tag contains '-' -> prerelease" rule mark every release as a
@@ -25,6 +26,7 @@
 name: release
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - "v*"

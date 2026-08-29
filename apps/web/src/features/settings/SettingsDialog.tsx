@@ -4,6 +4,7 @@ import {
   CaretLeft,
   CaretRight,
   Database,
+  HardDrives,
   Info,
   Keyboard,
   Palette,
@@ -29,6 +30,7 @@ import { AIPanel } from "./sections/AIPanel";
 import { AppearancePanel } from "./sections/AppearancePanel";
 import { DataSyncPanel } from "./sections/DataSyncPanel";
 import { GeneralPanel } from "./sections/GeneralPanel";
+import { StoragePanel } from "./sections/StoragePanel";
 import { MenusPanel } from "./sections/MenusPanel";
 import { ReadingPanel } from "./sections/ReadingPanel";
 import { PluginsPanel } from "./sections/PluginsPanel";
@@ -56,6 +58,7 @@ const SECTIONS: SettingsSection[] = [
   { id: "menus", icon: Rows, Panel: MenusPanel },
   { id: "shortcuts", icon: Keyboard, Panel: ShortcutsPanel },
   { id: "dataSync", icon: Database, Panel: DataSyncPanel },
+  { id: "storage", icon: HardDrives, Panel: StoragePanel },
   { id: "about", icon: Info, Panel: AboutPanel },
 ];
 

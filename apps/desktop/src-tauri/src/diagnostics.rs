@@ -29,6 +29,14 @@ pub struct LogFileTail {
 }
 
 fn log_dir(app: &tauri::AppHandle) -> Result<PathBuf, String> {
+    // Desktop logs live under the data root (`<data_dir>/logs`), matching the
+    // log plugin's target (see lib.rs). Mobile keeps the OS log dir.
+    #[cfg(desktop)]
+    {
+        let dir = app.state::<crate::storage::DataDir>().0.join("logs");
+        return Ok(dir);
+    }
+    #[cfg(not(desktop))]
     app.path()
         .app_log_dir()
         .map_err(|error| format!("log directory unavailable: {error}"))

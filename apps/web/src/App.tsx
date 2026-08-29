@@ -36,6 +36,7 @@ import { useReaderSession } from "./features/reader/hooks/useReaderSession";
 import { useGlobalShortcuts } from "./features/settings/hooks/useGlobalShortcuts";
 import { useBillingReturnDeepLink } from "./features/settings/hooks/useBillingReturnDeepLink";
 import { useSyncLoginDeepLink } from "./features/settings/hooks/useSyncLoginDeepLink";
+import { useDataDirNotice } from "./features/settings/hooks/useDataDirNotice";
 import { usePluginCommandShortcuts } from "./features/plugins/hooks/usePluginCommandShortcuts";
 import { useSurfaceHandoff } from "./hooks/useSurfaceHandoff";
 import { emitAppEvent } from "./platform/app-events";
@@ -194,6 +195,9 @@ function App() {
     },
     [reader.selectedBook, primaryDestinations, setActiveTopNav],
   );
+
+  // One-shot boot toast for a staged data-directory move (success/failure).
+  useDataDirNotice();
 
   useGlobalShortcuts({
     onOpenSearch: () => setSearchModalOpen(true),

@@ -34,11 +34,7 @@ pub struct PluginCandidate {
 }
 
 fn plugins_dir(app: &tauri::AppHandle) -> Result<PathBuf, String> {
-    let dir = app
-        .path()
-        .app_data_dir()
-        .map_err(|e| e.to_string())?
-        .join("plugins");
+    let dir = app.state::<crate::storage::DataDir>().0.join("plugins");
     fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
     Ok(dir)
 }
@@ -195,7 +191,10 @@ impl BundledRoot {
 
 /// Extract the embedded set (once per app version) and return its root.
 fn extract_bundled(app: &tauri::AppHandle) -> Option<PathBuf> {
-    let base = app.path().app_data_dir().ok()?.join("bundled-plugins");
+    let base = app
+        .state::<crate::storage::DataDir>()
+        .0
+        .join("bundled-plugins");
     let stamp_path = base.join(".version");
     let version = app.package_info().version.to_string();
     if fs::read_to_string(&stamp_path).ok().as_deref() == Some(version.as_str()) {

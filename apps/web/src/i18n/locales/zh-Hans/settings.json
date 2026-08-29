@@ -343,7 +343,7 @@
     },
     "dangerZone": "危险区",
     "dataLocation": {
-      "descTauri": "保存在本设备的 ReadAware 应用数据文件夹中。",
+      "descTauri": "保存在本机的 ReadAware 数据文件夹中；可在「存储」设置中更改位置。",
       "descWeb": "保存在此浏览器中。桌面应用会将数据保存在你可控的本地文件夹里。",
       "title": "数据位置"
     },
@@ -544,7 +544,8 @@
     "menus": "自定义",
     "plugins": "插件",
     "reading": "阅读",
-    "shortcuts": "快捷键"
+    "shortcuts": "快捷键",
+    "storage": "存储"
   },
   "shortcuts": {
     "actions": {
@@ -584,5 +585,43 @@
     "reset": "重置 {{label}}",
     "resetAll": "全部重置为默认",
     "title": "快捷键"
+  },
+  "storage": {
+    "canceled": "已取消迁移。",
+    "cancelPending": "取消迁移",
+    "change": "更改数据文件夹",
+    "changeButton": "更改…",
+    "changeDescription": "选择本机上的一个新文件夹。ReadAware 会把数据复制过去并重启一次。",
+    "currentDir": "数据文件夹",
+    "currentGroup": "数据位置",
+    "currentPath": "当前路径",
+    "description": "ReadAware 保存书籍、进度、插件与同步数据的位置。",
+    "later": "稍后",
+    "migrationDone": "数据迁移成功。",
+    "migrationFailed": "数据迁移失败：{{message}}",
+    "moveGroup": "移动数据",
+    "moveGroupDescription": "把数据移到其他磁盘或文件夹。数据会被复制，原文件夹保留，随时可以切回。",
+    "noticeDone": "完成",
+    "noticeError": "出错了",
+    "openDir": "打开文件夹",
+    "pendingDescription": "重启 ReadAware 以完成数据迁移到 {{path}}。",
+    "pendingTitle": "待完成迁移",
+    "restartBody": "立即重启 ReadAware 以应用更改？",
+    "restartNow": "立即重启",
+    "restartTitle": "重启以完成",
+    "revert": "恢复默认文件夹",
+    "revertButton": "恢复",
+    "revertConfirmBody": "下次启动时 ReadAware 将使用默认数据文件夹。自定义文件夹仍保留在磁盘上。",
+    "revertConfirmButton": "切回",
+    "revertConfirmTitle": "切回默认位置？",
+    "revertDescription": "下次启动时改用原始默认位置。",
+    "source": {
+      "custom": "自定义文件夹",
+      "default": "默认位置",
+      "env": "环境变量",
+      "portable": "便携模式（应用旁）"
+    },
+    "sourceLabel": "位置：{{source}}",
+    "title": "存储"
   }
 }

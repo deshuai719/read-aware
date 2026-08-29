@@ -3888,6 +3888,7 @@ dependencies = [
  "base64 0.22.1",
  "block",
  "cocoa",
+ "dirs",
  "include_dir",
  "jni 0.21.1",
  "log",

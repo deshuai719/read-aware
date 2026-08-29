@@ -343,7 +343,7 @@
     },
     "dangerZone": "Zona de peligro",
     "dataLocation": {
-      "descTauri": "Se guardan en la carpeta de datos de la aplicación ReadAware en este dispositivo.",
+      "descTauri": "Se guardan en la carpeta de datos de ReadAware en este dispositivo. Puedes cambiar la carpeta en los ajustes de Almacenamiento.",
       "descWeb": "Se guardan en este navegador. La app de escritorio mantiene los datos en una carpeta local que tú controlas.",
       "title": "Ubicación de los datos"
     },
@@ -379,17 +379,17 @@
       "label": "Estado de sincronización"
     },
     "merge": {
-      "annotations_one": "{{count}} anotación",
       "annotations_many": "{{count}} anotaciones",
+      "annotations_one": "{{count}} anotación",
       "annotations_other": "{{count}} anotaciones",
-      "books_one": "{{count}} libro",
       "books_many": "{{count}} libros",
+      "books_one": "{{count}} libro",
       "books_other": "{{count}} libros",
-      "collections_one": "{{count}} colección",
       "collections_many": "{{count}} colecciones",
+      "collections_one": "{{count}} colección",
       "collections_other": "{{count}} colecciones",
-      "settings_one": "{{count}} ajuste",
       "settings_many": "{{count}} ajustes",
+      "settings_one": "{{count}} ajuste",
       "settings_other": "{{count}} ajustes",
       "summary": "Se combinaron {{books}}, {{annotations}}, {{collections}} y {{settings}}. Recargando…"
     },
@@ -405,12 +405,12 @@
       "pending": "Pendiente de envío: {{events}} cambios, {{blobs}} archivos",
       "pendingNone": "Nada pendiente de envío",
       "pulling": "Recibiendo cambios… {{count}} fusionados",
-      "pulling_one": "",
       "pulling_many": "",
+      "pulling_one": "",
       "pulling_other": "",
       "pushing": "Enviando cambios… {{count}} enviados",
-      "pushing_one": "",
       "pushing_many": "",
+      "pushing_one": "",
       "pushing_other": ""
     },
     "reauth": {
@@ -556,7 +556,8 @@
     "menus": "Personalizar",
     "plugins": "Plugins",
     "reading": "Lectura",
-    "shortcuts": "Atajos"
+    "shortcuts": "Atajos",
+    "storage": "Almacenamiento"
   },
   "shortcuts": {
     "actions": {
@@ -596,5 +597,43 @@
     "reset": "Restablecer {{label}}",
     "resetAll": "Restablecer todo a los valores predeterminados",
     "title": "Atajos"
+  },
+  "storage": {
+    "canceled": "Movimiento cancelado.",
+    "cancelPending": "Cancelar movimiento",
+    "change": "Cambiar carpeta de datos",
+    "changeButton": "Cambiar…",
+    "changeDescription": "Elige una nueva carpeta en este equipo. ReadAware copiará tus datos allí y se reiniciará una vez.",
+    "currentDir": "Carpeta de datos",
+    "currentGroup": "Ubicación de datos",
+    "currentPath": "Ruta actual",
+    "description": "Dónde ReadAware guarda tus libros, progreso, plugins y datos de sincronización.",
+    "later": "Más tarde",
+    "migrationDone": "Datos movidos correctamente.",
+    "migrationFailed": "No se pudieron mover los datos: {{message}}",
+    "moveGroup": "Mover datos",
+    "moveGroupDescription": "Mover a otra unidad o carpeta. Tus datos se copian y la carpeta anterior se conserva.",
+    "noticeDone": "Hecho",
+    "noticeError": "Algo salió mal",
+    "openDir": "Abrir carpeta",
+    "pendingDescription": "Reinicia ReadAware para terminar de mover tus datos a {{path}}.",
+    "pendingTitle": "Movimiento pendiente",
+    "restartBody": "¿Reiniciar ReadAware ahora para aplicar el cambio?",
+    "restartNow": "Reiniciar ahora",
+    "restartTitle": "Reiniciar para terminar",
+    "revert": "Volver a la carpeta predeterminada",
+    "revertButton": "Revertir",
+    "revertConfirmBody": "ReadAware usará de nuevo la carpeta de datos predeterminada en el próximo inicio. Tu carpeta personalizada se mantiene en el disco.",
+    "revertConfirmButton": "Volver",
+    "revertConfirmTitle": "¿Volver?",
+    "revertDescription": "Usar de nuevo la ubicación original en el próximo inicio.",
+    "source": {
+      "custom": "Carpeta personalizada",
+      "default": "Predeterminada",
+      "env": "Variable de entorno",
+      "portable": "Portátil (junto a la app)"
+    },
+    "sourceLabel": "Ubicación: {{source}}",
+    "title": "Almacenamiento"
   }
 }

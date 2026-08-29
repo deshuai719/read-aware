@@ -78,6 +78,7 @@ export type CoreSettingsSectionId =
   | "menus"
   | "shortcuts"
   | "dataSync"
+  | "storage"
   | "about";
 
 /**

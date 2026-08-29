@@ -343,7 +343,7 @@
     },
     "dangerZone": "Danger zone",
     "dataLocation": {
-      "descTauri": "Stored in the ReadAware application data folder on this device.",
+      "descTauri": "Stored in the ReadAware data folder on this device. You can change the folder in Storage settings.",
       "descWeb": "Stored in this browser. The desktop app keeps data in a local folder you control.",
       "title": "Data location"
     },
@@ -550,7 +550,8 @@
     "menus": "Customize",
     "plugins": "Plugins",
     "reading": "Reading",
-    "shortcuts": "Shortcuts"
+    "shortcuts": "Shortcuts",
+    "storage": "Storage"
   },
   "shortcuts": {
     "actions": {
@@ -590,5 +591,43 @@
     "reset": "Reset {{label}}",
     "resetAll": "Reset all to defaults",
     "title": "Shortcuts"
+  },
+  "storage": {
+    "canceled": "Move cancelled.",
+    "cancelPending": "Cancel move",
+    "change": "Change data folder",
+    "changeButton": "Change…",
+    "changeDescription": "Choose a new folder on this computer. ReadAware will copy your data there and restart once.",
+    "currentDir": "Data folder",
+    "currentGroup": "Data location",
+    "currentPath": "Current path",
+    "description": "Where ReadAware keeps your books, progress, plugins, and sync state.",
+    "later": "Later",
+    "migrationDone": "Data moved successfully.",
+    "migrationFailed": "Data move failed: {{message}}",
+    "moveGroup": "Move data",
+    "moveGroupDescription": "Move to another drive or folder. Your data is copied and the old folder is kept, so you can switch back at any time.",
+    "noticeDone": "Done",
+    "noticeError": "Something went wrong",
+    "openDir": "Open folder",
+    "pendingDescription": "Restart ReadAware to finish moving your data to {{path}}.",
+    "pendingTitle": "Move pending",
+    "restartBody": "Restart ReadAware now to apply the change?",
+    "restartNow": "Restart now",
+    "restartTitle": "Restart to finish",
+    "revert": "Back to default folder",
+    "revertButton": "Revert",
+    "revertConfirmBody": "ReadAware will use the default data folder again on the next start. Your custom folder stays on disk.",
+    "revertConfirmButton": "Switch back",
+    "revertConfirmTitle": "Switch back?",
+    "revertDescription": "Use the original location again on the next start.",
+    "source": {
+      "custom": "Custom folder",
+      "default": "Default",
+      "env": "Environment variable",
+      "portable": "Portable (next to the app)"
+    },
+    "sourceLabel": "Location: {{source}}",
+    "title": "Storage"
   }
 }

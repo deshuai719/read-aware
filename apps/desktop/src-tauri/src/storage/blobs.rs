@@ -363,16 +363,15 @@ pub(crate) fn externalize_inline_blobs(conn: &Connection, data_dir: &Path) -> Re
 /// baseline (WAL et al — see `apply_connection_pragmas`), run migrations,
 /// externalize any pre-v3 inline blobs, and ensure the device identity row.
 /// Returns the connection plus the app-data dir the blob store roots at.
-pub fn init_db(app: &AppHandle) -> Result<(Connection, PathBuf), String> {
-    let dir = app.path().app_data_dir().map_err(|e| e.to_string())?;
-    std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
-    let mut conn = Connection::open(dir.join("read-aware.db")).map_err(|e| e.to_string())?;
+pub fn init_db_at(data_dir: &Path) -> Result<(Connection, PathBuf), String> {
+    std::fs::create_dir_all(data_dir).map_err(|e| e.to_string())?;
+    let mut conn = Connection::open(data_dir.join("read-aware.db")).map_err(|e| e.to_string())?;
     apply_connection_pragmas(&conn)?;
     register_sql_functions(&conn)?;
     run_migrations(&mut conn)?;
-    externalize_inline_blobs(&conn, &dir)?;
+    externalize_inline_blobs(&conn, data_dir)?;
     ensure_local_device(&conn)?;
-    Ok((conn, dir))
+    Ok((conn, data_dir.to_path_buf()))
 }
 
 

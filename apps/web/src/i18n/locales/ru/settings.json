@@ -343,7 +343,7 @@
     },
     "dangerZone": "Опасная зона",
     "dataLocation": {
-      "descTauri": "Хранится в папке данных приложения ReadAware на этом устройстве.",
+      "descTauri": "Данные хранятся в папке данных ReadAware на этом устройстве. Папку можно изменить в настройках «Хранилище».",
       "descWeb": "Хранится в этом браузере. Настольное приложение хранит данные в локальной папке, которой вы управляете.",
       "title": "Расположение данных"
     },
@@ -379,21 +379,21 @@
       "label": "Состояние синхронизации"
     },
     "merge": {
-      "annotations_one": "{{count}} пометка",
       "annotations_few": "{{count}} пометки",
       "annotations_many": "{{count}} пометок",
+      "annotations_one": "{{count}} пометка",
       "annotations_other": "{{count}} пометки",
-      "books_one": "{{count}} книга",
       "books_few": "{{count}} книги",
       "books_many": "{{count}} книг",
+      "books_one": "{{count}} книга",
       "books_other": "{{count}} книги",
-      "collections_one": "{{count}} коллекция",
       "collections_few": "{{count}} коллекции",
       "collections_many": "{{count}} коллекций",
+      "collections_one": "{{count}} коллекция",
       "collections_other": "{{count}} коллекции",
-      "settings_one": "{{count}} настройка",
       "settings_few": "{{count}} настройки",
       "settings_many": "{{count}} настроек",
+      "settings_one": "{{count}} настройка",
       "settings_other": "{{count}} настройки",
       "summary": "Объединено: {{books}}, {{annotations}}, {{collections}} и {{settings}}. Перезагрузка…"
     },
@@ -409,14 +409,14 @@
       "pending": "Ожидают отправки: изменений — {{events}}, файлов — {{blobs}}",
       "pendingNone": "Нет данных, ожидающих отправки",
       "pulling": "Получение изменений… объединено: {{count}}",
-      "pulling_one": "",
       "pulling_few": "",
       "pulling_many": "",
+      "pulling_one": "",
       "pulling_other": "",
       "pushing": "Отправка изменений… отправлено: {{count}}",
-      "pushing_one": "",
       "pushing_few": "",
       "pushing_many": "",
+      "pushing_one": "",
       "pushing_other": ""
     },
     "reauth": {
@@ -562,7 +562,8 @@
     "menus": "Настройка",
     "plugins": "Плагины",
     "reading": "Чтение",
-    "shortcuts": "Горячие клавиши"
+    "shortcuts": "Горячие клавиши",
+    "storage": "Хранилище"
   },
   "shortcuts": {
     "actions": {
@@ -602,5 +603,43 @@
     "reset": "Сбросить {{label}}",
     "resetAll": "Сбросить всё до значений по умолчанию",
     "title": "Горячие клавиши"
+  },
+  "storage": {
+    "canceled": "Перенос отменён.",
+    "cancelPending": "Отменить перенос",
+    "change": "Изменить папку данных",
+    "changeButton": "Изменить…",
+    "changeDescription": "Выберите новую папку на этом компьютере. ReadAware скопирует туда данные и один раз перезапустится.",
+    "currentDir": "Папка данных",
+    "currentGroup": "Расположение данных",
+    "currentPath": "Текущий путь",
+    "description": "Где ReadAware хранит книги, прогресс, плагины и данные синхронизации.",
+    "later": "Позже",
+    "migrationDone": "Данные успешно перенесены.",
+    "migrationFailed": "Не удалось перенести данные: {{message}}",
+    "moveGroup": "Перенести данные",
+    "moveGroupDescription": "Переместить на другой диск или в другую папку. Данные копируются, старая папка сохраняется.",
+    "noticeDone": "Готово",
+    "noticeError": "Что-то пошло не так",
+    "openDir": "Открыть папку",
+    "pendingDescription": "Перезапустите ReadAware, чтобы завершить перенос данных в {{path}}.",
+    "pendingTitle": "Ожидается перенос",
+    "restartBody": "Перезапустить ReadAware сейчас, чтобы применить изменение?",
+    "restartNow": "Перезапустить",
+    "restartTitle": "Перезапуск для завершения",
+    "revert": "Вернуть стандартную папку",
+    "revertButton": "Вернуть",
+    "revertConfirmBody": "При следующем запуске ReadAware снова будет использовать стандартную папку данных. Ваша папка останется на диске.",
+    "revertConfirmButton": "Вернуться",
+    "revertConfirmTitle": "Вернуться?",
+    "revertDescription": "При следующем запуске снова использовать исходное расположение.",
+    "source": {
+      "custom": "Своя папка",
+      "default": "По умолчанию",
+      "env": "Переменная окружения",
+      "portable": "Портативно (рядом с приложением)"
+    },
+    "sourceLabel": "Расположение: {{source}}",
+    "title": "Хранилище"
   }
 }

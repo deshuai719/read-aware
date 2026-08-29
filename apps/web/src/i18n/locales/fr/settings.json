@@ -343,7 +343,7 @@
     },
     "dangerZone": "Zone sensible",
     "dataLocation": {
-      "descTauri": "Stocké dans le dossier de données de l’application ReadAware sur cet appareil.",
+      "descTauri": "Stocké dans le dossier de données de ReadAware sur cet appareil. Vous pouvez changer le dossier dans les réglages de stockage.",
       "descWeb": "Stocké dans ce navigateur. L’application de bureau conserve les données dans un dossier local que vous contrôlez.",
       "title": "Emplacement des données"
     },
@@ -379,17 +379,17 @@
       "label": "État de la synchronisation"
     },
     "merge": {
-      "annotations_one": "{{count}} annotation",
       "annotations_many": "{{count}} annotations",
+      "annotations_one": "{{count}} annotation",
       "annotations_other": "{{count}} annotations",
-      "books_one": "{{count}} livre",
       "books_many": "{{count}} livres",
+      "books_one": "{{count}} livre",
       "books_other": "{{count}} livres",
-      "collections_one": "{{count}} collection",
       "collections_many": "{{count}} collections",
+      "collections_one": "{{count}} collection",
       "collections_other": "{{count}} collections",
-      "settings_one": "{{count}} paramètre",
       "settings_many": "{{count}} paramètres",
+      "settings_one": "{{count}} paramètre",
       "settings_other": "{{count}} paramètres",
       "summary": "Fusion de {{books}}, {{annotations}}, {{collections}} et {{settings}}. Rechargement…"
     },
@@ -397,20 +397,20 @@
     "noticeError": "Erreur",
     "progress": {
       "blobs": "Transfert des fichiers… {{done}}/{{total}}",
-      "bookDown": "Téléchargement de «\u202f{{title}}\u202f»",
-      "bookDownParts": "Téléchargement de «\u202f{{title}}\u202f» ({{done}}/{{total}})",
-      "bookUp": "Envoi de «\u202f{{title}}\u202f»",
-      "bookUpParts": "Envoi de «\u202f{{title}}\u202f» ({{done}}/{{total}})",
+      "bookDown": "Téléchargement de « {{title}} »",
+      "bookDownParts": "Téléchargement de « {{title}} » ({{done}}/{{total}})",
+      "bookUp": "Envoi de « {{title}} »",
+      "bookUpParts": "Envoi de « {{title}} » ({{done}}/{{total}})",
       "lastCycle": "Dernier cycle : {{pulled}} reçues · {{pushed}} envoyées · {{blobs}} fichiers",
       "pending": "En attente d'envoi : {{events}} modifications, {{blobs}} fichiers",
       "pendingNone": "Rien en attente d'envoi",
       "pulling": "Réception des modifications… {{count}} fusionnées",
-      "pulling_one": "",
       "pulling_many": "",
+      "pulling_one": "",
       "pulling_other": "",
       "pushing": "Envoi des modifications… {{count}} envoyées",
-      "pushing_one": "",
       "pushing_many": "",
+      "pushing_one": "",
       "pushing_other": ""
     },
     "reauth": {
@@ -556,7 +556,8 @@
     "menus": "Personnaliser",
     "plugins": "Extensions",
     "reading": "Lecture",
-    "shortcuts": "Raccourcis"
+    "shortcuts": "Raccourcis",
+    "storage": "Stockage"
   },
   "shortcuts": {
     "actions": {
@@ -596,5 +597,43 @@
     "reset": "Réinitialiser {{label}}",
     "resetAll": "Tout réinitialiser aux valeurs par défaut",
     "title": "Raccourcis"
+  },
+  "storage": {
+    "canceled": "Déplacement annulé.",
+    "cancelPending": "Annuler le déplacement",
+    "change": "Changer le dossier de données",
+    "changeButton": "Changer…",
+    "changeDescription": "Choisissez un nouveau dossier sur cet ordinateur. ReadAware y copiera vos données et redémarrera une fois.",
+    "currentDir": "Dossier de données",
+    "currentGroup": "Emplacement des données",
+    "currentPath": "Chemin actuel",
+    "description": "Là où ReadAware conserve vos livres, votre progression, vos plugins et vos données de synchronisation.",
+    "later": "Plus tard",
+    "migrationDone": "Données déplacées avec succès.",
+    "migrationFailed": "Échec du déplacement des données : {{message}}",
+    "moveGroup": "Déplacer les données",
+    "moveGroupDescription": "Déplacer vers un autre disque ou dossier. Vos données sont copiées et l’ancien dossier est conservé.",
+    "noticeDone": "Terminé",
+    "noticeError": "Une erreur est survenue",
+    "openDir": "Ouvrir le dossier",
+    "pendingDescription": "Redémarrez ReadAware pour terminer le déplacement de vos données vers {{path}}.",
+    "pendingTitle": "Déplacement en attente",
+    "restartBody": "Redémarrer ReadAware maintenant pour appliquer le changement ?",
+    "restartNow": "Redémarrer maintenant",
+    "restartTitle": "Redémarrer pour terminer",
+    "revert": "Revenir au dossier par défaut",
+    "revertButton": "Rétablir",
+    "revertConfirmBody": "ReadAware réutilisera le dossier de données par défaut au prochain démarrage. Votre dossier personnalisé reste sur le disque.",
+    "revertConfirmButton": "Revenir",
+    "revertConfirmTitle": "Revenir en arrière ?",
+    "revertDescription": "Réutiliser l’emplacement d’origine au prochain démarrage.",
+    "source": {
+      "custom": "Dossier personnalisé",
+      "default": "Par défaut",
+      "env": "Variable d’environnement",
+      "portable": "Portable (à côté de l’app)"
+    },
+    "sourceLabel": "Emplacement : {{source}}",
+    "title": "Stockage"
   }
 }

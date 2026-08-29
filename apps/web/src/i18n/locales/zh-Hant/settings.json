@@ -343,7 +343,7 @@
     },
     "dangerZone": "危險區域",
     "dataLocation": {
-      "descTauri": "儲存在本裝置的 ReadAware 應用程式資料夾中。",
+      "descTauri": "儲存在本機的 ReadAware 資料資料夾中；可在「儲存」設定中變更位置。",
       "descWeb": "儲存在此瀏覽器中。桌面應用程式會將資料存放於你可掌控的本機資料夾。",
       "title": "資料位置"
     },
@@ -544,7 +544,8 @@
     "menus": "自訂",
     "plugins": "外掛",
     "reading": "閱讀",
-    "shortcuts": "快捷鍵"
+    "shortcuts": "快捷鍵",
+    "storage": "儲存"
   },
   "shortcuts": {
     "actions": {
@@ -584,5 +585,43 @@
     "reset": "重設 {{label}}",
     "resetAll": "全部重設為預設值",
     "title": "快捷鍵"
+  },
+  "storage": {
+    "canceled": "已取消移轉。",
+    "cancelPending": "取消移轉",
+    "change": "更改資料資料夾",
+    "changeButton": "更改…",
+    "changeDescription": "選擇本機上的一個新資料夾。ReadAware 會把資料複製過去並重新啟動一次。",
+    "currentDir": "資料資料夾",
+    "currentGroup": "資料位置",
+    "currentPath": "目前路徑",
+    "description": "ReadAware 儲存書籍、進度、外掛與同步資料的位置。",
+    "later": "稍後",
+    "migrationDone": "資料移轉成功。",
+    "migrationFailed": "資料移轉失敗：{{message}}",
+    "moveGroup": "移動資料",
+    "moveGroupDescription": "把資料移到其他磁碟或資料夾。資料會被複製，原資料夾保留，隨時可以切回。",
+    "noticeDone": "完成",
+    "noticeError": "發生錯誤",
+    "openDir": "開啟資料夾",
+    "pendingDescription": "重新啟動 ReadAware 以完成資料移轉到 {{path}}。",
+    "pendingTitle": "待完成移轉",
+    "restartBody": "立即重新啟動 ReadAware 以套用變更？",
+    "restartNow": "立即重新啟動",
+    "restartTitle": "重新啟動以完成",
+    "revert": "恢復預設資料夾",
+    "revertButton": "恢復",
+    "revertConfirmBody": "下次啟動時 ReadAware 將使用預設資料資料夾。自訂資料夾仍保留在磁碟上。",
+    "revertConfirmButton": "切回",
+    "revertConfirmTitle": "切回預設位置？",
+    "revertDescription": "下次啟動時改用原始預設位置。",
+    "source": {
+      "custom": "自訂資料夾",
+      "default": "預設位置",
+      "env": "環境變數",
+      "portable": "攜帶模式（應用程式旁）"
+    },
+    "sourceLabel": "位置：{{source}}",
+    "title": "儲存"
   }
 }

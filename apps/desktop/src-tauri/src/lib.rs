@@ -1,7 +1,8 @@
 mod android_update;
 mod book_metadata;
-mod desktop_update;
 mod comic_metadata;
+mod data_dir;
+mod desktop_update;
 mod diagnostics;
 mod external_open;
 mod fb2_metadata;
@@ -15,6 +16,7 @@ mod secrets;
 mod single_instance_guard;
 mod storage;
 
+use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 
 use tauri::Manager;
@@ -665,15 +667,21 @@ fn boot_theme_script(theme: &str) -> String {
 /// keeps of a production run (no console on Windows, no DevTools in release).
 /// The webview's logger feeds the same file through the plugin's IPC command.
 /// Info-level in release so the file stays quiet; ~5 MB × 4 files bounds disk.
-fn build_log_plugin<R: tauri::Runtime>() -> tauri::plugin::TauriPlugin<R> {
+fn build_log_plugin<R: tauri::Runtime>(data_dir: Option<&Path>) -> tauri::plugin::TauriPlugin<R> {
     use tauri_plugin_log::{RotationStrategy, Target, TargetKind, TimezoneStrategy};
+    // A configured data root carries its own logs (`<data_dir>/logs`); the
+    // default root keeps the OS log dir. Resolved before any AppHandle exists.
+    let file_target = match data_dir {
+        Some(dir) => Target::new(TargetKind::Folder {
+            path: dir.join("logs"),
+            file_name: Some("readaware".into()),
+        }),
+        None => Target::new(TargetKind::LogDir {
+            file_name: Some("readaware".into()),
+        }),
+    };
     tauri_plugin_log::Builder::default()
-        .targets([
-            Target::new(TargetKind::LogDir {
-                file_name: Some("readaware".into()),
-            }),
-            Target::new(TargetKind::Stdout),
-        ])
+        .targets([file_target, Target::new(TargetKind::Stdout)])
         .level(if cfg!(debug_assertions) {
             log::LevelFilter::Debug
         } else {
@@ -755,6 +763,14 @@ pub fn run() {
     #[cfg(not(desktop))]
     let launch_open_paths: Vec<String> = Vec::new();
 
+    // The log plugin initializes before an AppHandle exists, so resolve the
+    // data root early. Desktop logs always follow the data root; mobile keeps
+    // the OS log dir (None).
+    #[cfg(desktop)]
+    let early_data_dir: Option<PathBuf> = Some(data_dir::early_resolve());
+    #[cfg(not(desktop))]
+    let early_data_dir: Option<PathBuf> = None;
+
     let builder = tauri::Builder::default();
     // Single-instance must be the FIRST plugin: a second launch (double-click
     // on an associated book while the app runs) must short-circuit here and
@@ -773,7 +789,7 @@ pub fn run() {
     // Log plugin as early as the ordering constraints allow (single-instance
     // must stay first on desktop): every later plugin's init logs land in the
     // file from the first run.
-    let builder = builder.plugin(build_log_plugin());
+    let builder = builder.plugin(build_log_plugin(early_data_dir.as_deref()));
     // Desktop-only window chrome (macOS traffic-light repositioning); the
     // crate is not compiled for Android/iOS, where the webview is fullscreen.
     #[cfg(desktop)]
@@ -846,7 +862,19 @@ pub fn run() {
             // A failed migration or unreadable database is the most likely
             // real-world "app dies at launch" cause — make sure it is the
             // first thing the log file explains before the process goes down.
-            let (conn, data_dir) = storage::init_db(app.handle()).map_err(|error| {
+            // Resolve the data root (running any staged directory migration)
+            // BEFORE the SQLite connection opens. Mobile always uses the default.
+            #[cfg(desktop)]
+            let data_dir = data_dir::resolve_with_app(app.handle()).map_err(|error| {
+                log::error!("data directory resolution failed: {error}");
+                error
+            })?;
+            #[cfg(not(desktop))]
+            let data_dir = app
+                .path()
+                .app_data_dir()
+                .map_err(|error| format!("app data dir unavailable: {error}"))?;
+            let (conn, _) = storage::init_db_at(&data_dir).map_err(|error| {
                 log::error!("database initialization failed: {error}");
                 error
             })?;
@@ -1091,6 +1119,11 @@ pub fn run() {
             external_open::external_open_take,
             diagnostics::diagnostics_read_logs,
             diagnostics::diagnostics_log_dir,
+            data_dir::data_dir_info,
+            data_dir::data_dir_prepare,
+            data_dir::data_dir_cancel_pending,
+            data_dir::data_dir_clear_notice,
+            data_dir::data_dir_revert_default,
             book_file_size,
             read_book_head,
             write_export_file,

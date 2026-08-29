@@ -343,7 +343,7 @@
     },
     "dangerZone": "Gefahrenzone",
     "dataLocation": {
-      "descTauri": "Im ReadAware-Anwendungsdatenordner auf diesem Gerät gespeichert.",
+      "descTauri": "Gespeichert im ReadAware-Datenordner auf diesem Gerät. Du kannst den Ordner in den Speicher-Einstellungen ändern.",
       "descWeb": "In diesem Browser gespeichert. Die Desktop-App bewahrt Daten in einem lokalen Ordner auf, den du kontrollierst.",
       "title": "Speicherort"
     },
@@ -550,7 +550,8 @@
     "menus": "Anpassen",
     "plugins": "Plugins",
     "reading": "Lesen",
-    "shortcuts": "Tastenkürzel"
+    "shortcuts": "Tastenkürzel",
+    "storage": "Speicher"
   },
   "shortcuts": {
     "actions": {
@@ -590,5 +591,43 @@
     "reset": "{{label}} zurücksetzen",
     "resetAll": "Alle auf Standard zurücksetzen",
     "title": "Tastenkürzel"
+  },
+  "storage": {
+    "canceled": "Verschiebung abgebrochen.",
+    "cancelPending": "Verschiebung abbrechen",
+    "change": "Datenordner ändern",
+    "changeButton": "Ändern…",
+    "changeDescription": "Wähle einen neuen Ordner auf diesem Computer. ReadAware kopiert die Daten dorthin und startet einmal neu.",
+    "currentDir": "Datenordner",
+    "currentGroup": "Datenspeicherort",
+    "currentPath": "Aktueller Pfad",
+    "description": "Wo ReadAware Bücher, Fortschritt, Plugins und Synchronisierungsdaten ablegt.",
+    "later": "Später",
+    "migrationDone": "Daten erfolgreich verschoben.",
+    "migrationFailed": "Datenverschiebung fehlgeschlagen: {{message}}",
+    "moveGroup": "Daten verschieben",
+    "moveGroupDescription": "Auf ein anderes Laufwerk oder in einen anderen Ordner verschieben. Die Daten werden kopiert, der alte Ordner bleibt erhalten.",
+    "noticeDone": "Fertig",
+    "noticeError": "Etwas ist schiefgelaufen",
+    "openDir": "Ordner öffnen",
+    "pendingDescription": "Starte ReadAware neu, um die Daten nach {{path}} zu verschieben.",
+    "pendingTitle": "Verschiebung ausstehend",
+    "restartBody": "ReadAware jetzt neu starten, um die Änderung anzuwenden?",
+    "restartNow": "Jetzt neu starten",
+    "restartTitle": "Neustart zum Abschließen",
+    "revert": "Zurück zum Standardordner",
+    "revertButton": "Zurücksetzen",
+    "revertConfirmBody": "ReadAware verwendet beim nächsten Start wieder den Standard-Datenordner. Dein benutzerdefinierter Ordner bleibt auf der Festplatte.",
+    "revertConfirmButton": "Zurückwechseln",
+    "revertConfirmTitle": "Zurückwechseln?",
+    "revertDescription": "Beim nächsten Start wieder den ursprünglichen Speicherort verwenden.",
+    "source": {
+      "custom": "Benutzerdefinierter Ordner",
+      "default": "Standard",
+      "env": "Umgebungsvariable",
+      "portable": "Portabel (neben der App)"
+    },
+    "sourceLabel": "Speicherort: {{source}}",
+    "title": "Speicher"
   }
 }

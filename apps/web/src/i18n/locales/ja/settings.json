@@ -343,7 +343,7 @@
     },
     "dangerZone": "危険な操作",
     "dataLocation": {
-      "descTauri": "この端末の ReadAware アプリケーションデータフォルダに保存されています。",
+      "descTauri": "データはこの端末の ReadAware データフォルダーに保存されています。保存先は「ストレージ」設定で変更できます。",
       "descWeb": "このブラウザに保存されています。デスクトップアプリでは、あなたが管理するローカルフォルダにデータを保存します。",
       "title": "データの保存場所"
     },
@@ -544,7 +544,8 @@
     "menus": "カスタマイズ",
     "plugins": "プラグイン",
     "reading": "読書",
-    "shortcuts": "ショートカット"
+    "shortcuts": "ショートカット",
+    "storage": "ストレージ"
   },
   "shortcuts": {
     "actions": {
@@ -584,5 +585,43 @@
     "reset": "{{label}}をリセット",
     "resetAll": "すべて既定値にリセット",
     "title": "ショートカット"
+  },
+  "storage": {
+    "canceled": "移動をキャンセルしました。",
+    "cancelPending": "移動をキャンセル",
+    "change": "データフォルダーを変更",
+    "changeButton": "変更…",
+    "changeDescription": "この PC 上の新しいフォルダーを選択してください。ReadAware がデータをコピーして一度再起動します。",
+    "currentDir": "データフォルダー",
+    "currentGroup": "データの場所",
+    "currentPath": "現在のパス",
+    "description": "ReadAware が書籍・進捗・プラグイン・同期データを保存する場所。",
+    "later": "後で",
+    "migrationDone": "データの移動が完了しました。",
+    "migrationFailed": "データの移動に失敗しました：{{message}}",
+    "moveGroup": "データを移動",
+    "moveGroupDescription": "別のドライブやフォルダーへ移動します。データはコピーされ、元のフォルダーは保持されます。",
+    "noticeDone": "完了",
+    "noticeError": "エラーが発生しました",
+    "openDir": "フォルダーを開く",
+    "pendingDescription": "ReadAware を再起動すると、データが {{path}} へ移動されます。",
+    "pendingTitle": "移動待ち",
+    "restartBody": "今すぐ ReadAware を再起動して変更を適用しますか？",
+    "restartNow": "今すぐ再起動",
+    "restartTitle": "再起動して完了",
+    "revert": "既定フォルダーに戻す",
+    "revertButton": "戻す",
+    "revertConfirmBody": "次回起動時から ReadAware は既定のデータフォルダーを使います。カスタムフォルダーはディスク上に残ります。",
+    "revertConfirmButton": "戻す",
+    "revertConfirmTitle": "戻しますか？",
+    "revertDescription": "次回起動時から元の場所を使います。",
+    "source": {
+      "custom": "カスタムフォルダー",
+      "default": "既定",
+      "env": "環境変数",
+      "portable": "ポータブル（アプリの隣）"
+    },
+    "sourceLabel": "場所：{{source}}",
+    "title": "ストレージ"
   }
 }

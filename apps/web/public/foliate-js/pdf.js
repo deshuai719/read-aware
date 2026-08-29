@@ -281,6 +281,8 @@ const makeTOCItem = item => ({
     subitems: item.items.length ? item.items.map(makeTOCItem) : null,
 })
 
+import { clampPageIndex, isRefShaped, parseHrefDest, resolveDestIndex } from './pdf-nav.js'
+
 export const makePDF = async file => {
     const transport = new pdfjsLib.PDFDataRangeTransport(file.size, [])
     transport.requestDataRange = (begin, end) => {
@@ -335,17 +337,21 @@ export const makePDF = async file => {
     }))
     book.isExternal = uri => /^\w+:/i.test(uri)
     book.resolveHref = async href => {
-        const parsed = JSON.parse(href)
-        const dest = typeof parsed === 'string'
-            ? await pdf.getDestination(parsed) : parsed
-        const index = await pdf.getPageIndex(dest[0])
+        const index = await resolveDestIndex({
+            dest: parseHrefDest(href),
+            getDestination: dest => pdf.getDestination(dest),
+            getPageIndex: ref => pdf.getPageIndex(ref),
+            numPages: pdf.numPages,
+        })
         return { index }
     }
     book.splitTOCHref = async href => {
-        const parsed = JSON.parse(href)
-        const dest = typeof parsed === 'string'
-            ? await pdf.getDestination(parsed) : parsed
-        const index = await pdf.getPageIndex(dest[0])
+        const index = await resolveDestIndex({
+            dest: parseHrefDest(href),
+            getDestination: dest => pdf.getDestination(dest),
+            getPageIndex: ref => pdf.getPageIndex(ref),
+            numPages: pdf.numPages,
+        })
         return [index, null]
     }
     book.getTOCFragment = doc => doc.documentElement

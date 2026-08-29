@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { TFunction } from "i18next";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { Body, Spinner } from "@read-aware/ui";
+import { Body, Button, Spinner } from "@read-aware/ui";
 import { cn } from "@read-aware/ui/cn";
 import { useTranslation } from "../../../i18n";
 import { textUnitModeSettingsAtom, shortcutBindingsAtom } from "../../../state/ui";
@@ -2278,7 +2278,16 @@ export function FoliateReaderView({
 
       {error && (
         <div className="absolute inset-0 flex items-center justify-center bg-inherit px-8 text-center">
-          <Body className="max-w-md text-sm text-fg-muted">{error}</Body>
+          <div className="max-w-md space-y-4">
+            <Body className="text-sm text-fg-muted">{error}</Body>
+            {onCloseReader ? (
+              <div className="flex items-center justify-center gap-2">
+                <Button size="sm" variant="ghost" onClick={onCloseReader}>
+                  {t("backToLibrary")}
+                </Button>
+              </div>
+            ) : null}
+          </div>
         </div>
       )}
 

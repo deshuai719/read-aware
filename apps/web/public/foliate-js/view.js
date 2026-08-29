@@ -448,15 +448,34 @@ export class View extends HTMLElement {
             return { index, anchor }
         }
     }
+    // READAWARE: clamp every resolved navigation target to the book's section
+    // bounds. Saved progress can outlive the file it pointed at (replaced PDF,
+    // fewer pages, synced from another device), and a stale index used to be
+    // dropped by the renderers (reader stuck on the first page) or, through
+    // PDF href resolution, surface as an `Invalid pageIndex request.` failure
+    // while the book opens. PDF href resolution is async, so the clamp also
+    // wraps promise results. Out-of-range targets land on the last page;
+    // negative ones on the first.
+    #clampResolved(resolved) {
+        if (resolved && typeof resolved.then === 'function')
+            return resolved.then(r => this.#clampResolved(r))
+        if (!resolved || typeof resolved.index !== 'number') return resolved
+        const last = (this.book?.sections?.length ?? 1) - 1
+        const index = Number.isFinite(resolved.index) ? resolved.index : 0
+        resolved.index = Math.max(0, Math.min(index, last))
+        return resolved
+    }
     resolveNavigation(target) {
         try {
-            if (typeof target === 'number') return { index: target }
-            if (typeof target.fraction === 'number') {
+            let resolved
+            if (typeof target === 'number') resolved = { index: target }
+            else if (typeof target.fraction === 'number') {
                 const [index, anchor] = this.#sectionProgress.getSection(target.fraction)
-                return { index, anchor }
+                resolved = { index, anchor }
             }
-            if (CFI.isCFI.test(target)) return this.resolveCFI(target)
-            return this.book.resolveHref(target)
+            else if (CFI.isCFI.test(target)) resolved = this.resolveCFI(target)
+            else resolved = this.book.resolveHref(target)
+            return this.#clampResolved(resolved)
         } catch (e) {
             console.error(e)
             console.error(`Could not resolve target ${target}`)

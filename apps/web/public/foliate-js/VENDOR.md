@@ -108,6 +108,19 @@ The typed wrapper that consumes this lives at
   still reports the CFI. This lets ReadAware's navigator focus layer coexist
   with a saved mark on the exact same sentence. Re-apply after any upstream
   update.
+- **`pdf.js` / `pdf-nav.js` — navigation-target hardening:** outline/bookmark
+  destinations and stale saved progress can point at pages PDF.js cannot turn
+  into a valid index: a dest whose first element is not a ref proxy
+  (`Invalid pageIndex request.` from `getPageIndex`) or an index past the
+  current page count. The pure helpers in `pdf-nav.js` (`clampPageIndex`,
+  `isRefShaped`, `parseHrefDest`, `resolveDestIndex`) validate and clamp, and
+  `resolveHref` / `splitTOCHref` use them so `view.open()`'s TOC init can never
+  fail on one bad bookmark. Re-apply after any upstream update.
+- **`view.js` — navigation index clamping:** `resolveNavigation` now clamps
+  every resolved target index to `[0, sections.length - 1]` (including
+  promise-returning PDF hrefs). Saved progress that outlives its file lands on
+  the last page instead of being dropped (reader stuck on the first page) or
+  failing the open. Re-apply after any upstream update.
 - Otherwise all engine modules and `vendor/` are byte-for-byte upstream.
 
 ## Updating

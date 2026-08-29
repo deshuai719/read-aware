@@ -38,6 +38,8 @@ export type FoliateBook = {
   rendition?: { layout?: string };
   dir?: string;
   getCover?: () => Promise<Blob | null> | Blob | null;
+  /** Release the parsed document (pdf.js PDFDocumentProxy etc.) on teardown. */
+  destroy?: () => void | Promise<void>;
 };
 
 /**

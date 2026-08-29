@@ -2106,6 +2106,14 @@ export function FoliateReaderView({
         // Ignore teardown races.
       }
       view?.remove();
+      // Release the parsed document (pdf.js PDFDocumentProxy etc.) so memory
+      // returns promptly instead of waiting on GC; parseBookFile sets
+      // book.destroy on every format.
+      try {
+        view?.book?.destroy?.();
+      } catch {
+        // Ignore teardown races.
+      }
       if (viewRef.current === view) viewRef.current = null;
     };
     // Keyed on selectedBook?.id (not the object): progress saves replace the

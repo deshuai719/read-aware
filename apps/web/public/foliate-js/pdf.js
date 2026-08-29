@@ -333,6 +333,17 @@ export const makePDF = async file => {
             return url
         },
         getText: async () => extractPageText(await pdf.getPage(i + 1)),
+        // The paginator calls unload() once the next page has loaded, so the
+        // rendered blob can be revoked right away: memory stays bounded to
+        // the pages actually on screen instead of growing with every page
+        // ever viewed. Reopening a page re-renders it.
+        unload: () => {
+            const url = cache.get(i);
+            if (url) {
+                URL.revokeObjectURL(url);
+                cache.delete(i);
+            }
+        },
         size: 1000,
     }))
     book.isExternal = uri => /^\w+:/i.test(uri)

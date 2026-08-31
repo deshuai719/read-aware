@@ -42,25 +42,10 @@ env:
   NDK_VERSION: 28.2.13676358
 
 jobs:
-  marketplace-contract:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
-
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
-
-      - name: Verify the production marketplace against this release
-        run: bun run check:marketplace
-
+  # fork: the upstream marketplace-contract job is dropped — this fork does not
+  # consume the upstream plugin marketplace, whose live catalog now requires
+  # app >= 0.5.1 host features this fork does not carry.
   android:
-    needs: marketplace-contract
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -147,7 +132,6 @@ jobs:
           prerelease: false
 
   desktop:
-    needs: marketplace-contract
     strategy:
       fail-fast: false
       matrix:

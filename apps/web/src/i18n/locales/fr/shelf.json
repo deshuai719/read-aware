@@ -1,140 +1,182 @@
 {
   "actions": {
-    "import": "Importer",
-    "create": "Créer",
     "cancel": "Annuler",
-    "remove": "Retirer",
-    "delete": "Supprimer",
     "close": "Fermer",
-    "done": "Terminé"
+    "create": "Créer",
+    "delete": "Supprimer",
+    "done": "Terminé",
+    "import": "Importer",
+    "remove": "Retirer"
+  },
+  "book": {
+    "cover": "Couverture de {{title}}",
+    "info": "Informations sur {{title}}",
+    "menu": {
+      "addToCollection": "Ajouter à la collection…",
+      "info": "Infos du livre",
+      "label": "Actions du livre",
+      "markFinished": "Marquer comme terminé",
+      "markUnfinished": "Marquer comme non lu",
+      "open": "Ouvrir",
+      "remove": "Retirer",
+      "star": "Épingler",
+      "unstar": "Désépingler"
+    },
+    "remove": "Retirer {{title}}",
+    "star": "Ajouter {{title}} aux favoris",
+    "unstar": "Retirer {{title}} des favoris"
   },
   "books_one": "{{count}} livre",
   "books_many": "{{count}} livres",
   "books_other": "{{count}} livres",
-  "workspace": {
-    "errorTitle": "Erreur de bibliothèque",
-    "importTitle": "Importer",
-    "emptyTitle": "Importez votre premier livre",
-    "emptyCollection": "Aucun livre dans cette collection.",
-    "nothingToShow": "Rien à afficher."
+  "collection": {
+    "deleteAction": "Supprimer la collection",
+    "deleteBody": "Supprimer <strong>{{name}}</strong> ? Les livres restent dans votre bibliothèque — ils sont simplement dégroupés.",
+    "deleteTitle": "Supprimer la collection ?",
+    "deleteTooltip": "Supprimer la collection",
+    "lockAction": "",
+    "lockChange": "",
+    "lockClear": "",
+    "lockCurrentPasswordLabel": "",
+    "lockedEmpty": "",
+    "lockedTooltip": "",
+    "lockManageTitle": "",
+    "lockNewPasswordHint": "",
+    "lockNewPasswordLabel": "",
+    "lockPasswordLabel": "",
+    "lockSet": "",
+    "lockTooltip": "",
+    "lockUnlock": "",
+    "lockUnlockTitle": "",
+    "lockVerifying": "",
+    "lockWrongPassword": "",
+    "menu": {
+      "delete": "Supprimer la collection",
+      "manageLock": "Gérer le mot de passe",
+      "open": "Ouvrir",
+      "rename": "Renommer",
+      "unlock": "Déverrouiller",
+      "label": "Actions de collection"
+    },
+    "nameLabel": "Nom de la collection",
+    "rename": "Renommer",
+    "renameAction": "Renommer la collection"
   },
-  "importNotice": {
-    "duplicate_one": "« {{title}} » est déjà dans votre bibliothèque.",
-    "duplicate_many": "{{count}} livres déjà présents dans votre bibliothèque ont été ignorés.",
-    "duplicate_other": "{{count}} livres déjà présents dans votre bibliothèque ont été ignorés.",
-    "combined": "{{skipped}} {{count}} nouveaux importés."
+  "collectionDialog": {
+    "newLabel": "Nouvelle collection",
+    "newPlaceholder": "ex. : À lire",
+    "passwordLabel": "",
+    "passwordPlaceholder": "",
+    "removeFromCollection": "Retirer de la collection",
+    "title_one": "Ajouter {{count}} livre à…",
+    "title_many": "Ajouter {{count}} livres à…",
+    "title_other": "Ajouter {{count}} livres à…"
   },
-  "importDialog": {
-    "title": "Importer des livres",
-    "filterName": "Livres"
+  "details": {
+    "annotations": "Notes et surlignages",
+    "edit": "Modifier",
+    "fieldAuthor": "Auteur",
+    "fieldFormat": "Format",
+    "fieldReading": "Temps de lecture",
+    "fieldTitle": "Titre",
+    "highlights": "Surlignages",
+    "notes": "Notes",
+    "progress": "Progression",
+    "save": "Enregistrer",
+    "title": "Détails du livre"
+  },
+  "dropFeedback": {
+    "added": "",
+    "ungrouped": ""
   },
   "dropImport": {
     "hint": "Déposez des livres ici pour les importer"
   },
-  "book": {
-    "cover": "Couverture de {{title}}",
-    "star": "Ajouter {{title}} aux favoris",
-    "unstar": "Retirer {{title}} des favoris",
-    "info": "Informations sur {{title}}",
-    "remove": "Retirer {{title}}",
-    "menu": {
-      "star": "Épingler",
-      "unstar": "Désépingler",
-      "info": "Infos du livre",
-      "remove": "Retirer",
-      "label": "Actions du livre"
-    }
+  "dropZone": {
+    "ungroupActive": "",
+    "ungroupHint": "",
+    "ungroupTitle": ""
   },
-  "status": {
-    "finished": "Terminé",
-    "notStarted": "Non commencé"
+  "errors": {
+    "generic": "Une erreur s’est produite lors de la mise à jour de votre bibliothèque.",
+    "unsupportedFormat": "Type de fichier non pris en charge : {{name}}. Formats pris en charge : EPUB, MOBI, AZW3, FB2, CBZ, CBR, TXT, HTML, PDF."
   },
-  "details": {
-    "title": "Détails du livre",
-    "fieldTitle": "Titre",
-    "fieldAuthor": "Auteur",
-    "fieldFormat": "Format",
-    "fieldReading": "Temps de lecture",
-    "edit": "Modifier",
-    "save": "Enregistrer",
-    "progress": "Progression",
-    "highlights": "Surlignages",
-    "notes": "Notes",
-    "annotations": "Notes et surlignages"
+  "group": {
+    "author": "Auteur",
+    "format": "Format",
+    "none": "Aucun",
+    "status": "Statut de lecture"
   },
-  "removeBook": {
-    "title": "Retirer le livre ?",
-    "body": "Retirer <strong>{{title}}</strong> de votre bibliothèque et supprimer son fichier stocké sur cet appareil ?"
+  "groupSection": {
+    "finished": "Terminés",
+    "reading": "En cours de lecture",
+    "unknownAuthor": "Auteur inconnu",
+    "unread": "À suivre"
   },
-  "removeBooks": {
-    "title_one": "Retirer {{count}} livre ?",
-    "title_many": "Retirer {{count}} livres ?",
-    "title_other": "Retirer {{count}} livres ?",
-    "body_one": "Retirer ce livre de votre bibliothèque et supprimer son fichier stocké sur cet appareil ? Cette action est irréversible.",
-    "body_many": "Retirer ces {{count}} livres de votre bibliothèque et supprimer leurs fichiers stockés sur cet appareil ? Cette action est irréversible.",
-    "body_other": "Retirer ces {{count}} livres de votre bibliothèque et supprimer leurs fichiers stockés sur cet appareil ? Cette action est irréversible."
+  "importDialog": {
+    "filterName": "Livres",
+    "title": "Importer des livres"
   },
-  "collectionDialog": {
-    "title_one": "Ajouter {{count}} livre à…",
-    "title_many": "Ajouter {{count}} livres à…",
-    "title_other": "Ajouter {{count}} livres à…",
-    "newLabel": "Nouvelle collection",
-    "newPlaceholder": "ex. : À lire",
-    "removeFromCollection": "Retirer de la collection"
-  },
-  "collection": {
-    "nameLabel": "Nom de la collection",
-    "rename": "Renommer",
-    "renameAction": "Renommer la collection",
-    "deleteTooltip": "Supprimer la collection",
-    "deleteAction": "Supprimer la collection",
-    "deleteTitle": "Supprimer la collection ?",
-    "deleteBody": "Supprimer <strong>{{name}}</strong> ? Les livres restent dans votre bibliothèque — ils sont simplement dégroupés."
-  },
-  "manage": {
-    "trigger": "Gestion de l’étagère",
-    "layout": "Disposition",
-    "groupBy": "Grouper par",
-    "sortBy": "Trier par",
-    "management": "Gestion",
-    "selectBooks": "Sélectionner des livres"
+  "importNotice": {
+    "combined": "{{skipped}} {{count}} nouveaux importés.",
+    "combined_one": "",
+    "combined_many": "",
+    "combined_other": "",
+    "duplicate_one": "« {{title}} » est déjà dans votre bibliothèque.",
+    "duplicate_many": "{{count}} livres déjà présents dans votre bibliothèque ont été ignorés.",
+    "duplicate_other": "{{count}} livres déjà présents dans votre bibliothèque ont été ignorés."
   },
   "layout": {
     "grid": "Grille",
     "list": "Liste"
   },
-  "group": {
-    "none": "Aucun",
-    "status": "Statut de lecture",
-    "author": "Auteur",
-    "format": "Format"
+  "manage": {
+    "groupBy": "Grouper par",
+    "layout": "Disposition",
+    "management": "Gestion",
+    "selectBooks": "Sélectionner des livres",
+    "sortBy": "Trier par",
+    "trigger": "Gestion de l’étagère"
+  },
+  "removeBook": {
+    "body": "Retirer <strong>{{title}}</strong> de votre bibliothèque et supprimer son fichier stocké sur cet appareil ?",
+    "title": "Retirer le livre ?"
+  },
+  "removeBooks": {
+    "body_one": "Retirer ce livre de votre bibliothèque et supprimer son fichier stocké sur cet appareil ? Cette action est irréversible.",
+    "body_many": "Retirer ces {{count}} livres de votre bibliothèque et supprimer leurs fichiers stockés sur cet appareil ? Cette action est irréversible.",
+    "body_other": "Retirer ces {{count}} livres de votre bibliothèque et supprimer leurs fichiers stockés sur cet appareil ? Cette action est irréversible.",
+    "title_one": "Retirer {{count}} livre ?",
+    "title_many": "Retirer {{count}} livres ?",
+    "title_other": "Retirer {{count}} livres ?"
   },
   "sort": {
-    "recent": "Récemment ouverts",
     "added": "Récemment ajoutés",
-    "title": "Titre",
     "author": "Auteur",
-    "progress": "Progression"
+    "progress": "Progression",
+    "recent": "Récemment ouverts",
+    "title": "Titre"
   },
-  "groupSection": {
-    "reading": "En cours de lecture",
-    "unread": "À suivre",
-    "finished": "Terminés",
-    "unknownAuthor": "Auteur inconnu"
+  "status": {
+    "finished": "Terminé",
+    "notStarted": "Non commencé"
   },
   "toolbar": {
+    "addSelected": "Ajouter la sélection à la collection",
+    "addToCollection": "Ajouter à la collection",
+    "clear": "Effacer",
+    "removeSelected": "Retirer la sélection",
+    "removeTooltip": "Retirer",
+    "selectAll": "Tout sélectionner",
     "selected_one": "{{count}} sélectionné",
     "selected_many": "{{count}} sélectionnés",
-    "selected_other": "{{count}} sélectionnés",
-    "clear": "Effacer",
-    "selectAll": "Tout sélectionner",
-    "addToCollection": "Ajouter à la collection",
-    "addSelected": "Ajouter la sélection à la collection",
-    "removeTooltip": "Retirer",
-    "removeSelected": "Retirer la sélection"
+    "selected_other": "{{count}} sélectionnés"
   },
-  "errors": {
-    "generic": "Une erreur s’est produite lors de la mise à jour de votre bibliothèque.",
-    "unsupportedFormat": "Type de fichier non pris en charge : {{name}}. Formats pris en charge : EPUB, MOBI, AZW3, FB2, CBZ, CBR, TXT, HTML, PDF."
+  "workspace": {
+    "emptyCollection": "Aucun livre dans cette collection.",
+    "emptyTitle": "Importez votre premier livre",
+    "errorTitle": "Erreur de bibliothèque",
+    "importTitle": "Importer",
+    "nothingToShow": "Rien à afficher."
   }
 }

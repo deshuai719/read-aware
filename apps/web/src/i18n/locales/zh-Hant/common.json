@@ -2,11 +2,48 @@
   "actions": {
     "backToLibrary": "返回書庫",
     "dismiss": "關閉",
-    "openSettings": "開啟設定"
+    "goAgent": {
+      "keywords": "",
+      "title": ""
+    },
+    "goShelf": {
+      "keywords": "",
+      "title": ""
+    },
+    "goStats": {
+      "keywords": "",
+      "title": ""
+    },
+    "import": {
+      "keywords": "",
+      "title": ""
+    },
+    "openSettings": "開啟設定",
+    "select": {
+      "keywords": "",
+      "title": ""
+    }
+  },
+  "collection": {
+    "keywords": "",
+    "subtitle": ""
   },
   "errorBoundary": {
-    "title": "此介面發生了問題",
     "body": "錯誤已寫入日誌。ReadAware 的其他部分不受影響,你可以重試。",
-    "retry": "重試"
+    "retry": "重試",
+    "title": "此介面發生了問題"
+  },
+  "group": {
+    "keywords": "",
+    "none": ""
+  },
+  "layout": {
+    "keywords": ""
+  },
+  "settings": {
+    "updateAvailableToast": ""
+  },
+  "sort": {
+    "keywords": ""
   }
 }

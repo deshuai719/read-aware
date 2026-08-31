@@ -1,8 +1,8 @@
 {
+  "avatar": "Avatar",
+  "breadcrumb": "Navigationspfad",
   "loading": "Wird geladen",
   "progress": "Fortschritt",
-  "tabs": "Tabs",
-  "breadcrumb": "Navigationspfad",
-  "avatar": "Avatar",
-  "remove": "{{name}} entfernen"
+  "remove": "{{name}} entfernen",
+  "tabs": "Tabs"
 }

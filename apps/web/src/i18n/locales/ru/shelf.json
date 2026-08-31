@@ -1,146 +1,189 @@
 {
   "actions": {
-    "import": "Импорт",
-    "create": "Создать",
     "cancel": "Отмена",
-    "remove": "Удалить",
-    "delete": "Удалить",
     "close": "Закрыть",
-    "done": "Готово"
+    "create": "Создать",
+    "delete": "Удалить",
+    "done": "Готово",
+    "import": "Импорт",
+    "remove": "Удалить"
+  },
+  "book": {
+    "cover": "Обложка {{title}}",
+    "info": "Сведения о {{title}}",
+    "menu": {
+      "addToCollection": "Добавить в подборку…",
+      "info": "О книге",
+      "label": "Действия с книгой",
+      "markFinished": "Отметить как прочитанную",
+      "markUnfinished": "Отметить как непрочитанную",
+      "open": "Открыть",
+      "remove": "Удалить",
+      "star": "В избранное",
+      "unstar": "Убрать из избранного"
+    },
+    "remove": "Удалить {{title}}",
+    "star": "Добавить {{title}} в избранное",
+    "unstar": "Убрать {{title}} из избранного"
   },
   "books_one": "{{count}} книга",
   "books_few": "{{count}} книги",
   "books_many": "{{count}} книг",
   "books_other": "{{count}} книги",
-  "workspace": {
-    "errorTitle": "Ошибка библиотеки",
-    "importTitle": "Импорт",
-    "emptyTitle": "Импортируйте свою первую книгу",
-    "emptyCollection": "В этой коллекции нет книг.",
-    "nothingToShow": "Нечего показать."
+  "collection": {
+    "deleteAction": "Удалить коллекцию",
+    "deleteBody": "Удалить <strong>{{name}}</strong>? Книги останутся в вашей библиотеке — они просто перестанут быть сгруппированными.",
+    "deleteTitle": "Удалить коллекцию?",
+    "deleteTooltip": "Удалить коллекцию",
+    "lockAction": "",
+    "lockChange": "",
+    "lockClear": "",
+    "lockCurrentPasswordLabel": "",
+    "lockedEmpty": "",
+    "lockedTooltip": "",
+    "lockManageTitle": "",
+    "lockNewPasswordHint": "",
+    "lockNewPasswordLabel": "",
+    "lockPasswordLabel": "",
+    "lockSet": "",
+    "lockTooltip": "",
+    "lockUnlock": "",
+    "lockUnlockTitle": "",
+    "lockVerifying": "",
+    "lockWrongPassword": "",
+    "menu": {
+      "delete": "Удалить подборку",
+      "manageLock": "Управление паролем",
+      "open": "Открыть",
+      "rename": "Переименовать",
+      "unlock": "Разблокировать",
+      "label": "Действия с подборкой"
+    },
+    "nameLabel": "Название коллекции",
+    "rename": "Переименовать",
+    "renameAction": "Переименовать коллекцию"
   },
-  "importNotice": {
-    "duplicate_one": "«{{title}}» уже есть в вашей библиотеке.",
-    "duplicate_few": "Пропущено {{count}} книги — они уже есть в вашей библиотеке.",
-    "duplicate_many": "Пропущено {{count}} книг — они уже есть в вашей библиотеке.",
-    "duplicate_other": "Пропущено {{count}} книг — они уже есть в вашей библиотеке.",
-    "combined": "{{skipped}} Импортировано новых: {{count}}."
+  "collectionDialog": {
+    "newLabel": "Новая коллекция",
+    "newPlaceholder": "напр. «Прочитать»",
+    "passwordLabel": "",
+    "passwordPlaceholder": "",
+    "removeFromCollection": "Убрать из коллекции",
+    "title_one": "Добавить {{count}} книгу в…",
+    "title_few": "Добавить {{count}} книги в…",
+    "title_many": "Добавить {{count}} книг в…",
+    "title_other": "Добавить {{count}} книги в…"
   },
-  "importDialog": {
-    "title": "Импорт книг",
-    "filterName": "Книги"
+  "details": {
+    "annotations": "Заметки и выделения",
+    "edit": "Изменить",
+    "fieldAuthor": "Автор",
+    "fieldFormat": "Формат",
+    "fieldReading": "Время чтения",
+    "fieldTitle": "Название",
+    "highlights": "Выделения",
+    "notes": "Заметки",
+    "progress": "Прогресс",
+    "save": "Сохранить",
+    "title": "Сведения о книге"
+  },
+  "dropFeedback": {
+    "added": "",
+    "ungrouped": ""
   },
   "dropImport": {
     "hint": "Перетащите книги сюда для импорта"
   },
-  "book": {
-    "cover": "Обложка {{title}}",
-    "star": "Добавить {{title}} в избранное",
-    "unstar": "Убрать {{title}} из избранного",
-    "info": "Сведения о {{title}}",
-    "remove": "Удалить {{title}}",
-    "menu": {
-      "star": "В избранное",
-      "unstar": "Убрать из избранного",
-      "info": "О книге",
-      "remove": "Удалить",
-      "label": "Действия с книгой"
-    }
+  "dropZone": {
+    "ungroupActive": "",
+    "ungroupHint": "",
+    "ungroupTitle": ""
   },
-  "status": {
+  "errors": {
+    "generic": "Что-то пошло не так при обновлении библиотеки.",
+    "unsupportedFormat": "Неподдерживаемый тип файла: {{name}}. Поддерживаемые форматы: EPUB, MOBI, AZW3, FB2, CBZ, CBR, TXT, HTML, PDF."
+  },
+  "group": {
+    "author": "Автор",
+    "format": "Формат",
+    "none": "Без группировки",
+    "status": "Статус чтения"
+  },
+  "groupSection": {
     "finished": "Прочитано",
-    "notStarted": "Не начато"
+    "reading": "Читаю сейчас",
+    "unknownAuthor": "Неизвестный автор",
+    "unread": "На очереди"
   },
-  "details": {
-    "title": "Сведения о книге",
-    "fieldTitle": "Название",
-    "fieldAuthor": "Автор",
-    "fieldFormat": "Формат",
-    "fieldReading": "Время чтения",
-    "edit": "Изменить",
-    "save": "Сохранить",
-    "progress": "Прогресс",
-    "highlights": "Выделения",
-    "notes": "Заметки",
-    "annotations": "Заметки и выделения"
+  "importDialog": {
+    "filterName": "Книги",
+    "title": "Импорт книг"
   },
-  "removeBook": {
-    "title": "Удалить книгу?",
-    "body": "Удалить <strong>{{title}}</strong> из библиотеки и удалить сохранённый файл с этого устройства?"
-  },
-  "removeBooks": {
-    "title_one": "Удалить {{count}} книгу?",
-    "title_few": "Удалить {{count}} книги?",
-    "title_many": "Удалить {{count}} книг?",
-    "title_other": "Удалить {{count}} книги?",
-    "body_one": "Удалить эту книгу из библиотеки и удалить её сохранённый файл с этого устройства? Это действие нельзя отменить.",
-    "body_few": "Удалить эти {{count}} книги из библиотеки и удалить их сохранённые файлы с этого устройства? Это действие нельзя отменить.",
-    "body_many": "Удалить эти {{count}} книг из библиотеки и удалить их сохранённые файлы с этого устройства? Это действие нельзя отменить.",
-    "body_other": "Удалить эти {{count}} книги из библиотеки и удалить их сохранённые файлы с этого устройства? Это действие нельзя отменить."
-  },
-  "collectionDialog": {
-    "title_one": "Добавить {{count}} книгу в…",
-    "title_few": "Добавить {{count}} книги в…",
-    "title_many": "Добавить {{count}} книг в…",
-    "title_other": "Добавить {{count}} книги в…",
-    "newLabel": "Новая коллекция",
-    "newPlaceholder": "напр. «Прочитать»",
-    "removeFromCollection": "Убрать из коллекции"
-  },
-  "collection": {
-    "nameLabel": "Название коллекции",
-    "rename": "Переименовать",
-    "renameAction": "Переименовать коллекцию",
-    "deleteTooltip": "Удалить коллекцию",
-    "deleteAction": "Удалить коллекцию",
-    "deleteTitle": "Удалить коллекцию?",
-    "deleteBody": "Удалить <strong>{{name}}</strong>? Книги останутся в вашей библиотеке — они просто перестанут быть сгруппированными."
-  },
-  "manage": {
-    "trigger": "Управление полкой",
-    "layout": "Вид",
-    "groupBy": "Группировать по",
-    "sortBy": "Сортировать по",
-    "management": "Управление",
-    "selectBooks": "Выбрать книги"
+  "importNotice": {
+    "combined": "{{skipped}} Импортировано новых: {{count}}.",
+    "combined_one": "",
+    "combined_few": "",
+    "combined_many": "",
+    "combined_other": "",
+    "duplicate_one": "«{{title}}» уже есть в вашей библиотеке.",
+    "duplicate_few": "Пропущено {{count}} книги — они уже есть в вашей библиотеке.",
+    "duplicate_many": "Пропущено {{count}} книг — они уже есть в вашей библиотеке.",
+    "duplicate_other": "Пропущено {{count}} книг — они уже есть в вашей библиотеке."
   },
   "layout": {
     "grid": "Сетка",
     "list": "Список"
   },
-  "group": {
-    "none": "Без группировки",
-    "status": "Статус чтения",
-    "author": "Автор",
-    "format": "Формат"
+  "manage": {
+    "groupBy": "Группировать по",
+    "layout": "Вид",
+    "management": "Управление",
+    "selectBooks": "Выбрать книги",
+    "sortBy": "Сортировать по",
+    "trigger": "Управление полкой"
+  },
+  "removeBook": {
+    "body": "Удалить <strong>{{title}}</strong> из библиотеки и удалить сохранённый файл с этого устройства?",
+    "title": "Удалить книгу?"
+  },
+  "removeBooks": {
+    "body_one": "Удалить эту книгу из библиотеки и удалить её сохранённый файл с этого устройства? Это действие нельзя отменить.",
+    "body_few": "Удалить эти {{count}} книги из библиотеки и удалить их сохранённые файлы с этого устройства? Это действие нельзя отменить.",
+    "body_many": "Удалить эти {{count}} книг из библиотеки и удалить их сохранённые файлы с этого устройства? Это действие нельзя отменить.",
+    "body_other": "Удалить эти {{count}} книги из библиотеки и удалить их сохранённые файлы с этого устройства? Это действие нельзя отменить.",
+    "title_one": "Удалить {{count}} книгу?",
+    "title_few": "Удалить {{count}} книги?",
+    "title_many": "Удалить {{count}} книг?",
+    "title_other": "Удалить {{count}} книги?"
   },
   "sort": {
-    "recent": "Недавно открытые",
     "added": "Недавно добавленные",
-    "title": "Название",
     "author": "Автор",
-    "progress": "Прогресс"
+    "progress": "Прогресс",
+    "recent": "Недавно открытые",
+    "title": "Название"
   },
-  "groupSection": {
-    "reading": "Читаю сейчас",
-    "unread": "На очереди",
+  "status": {
     "finished": "Прочитано",
-    "unknownAuthor": "Неизвестный автор"
+    "notStarted": "Не начато"
   },
   "toolbar": {
+    "addSelected": "Добавить выбранные в коллекцию",
+    "addToCollection": "Добавить в коллекцию",
+    "clear": "Очистить",
+    "removeSelected": "Удалить выбранные",
+    "removeTooltip": "Удалить",
+    "selectAll": "Выбрать все",
     "selected_one": "Выбрано: {{count}}",
     "selected_few": "Выбрано: {{count}}",
     "selected_many": "Выбрано: {{count}}",
-    "selected_other": "Выбрано: {{count}}",
-    "clear": "Очистить",
-    "selectAll": "Выбрать все",
-    "addToCollection": "Добавить в коллекцию",
-    "addSelected": "Добавить выбранные в коллекцию",
-    "removeTooltip": "Удалить",
-    "removeSelected": "Удалить выбранные"
+    "selected_other": "Выбрано: {{count}}"
   },
-  "errors": {
-    "generic": "Что-то пошло не так при обновлении библиотеки.",
-    "unsupportedFormat": "Неподдерживаемый тип файла: {{name}}. Поддерживаемые форматы: EPUB, MOBI, AZW3, FB2, CBZ, CBR, TXT, HTML, PDF."
+  "workspace": {
+    "emptyCollection": "В этой коллекции нет книг.",
+    "emptyTitle": "Импортируйте свою первую книгу",
+    "errorTitle": "Ошибка библиотеки",
+    "importTitle": "Импорт",
+    "nothingToShow": "Нечего показать."
   }
 }

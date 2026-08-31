@@ -1,8 +1,8 @@
 {
+  "avatar": "Avatar",
+  "breadcrumb": "Breadcrumb",
   "loading": "Loading",
   "progress": "Progress",
-  "tabs": "Tabs",
-  "breadcrumb": "Breadcrumb",
-  "avatar": "Avatar",
-  "remove": "Remove {{name}}"
+  "remove": "Remove {{name}}",
+  "tabs": "Tabs"
 }

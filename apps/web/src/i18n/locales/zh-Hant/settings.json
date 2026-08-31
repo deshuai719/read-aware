@@ -1,580 +1,588 @@
 {
-  "dialog": {
-    "title": "設定",
-    "sectionsLabel": "設定分類",
-    "close": "關閉設定"
-  },
-  "sections": {
-    "general": "一般",
-    "appearance": "主題",
-    "reading": "閱讀",
-    "ai": "AI",
-    "shortcuts": "快捷鍵",
-    "dataSync": "資料與同步",
-    "about": "關於",
-    "plugins": "外掛",
-    "menus": "自訂"
-  },
-  "general": {
-    "title": "一般",
-    "description": "全應用程式的行為 — 啟動時開啟的內容、語言與桌面整合。",
-    "onLaunch": "啟動時",
-    "startView": "起始畫面",
-    "startViewOptions": {
-      "shelf": "書庫書架",
-      "resume": "繼續上次閱讀的書"
-    },
-    "desktopIntegration": {
-      "title": "桌面整合",
-      "description": "設定儲存於此，由桌面應用程式套用。對瀏覽器預覽無效。",
-      "launchAtStartup": {
-        "title": "開機時啟動",
-        "description": "登入時自動開啟 ReadAware。"
-      },
-      "fileAssociations": {
-        "title": "檔案關聯",
-        "description": "用 ReadAware 開啟 EPUB、MOBI、AZW3、FB2、CBZ、CBR、TXT、HTML 與 PDF 檔案。"
-      },
-      "autoUpdate": {
-        "title": "自動檢查更新",
-        "description": "發現新版本時，在主介面安靜地顯示提示。"
-      },
-      "whatsNewDialog": {
-        "title": "更新後顯示「新內容」提示",
-        "description": "應用程式更新後，彈出一次小視窗提示可以在哪裡查看更新內容。"
-      }
-    },
-    "languagePrivacy": "語言與隱私",
-    "language": "語言",
-    "crashReports": {
-      "title": "傳送匿名當機報告",
-      "description": "分享當機診斷資訊以協助修復穩定性問題。預設為關閉。"
-    }
-  },
-  "appearance": {
-    "title": "外觀",
-    "description": "應用程式本身的外觀 — 與「閱讀」中的書頁顏色無關。",
-    "theme": {
-      "title": "主題",
-      "description": "「系統」會跟隨你作業系統的淺色或深色設定。"
-    },
-    "themeOptions": {
-      "system": "系統",
-      "light": "淺色",
-      "dark": "深色"
-    },
-    "contentType": {
-      "title": "內容排版",
-      "description": "聊天回覆、筆記與外掛視圖的排版。介面控制項保持自己的字級。",
-      "follow": {
-        "title": "跟隨閱讀設定",
-        "description": "沿用你為書籍選擇的字型與行距，按對話的尺度縮小。"
-      },
-      "appDefaultFont": "應用程式預設",
-      "fontSize": "字級",
-      "lineSpacing": "行距",
-      "previewLabel": "內容排版預覽",
-      "previewQuestion": "這一章到底在論證什麼？",
-      "previewAnswer": "改革始於即興——一連串沒人批准過的地方試驗，因為管用才被留了下來。"
-    },
-    "motion": "動態效果",
-    "reduceMotion": {
-      "title": "減少動態效果",
-      "description": "關閉整個應用程式的過場與動畫效果。"
-    }
-  },
-  "reading": {
-    "title": "閱讀",
-    "description": "書籍在頁面上的呈現方式。變更會即時套用到閱讀器。",
-    "previewLabel": "閱讀預覽",
-    "previewText": "有時，有些悲哀與痛苦的深度是說不出的，有些愛的深度是再愛不到的，它在身體內發生後，那個地方就空掉了。",
-    "previewTextSecondary": "如果水要流向我，我拿什麼阻截？她天生就會對我如此，根本無須情節。",
-    "previewSource": "邱妙津 · 《鱷魚手記》",
-    "typography": "字體排印",
-    "fontSize": "字級大小",
-    "fontWeight": "字重",
-    "lineSpacing": "行距",
-    "paragraphSpacing": "段落間距",
-    "textAlign": "對齊方式",
-    "layout": "版面",
-    "readingMode": "閱讀模式",
-    "pageColor": {
-      "title": "頁面顏色",
-      "description": "書籍的紙張。「自動」會跟隨應用程式主題；其餘為固定顏色。"
-    },
-    "pageMargins": "頁邊距"
-  },
-  "shortcuts": {
-    "title": "快捷鍵",
-    "description": "點按快捷鍵即可重新設定；錄製時按 Esc 取消。",
-    "categories": {
-      "Global": "全域",
-      "Reading": "閱讀",
-      "Selection": "選取",
-      "Overlays": "覆蓋層",
-      "Plugins": "外掛"
-    },
-    "categoryDescriptions": {
-      "selection": "在閱讀器中選取文字時生效。",
-      "plugins": "為外掛提供的命令指定快捷鍵。"
-    },
-    "actions": {
-      "search": "開啟搜尋",
-      "settings": "開啟設定",
-      "new-conversation": "建立新對話",
-      "primary-nav": "切換主導覽頁面",
-      "next-page": "下一頁",
-      "prev-page": "上一頁",
-      "next-chapter": "下一章",
-      "prev-chapter": "上一章",
-      "toggle-controls": "切換閱讀器控制項",
-      "selection-copy": "複製",
-      "selection-highlight": "螢光標示",
-      "selection-underline": "加底線",
-      "selection-add-note": "新增筆記",
-      "selection-look-up": "查詢",
-      "selection-ask-ai": "詢問 AI",
-      "close": "關閉對話框或覆蓋層"
-    },
-    "recording": "請按下快捷鍵…",
-    "conflict": "已被「{{label}}」使用",
-    "rebind": "重新設定 {{label}}",
-    "reset": "重設 {{label}}",
-    "resetAll": "全部重設為預設值",
-    "notSet": "未設定"
-  },
-  "ai": {
-    "title": "AI",
-    "description": "自備你的模型金鑰，再選擇助理可執行的功能與可存取的內容。",
-    "connection": "連線",
-    "features": {
-      "title": "功能",
-      "description": "閱讀輔助功能，隨各項功能推出逐一啟用。"
-    },
-    "featureList": {
-      "explainSelection": {
-        "label": "解釋選取內容",
-        "description": "以淺白的語言解說標示的段落。"
-      },
-      "defineTerm": {
-        "label": "定義詞語",
-        "description": "為選取的字詞提供行內定義。"
-      },
-      "translate": {
-        "label": "翻譯",
-        "description": "將選取內容翻譯成你的閱讀語言。"
-      },
-      "summarizeChapter": {
-        "label": "摘要本章",
-        "description": "將目前章節濃縮為重點。"
-      },
-      "askConversation": {
-        "label": "對話式問答",
-        "description": "根據書籍內容與你的筆記提出追問。"
-      }
-    },
-    "chat": "對話",
-    "followStreaming": {
-      "title": "跟隨串流回覆捲動",
-      "description": "回覆生成時自動捲動至最新內容；關閉時檢視停留在回覆開頭。"
-    },
-    "memory": "記憶",
-    "buildMemory": {
-      "title": "建立長期記憶",
-      "description": "讓 ReadAware 隨時間從你的閱讀與筆記中建立持久的個人檔案。"
-    },
-    "storedMemory": {
-      "title": "已儲存的記憶",
-      "description": "檢視或清除 ReadAware 記住的關於你的所有內容。"
-    },
-    "clearMemory": "清除記憶",
-    "privacy": {
-      "title": "隱私",
-      "description": "控制 AI 功能執行時有哪些內容離開你的裝置。"
-    },
-    "sendHighlightedText": {
-      "title": "傳送標示的文字",
-      "description": "在請求中包含你選取的段落。"
-    },
-    "sendSurroundingContext": {
-      "title": "傳送周邊上下文",
-      "description": "包含鄰近段落，讓回答緊扣文本內容。"
-    },
-    "localOnly": {
-      "title": "僅本機模式",
-      "description": "絕不呼叫遠端模型。在本機模型可用之前，AI 功能保持關閉。"
-    }
-  },
-  "aiConfig": {
-    "provider": "AI 供應商",
-    "readaware": {
-      "description": "內建模型,無需自己的 API key——用量按方案以 credits 逐月計量。",
-      "notConnected": "請先在「資料與同步」裡連接帳號,訂閱使用該帳號登入。",
-      "requiresPaid": "內建 AI 需要 Pro 或 Max 方案;免費方案請使用自己的 key。",
-      "credits": "本月已用 {{used}} / {{total}} credits",
-      "creditsUnlimited": "本月已用 {{used}} credits(不限量)"
-    },
-    "customBaseUrl": {
-      "label": "自訂 Base URL",
-      "helper": "輸入你的 OpenAI 相容 API 端點的 base URL。"
-    },
-    "customApi": {
-      "label": "API 格式",
-      "helper": "選擇你的供應商實作的端點格式。",
-      "chatCompletions": "Chat Completions（/chat/completions）",
-      "responses": "Responses（/responses）"
-    },
-    "customSupportsThinking": "模型支援思考",
-    "customMaxOutputTokens": {
-      "label": "最大輸出 token 數",
-      "placeholder": "使用供應商預設值",
-      "helper": "選填。留空時不設定上限，由供應商決定。",
-      "error": "請輸入正整數。"
-    },
-    "apiKey": {
-      "label": "API 金鑰",
-      "placeholder": "輸入你的 {{provider}} API 金鑰",
-      "helper": "你的 API 金鑰經過加密，僅儲存在此裝置上，不會傳送到 ReadAware 的伺服器。"
-    },
-    "show": "顯示",
-    "hide": "隱藏",
-    "model": "主模型",
-    "modelDefault": "預設",
-    "modelHelper": "預設同時用於 Smart 與 Fast 任務。",
-    "advancedSettings": "進階設定",
-    "separateFastModel": "為 Fast 任務使用獨立模型",
-    "getKey": {
-      "openai": "從 <link>OpenAI Dashboard</link> 取得你的 API 金鑰",
-      "anthropic": "從 <link>Anthropic Console</link> 取得你的 API 金鑰",
-      "openrouter": "從 <link>OpenRouter</link> 取得你的 API 金鑰",
-      "generic": "從 {{provider}} 主控台取得 API 金鑰：<link>前往</link>。"
-    },
-    "test": "測試連線",
-    "testing": "測試中...",
-    "clear": "清除",
-    "testSuccessMessage": "測試成功！回應：「{{response}}」",
-    "testEmptyMessage": "測試失敗：AI 供應商回傳空白回應。",
-    "testUnknownError": "測試期間發生未知錯誤。",
-    "byok": {
-      "title": "關於 BYOK（自備金鑰）",
-      "body": "ReadAware 使用你的金鑰呼叫所選供應商。金鑰經過加密，僅儲存在此裝置上；產生的 API 使用費用仍由你負擔。"
-    },
-    "smartModel": "Smart 模型",
-    "fastModel": "Fast 模型",
-    "smartModelHelper": "聊天、引導訪談、跨書綜合——較慢、較聰明的檔位。",
-    "fastModelHelper": "查字典、記憶提煉、摘要——較便宜、較快的檔位。",
-    "modelPlaceholder": "例如 gpt-5.5",
-    "fastModelCustomPlaceholder": "留空則與 Smart 模型相同",
-    "thinking": "思考力度",
-    "thinkingHelper": "Smart 和 Fast 任務共用。檔位越高，回答前思考越久；不支援思考的模型會忽略此設定。",
-    "smartThinking": "Smart 模型思考力度",
-    "fastThinking": "Fast 模型思考力度",
-    "smartThinkingHelper": "聊天輪次的推理力度——檔位越高，回答前思考越久。不支援思考的模型會忽略此設定。",
-    "fastThinkingHelper": "背景任務的推理力度——檔位越低，速度越快、費用越少。",
-    "thinkingLevels": {
-      "off": "關閉",
-      "minimal": "最低",
-      "low": "低",
-      "medium": "中",
-      "high": "高",
-      "xhigh": "極高",
-      "max": "最高"
-    },
-    "modelPicker": {
-      "search": "搜尋模型…",
-      "recommended": "推薦",
-      "useCustom": "把「{{id}}」用作模型 ID",
-      "empty": "沒有符合的模型"
-    },
-    "openRouter": {
-      "sort": {
-        "label": "上游排序",
-        "default": "OpenRouter 預設（負載平衡）",
-        "price": "價格優先",
-        "throughput": "吞吐優先",
-        "latency": "延遲優先",
-        "helper": "OpenRouter 在承載該模型的多家上游之間如何選擇。"
-      },
-      "order": {
-        "label": "優先上游",
-        "helper": "依序嘗試的上游 slug，逗號分隔（如 coreweave, deepinfra）。留空表示不指定。"
-      },
-      "allowFallbacks": "優先上游不可用時回退到其他上游"
-    }
-  },
-  "font": {
-    "label": "字型",
-    "custom": "自訂",
-    "customAria": "從此裝置已安裝的字型中挑選",
-    "placeholderCurated": "選擇精選字型",
-    "placeholderCustom": "選擇已安裝的字型",
-    "downloading": "正在下載字型 · {{percent}}%",
-    "downloadFailed": "字型下載失敗——請檢查網路。",
-    "retry": "重試"
-  },
-  "pendingBadge": {
-    "comingSoon": "即將推出"
-  },
-  "dataSync": {
-    "title": "資料與同步",
-    "description": "ReadAware 以本機優先：你的資料存放於此裝置。同步僅是加密的中繼，並非真實資料來源。",
-    "noticeDone": "完成",
-    "noticeError": "錯誤",
-    "exportSuccess": "所有內容已匯出至 {{file}}。",
-    "exportError": "無法匯出你的資料。",
-    "importError": "無法匯入此檔案。",
-    "merge": {
-      "books_other": "{{count}} 本書",
-      "annotations_other": "{{count}} 則註記",
-      "collections_other": "{{count}} 個收藏",
-      "settings_other": "{{count}} 項設定",
-      "summary": "已合併 {{books}}、{{annotations}}、{{collections}} 與 {{settings}}。重新載入中…"
-    },
-    "sync": "同步",
-    "account": {
-      "title": "帳號",
-      "description": "連結帳號，以在裝置間同步你加密的事件記錄。"
-    },
-    "connectAccount": "連結帳號",
-    "e2e": {
-      "title": "端對端加密",
-      "description": "同步的資料在裝置上加密。可在此管理你的密碼短語與裝置。",
-      "active": "已開啟——由你的密語保護。"
-    },
-    "storage": "儲存空間",
-    "dataLocation": {
-      "title": "資料位置",
-      "descTauri": "儲存在本裝置的 ReadAware 應用程式資料夾中。",
-      "descWeb": "儲存在此瀏覽器中。桌面應用程式會將資料存放於你可掌控的本機資料夾。"
-    },
-    "desktopBadge": "桌面版",
-    "reveal": "顯示位置",
-    "backup": {
-      "title": "備份與匯出",
-      "description": "將此裝置上的所有內容儲存為單一檔案 — 可搬移到其他裝置或作為備份保存。匯入時會將備份合併回你目前的資料。"
-    },
-    "fullBackup": {
-      "title": "完整備份",
-      "description": "書籍、螢光標示、筆記、收藏、閱讀進度以及所有偏好設定，全部匯集於一個可攜檔案。"
-    },
-    "import": "匯入",
-    "export": "匯出",
-    "working": "處理中…",
-    "dangerZone": "危險區域",
-    "syncStatus": {
-      "idle": "已同步",
-      "syncing": "同步中…",
-      "error": "同步出錯",
-      "lastSync": "上次同步 {{time}}",
-      "never": "尚未同步",
-      "signedOut": "登入已失效——重新登入後繼續同步"
-    },
-    "reauth": {
-      "notice": "同步登入已失效",
-      "action": "重新登入",
-      "dismiss": "關閉登入提示"
-    },
-    "connect": {
-      "emailLabel": "電子郵件",
-      "emailPlaceholder": "you@example.com",
-      "send": "傳送登入連結",
-      "sending": "傳送中…",
-      "sent": "請至信箱收信，然後把登入連結或權杖貼到下方。",
-      "tokenLabel": "登入連結或權杖",
-      "passphraseLabel": "加密密語",
-      "passphraseHint": "資料離開裝置前以它加密。第一台裝置設定密語，其他裝置必須輸入同一個。密語無法找回——忘記即無法解讀雲端資料。",
-      "passphraseTooShort": "至少 8 個字元。",
-      "connect": "連線",
-      "connecting": "連線中…",
-      "wrongPassphrase": "密語與該帳號不符。",
-      "failed": "連線失敗，請檢查連結後重試。",
-      "connected": "同步已開啟。",
-      "google": "使用 Google 登入",
-      "github": "使用 GitHub 登入",
-      "orEmail": "或使用電子郵件",
-      "oauthStarted": "在瀏覽器完成登入，然後把頁面顯示的權杖貼到下方。",
-      "back": "返回",
-      "tokenContinue": "繼續",
-      "verifying": "驗證中…",
-      "tokenInvalid": "登入連結或權杖無效——可能已過期或已被使用，請重新申請。",
-      "tokenRetry": "暫時無法驗證該權杖。請檢查網路後重試，權杖已保留在下方。",
-      "signedInAs": "即將連結的帳號",
-      "freshAccount": "該帳號尚未設定加密口令，將由本裝置設定。請確認這是你本人的帳號：連結後，本裝置的書庫會同步到該帳號。"
-    },
-    "connected": {
-      "statusTitle": "狀態",
-      "planTitle": "方案",
-      "syncNow": "立即同步",
-      "disconnect": "中斷連線",
-      "disconnectTitle": "中斷同步？",
-      "disconnectBody": "本裝置保留全部資料並停止同步。可隨時以同一密語重新連線。",
-      "cancel": "取消",
-      "storageUsed": "雲端已用 {{used}}",
-      "storageUsedOfLimit": "雲端已用 {{used}} / {{limit}}",
-      "plan": "方案:{{tier}}"
-    },
-    "tier": {
-      "free": "免費",
-      "sync": "Sync",
-      "pro": "Pro",
-      "max": "Max",
-      "staff": "內部"
-    },
-    "billing": {
-      "upgrade": "升級方案",
-      "manage": "管理訂閱",
-      "failed": "無法開啟付款頁面,請重試。"
-    },
-    "progress": {
-      "pulling": "正在接收變更… 已合併 {{count}} 條",
-      "pushing": "正在傳送變更… 已傳送 {{count}} 條",
-      "blobs": "正在傳輸檔案… {{done}}/{{total}}",
-      "pending": "待傳送：{{events}} 條變更、{{blobs}} 個檔案",
-      "pendingNone": "沒有待傳送的內容",
-      "lastCycle": "上次同步：接收 {{pulled}} 條 · 傳送 {{pushed}} 條 · 檔案 {{blobs}} 個",
-      "bookUp": "正在上傳《{{title}}》",
-      "bookDown": "正在下載《{{title}}》",
-      "bookUpParts": "正在上傳《{{title}}》（{{done}}/{{total}}）",
-      "bookDownParts": "正在下載《{{title}}》（{{done}}/{{total}}）"
-    },
-    "indicator": {
-      "label": "同步狀態",
-      "errorDismiss": "暫時忽略同步錯誤"
-    },
-    "deleteAll": {
-      "title": "刪除全部資料",
-      "description": "抹除此裝置上的一切——書籍、標註、閱讀紀錄、設定與同步憑證。已同步帳號在其他裝置上的副本不受影響。",
-      "button": "刪除全部資料",
-      "dialogTitle": "刪除全部資料？",
-      "dialogBody": "這將抹除此裝置上的所有書籍、標註、記憶、對話與設定，且無法復原。已同步到其他裝置的資料仍保留在那些裝置上。",
-      "confirmLabel": "輸入 {{phrase}} 以確認",
-      "cancel": "取消",
-      "deleting": "正在刪除…",
-      "failed": "刪除失敗，資料可能未被移除——請重試。"
-    },
-    "books": {
-      "title": "書籍檔案",
-      "pending": "等待上傳",
-      "failed": "上傳失敗，稍後重試",
-      "rejectedQuota": "雲端容量不足，未上傳",
-      "rejected": "被雲端拒絕",
-      "rejectedWith": "被拒絕：{{reason}}",
-      "awaitingOtherDevice": "等待持有檔案的裝置上傳",
-      "quotaFull": "雲端容量已滿——騰出空間或升級方案之前，之後的書只保留在本裝置。"
-    }
-  },
   "about": {
-    "title": "關於",
-    "description": "版本、組建，以及驅動閱讀的引擎。",
-    "version": "版本",
     "build": "組建",
     "buildAndroid": "Android 版（Tauri）",
-    "buildIos": "iOS 版（Tauri）",
     "buildDesktop": "桌面版（Tauri）",
+    "buildIos": "iOS 版（Tauri）",
     "buildWeb": "網頁預覽",
-    "updates": {
-      "title": "更新",
-      "description": "檢查並安裝最新版本。"
-    },
     "channel": {
-      "title": "更新通道",
+      "beta": "測試版",
       "description": "穩定版只接收正式發佈;測試版還會接收預發佈版本——更早用上新功能,也更可能遇到毛邊。",
       "stable": "穩定版",
-      "beta": "測試版"
+      "title": "更新通道"
     },
-    "checkUpdates": "檢查更新",
     "checkingUpdates": "正在檢查…",
-    "installUpdate": "安裝更新",
-    "versionUnknown": "未知",
-    "updateStatus": {
-      "upToDate": "已是最新版本",
-      "available": "版本 {{version}} 可用",
-      "downloading": "正在下載…",
-      "downloadingProgress": "正在下載 {{progress}}%",
-      "installing": "正在安裝…",
-      "permissionRequired": "請在 Android 設定中允許安裝",
-      "installerOpen": "已開啟系統安裝程式",
-      "failed": "更新失敗"
+    "checkUpdates": "檢查更新",
+    "contact": {
+      "description": "有疑問、錯誤或意見，歡迎直接聯絡。",
+      "title": "聯絡"
+    },
+    "description": "版本、組建，以及驅動閱讀的引擎。",
+    "diagnostics": {
+      "cancel": "取消",
+      "description": "ReadAware 絕不會自行上傳任何內容。診斷包只包含應用日誌與儲存自檢結果——不含書籍內容、筆記或對話——傳送前你可以完整檢視。",
+      "dialogTitle": "傳送診斷回報",
+      "done": "完成",
+      "exportError": "診斷包產生或儲存失敗。",
+      "exportRow": {
+        "button": "匯出",
+        "description": "儲存為 JSON 檔案,方便附在郵件或 issue 裡。",
+        "title": "匯出診斷包"
+      },
+      "exportSuccess": "診斷包已儲存。",
+      "logsRow": {
+        "button": "在資料夾中顯示",
+        "description": "診斷包所依據的滾動日誌檔案。",
+        "title": "日誌檔案"
+      },
+      "noticeDone": "完成",
+      "noticeError": "發生錯誤",
+      "previewBody": "以下就是將要傳送的全部內容——除此之外不會有任何資料離開你的裝置。",
+      "reportError": "回報傳送失敗。你可以改為匯出診斷包並透過郵件傳送。",
+      "reportRow": {
+        "button": "傳送回報…",
+        "description": "先檢視診斷包內容,再傳送給開發者。",
+        "title": "回報問題"
+      },
+      "send": "傳送",
+      "sentBody": "已傳送,謝謝。若就此問題聯絡我們,請附上這個回執編號:",
+      "title": "診斷"
     },
     "engine": {
-      "title": "閱讀引擎",
-      "description": "所有格式 —— EPUB、MOBI、AZW3、FB2、CBZ、CBR、TXT、HTML、PDF —— 都在同一個閱讀器裡開啟，共用同一套選取、註記與進度模型。"
+      "description": "所有格式 —— EPUB、MOBI、AZW3、FB2、CBZ、CBR、TXT、HTML、PDF —— 都在同一個閱讀器裡開啟，共用同一套選取、註記與進度模型。",
+      "title": "閱讀引擎"
     },
     "foliate": {
       "description": "ReadAware 所採用的開源閱讀引擎。"
     },
-    "vendored": "內建",
     "help": "說明",
+    "installUpdate": "安裝更新",
+    "title": "關於",
+    "updates": {
+      "description": "檢查並安裝最新版本。",
+      "title": "更新"
+    },
+    "updateStatus": {
+      "available": "版本 {{version}} 可用",
+      "downloading": "正在下載…",
+      "downloadingProgress": "正在下載 {{progress}}%",
+      "failed": "更新失敗",
+      "installerOpen": "已開啟系統安裝程式",
+      "installing": "正在安裝…",
+      "permissionRequired": "請在 Android 設定中允許安裝",
+      "upToDate": "已是最新版本"
+    },
+    "vendored": "內建",
+    "version": "版本",
+    "versionUnknown": "未知",
     "website": {
-      "title": "官方網站",
-      "description": "產品消息、下載與文件。"
-    },
-    "contact": {
-      "title": "聯絡",
-      "description": "有疑問、錯誤或意見，歡迎直接聯絡。"
-    },
-    "diagnostics": {
-      "title": "診斷",
-      "description": "ReadAware 絕不會自行上傳任何內容。診斷包只包含應用日誌與儲存自檢結果——不含書籍內容、筆記或對話——傳送前你可以完整檢視。",
-      "exportRow": {
-        "title": "匯出診斷包",
-        "description": "儲存為 JSON 檔案,方便附在郵件或 issue 裡。",
-        "button": "匯出"
-      },
-      "reportRow": {
-        "title": "回報問題",
-        "description": "先檢視診斷包內容,再傳送給開發者。",
-        "button": "傳送回報…"
-      },
-      "logsRow": {
-        "title": "日誌檔案",
-        "description": "診斷包所依據的滾動日誌檔案。",
-        "button": "在資料夾中顯示"
-      },
-      "dialogTitle": "傳送診斷回報",
-      "previewBody": "以下就是將要傳送的全部內容——除此之外不會有任何資料離開你的裝置。",
-      "send": "傳送",
-      "cancel": "取消",
-      "done": "完成",
-      "sentBody": "已傳送,謝謝。若就此問題聯絡我們,請附上這個回執編號:",
-      "noticeDone": "完成",
-      "noticeError": "發生錯誤",
-      "exportSuccess": "診斷包已儲存。",
-      "exportError": "診斷包產生或儲存失敗。",
-      "reportError": "回報傳送失敗。你可以改為匯出診斷包並透過郵件傳送。"
+      "description": "產品消息、下載與文件。",
+      "title": "官方網站"
     }
   },
-  "menus": {
-    "title": "自訂",
-    "description": "自訂頂欄與選取選單:在「顯示」與「更多選單」之間拖曳項目並調整順序。",
-    "more": "更多",
-    "shown": "顯示",
-    "overflow": "更多選單",
-    "reset": "恢復預設",
-    "dragHint": "拖曳可排序或在區域間移動。小工具類項目固定內聯顯示。",
-    "surface": {
-      "primaryNav": "主導覽",
-      "shelfHeader": "書架頂欄",
-      "readerHeader": "閱讀器頂欄",
-      "selection": "選取選單"
+  "ai": {
+    "buildMemory": {
+      "description": "讓 ReadAware 隨時間從你的閱讀與筆記中建立持久的個人檔案。",
+      "title": "建立長期記憶"
     },
+    "chat": "對話",
+    "clearMemory": "清除記憶",
+    "connection": "連線",
+    "description": "自備你的模型金鑰，再選擇助理可執行的功能與可存取的內容。",
+    "featureList": {
+      "askConversation": {
+        "description": "根據書籍內容與你的筆記提出追問。",
+        "label": "對話式問答"
+      },
+      "defineTerm": {
+        "description": "為選取的字詞提供行內定義。",
+        "label": "定義詞語"
+      },
+      "explainSelection": {
+        "description": "以淺白的語言解說標示的段落。",
+        "label": "解釋選取內容"
+      },
+      "summarizeChapter": {
+        "description": "將目前章節濃縮為重點。",
+        "label": "摘要本章"
+      },
+      "translate": {
+        "description": "將選取內容翻譯成你的閱讀語言。",
+        "label": "翻譯"
+      }
+    },
+    "features": {
+      "description": "閱讀輔助功能，隨各項功能推出逐一啟用。",
+      "title": "功能"
+    },
+    "followStreaming": {
+      "description": "回覆生成時自動捲動至最新內容；關閉時檢視停留在回覆開頭。",
+      "title": "跟隨串流回覆捲動"
+    },
+    "localOnly": {
+      "description": "絕不呼叫遠端模型。在本機模型可用之前，AI 功能保持關閉。",
+      "title": "僅本機模式"
+    },
+    "memory": "記憶",
+    "privacy": {
+      "description": "控制 AI 功能執行時有哪些內容離開你的裝置。",
+      "title": "隱私"
+    },
+    "sendHighlightedText": {
+      "description": "在請求中包含你選取的段落。",
+      "title": "傳送標示的文字"
+    },
+    "sendSurroundingContext": {
+      "description": "包含鄰近段落，讓回答緊扣文本內容。",
+      "title": "傳送周邊上下文"
+    },
+    "storedMemory": {
+      "description": "檢視或清除 ReadAware 記住的關於你的所有內容。",
+      "title": "已儲存的記憶"
+    },
+    "title": "AI"
+  },
+  "aiConfig": {
+    "advancedSettings": "進階設定",
+    "apiKey": {
+      "helper": "你的 API 金鑰經過加密，僅儲存在此裝置上，不會傳送到 ReadAware 的伺服器。",
+      "label": "API 金鑰",
+      "placeholder": "輸入你的 {{provider}} API 金鑰"
+    },
+    "byok": {
+      "body": "ReadAware 使用你的金鑰呼叫所選供應商。金鑰經過加密，僅儲存在此裝置上；產生的 API 使用費用仍由你負擔。",
+      "title": "關於 BYOK（自備金鑰）"
+    },
+    "clear": "清除",
+    "customApi": {
+      "chatCompletions": "Chat Completions（/chat/completions）",
+      "helper": "選擇你的供應商實作的端點格式。",
+      "label": "API 格式",
+      "responses": "Responses（/responses）"
+    },
+    "customBaseUrl": {
+      "helper": "輸入你的 OpenAI 相容 API 端點的 base URL。",
+      "label": "自訂 Base URL"
+    },
+    "customMaxOutputTokens": {
+      "error": "請輸入正整數。",
+      "helper": "選填。留空時不設定上限，由供應商決定。",
+      "label": "最大輸出 token 數",
+      "placeholder": "使用供應商預設值"
+    },
+    "customSupportsThinking": "模型支援思考",
+    "fastModel": "Fast 模型",
+    "fastModelCustomPlaceholder": "留空則與 Smart 模型相同",
+    "fastModelHelper": "查字典、記憶提煉、摘要——較便宜、較快的檔位。",
+    "fastThinking": "Fast 模型思考力度",
+    "fastThinkingHelper": "背景任務的推理力度——檔位越低，速度越快、費用越少。",
+    "getKey": {
+      "anthropic": "從 <link>Anthropic Console</link> 取得你的 API 金鑰",
+      "generic": "從 {{provider}} 主控台取得 API 金鑰：<link>前往</link>。",
+      "openai": "從 <link>OpenAI Dashboard</link> 取得你的 API 金鑰",
+      "openrouter": "從 <link>OpenRouter</link> 取得你的 API 金鑰"
+    },
+    "hide": "隱藏",
+    "model": "主模型",
+    "modelDefault": "預設",
+    "modelHelper": "預設同時用於 Smart 與 Fast 任務。",
+    "modelPicker": {
+      "empty": "沒有符合的模型",
+      "recommended": "推薦",
+      "search": "搜尋模型…",
+      "useCustom": "把「{{id}}」用作模型 ID"
+    },
+    "modelPlaceholder": "例如 gpt-5.5",
+    "openRouter": {
+      "allowFallbacks": "優先上游不可用時回退到其他上游",
+      "order": {
+        "helper": "依序嘗試的上游 slug，逗號分隔（如 coreweave, deepinfra）。留空表示不指定。",
+        "label": "優先上游"
+      },
+      "sort": {
+        "default": "OpenRouter 預設（負載平衡）",
+        "helper": "OpenRouter 在承載該模型的多家上游之間如何選擇。",
+        "label": "上游排序",
+        "latency": "延遲優先",
+        "price": "價格優先",
+        "throughput": "吞吐優先"
+      }
+    },
+    "provider": "AI 供應商",
+    "readaware": {
+      "credits": "本月已用 {{used}} / {{total}} credits",
+      "creditsUnlimited": "本月已用 {{used}} credits(不限量)",
+      "description": "內建模型,無需自己的 API key——用量按方案以 credits 逐月計量。",
+      "notConnected": "請先在「資料與同步」裡連接帳號,訂閱使用該帳號登入。",
+      "requiresPaid": "內建 AI 需要 Pro 或 Max 方案;免費方案請使用自己的 key。"
+    },
+    "separateFastModel": "為 Fast 任務使用獨立模型",
+    "show": "顯示",
+    "smartModel": "Smart 模型",
+    "smartModelHelper": "聊天、引導訪談、跨書綜合——較慢、較聰明的檔位。",
+    "smartThinking": "Smart 模型思考力度",
+    "smartThinkingHelper": "聊天輪次的推理力度——檔位越高，回答前思考越久。不支援思考的模型會忽略此設定。",
+    "test": "測試連線",
+    "testEmptyMessage": "測試失敗：AI 供應商回傳空白回應。",
+    "testing": "測試中...",
+    "testSuccessMessage": "測試成功！回應：「{{response}}」",
+    "testUnknownError": "測試期間發生未知錯誤。",
+    "thinking": "思考力度",
+    "thinkingHelper": "Smart 和 Fast 任務共用。檔位越高，回答前思考越久；不支援思考的模型會忽略此設定。",
+    "thinkingLevels": {
+      "high": "高",
+      "low": "低",
+      "max": "最高",
+      "medium": "中",
+      "minimal": "最低",
+      "off": "關閉",
+      "xhigh": "極高"
+    }
+  },
+  "appearance": {
+    "contentType": {
+      "appDefaultFont": "應用程式預設",
+      "description": "聊天回覆、筆記與外掛視圖的排版。介面控制項保持自己的字級。",
+      "follow": {
+        "description": "沿用你為書籍選擇的字型與行距，按對話的尺度縮小。",
+        "title": "跟隨閱讀設定"
+      },
+      "fontSize": "字級",
+      "lineSpacing": "行距",
+      "previewAnswer": "改革始於即興——一連串沒人批准過的地方試驗，因為管用才被留了下來。",
+      "previewLabel": "內容排版預覽",
+      "previewQuestion": "這一章到底在論證什麼？",
+      "title": "內容排版"
+    },
+    "description": "應用程式本身的外觀 — 與「閱讀」中的書頁顏色無關。",
+    "motion": "動態效果",
+    "reduceMotion": {
+      "description": "關閉整個應用程式的過場與動畫效果。",
+      "title": "減少動態效果"
+    },
+    "theme": {
+      "description": "「系統」會跟隨你作業系統的淺色或深色設定。",
+      "title": "主題"
+    },
+    "themeOptions": {
+      "dark": "深色",
+      "light": "淺色",
+      "system": "系統"
+    },
+    "title": "外觀"
+  },
+  "dataSync": {
+    "account": {
+      "description": "連結帳號，以在裝置間同步你加密的事件記錄。",
+      "title": "帳號"
+    },
+    "backup": {
+      "description": "將此裝置上的所有內容儲存為單一檔案 — 可搬移到其他裝置或作為備份保存。匯入時會將備份合併回你目前的資料。",
+      "title": "備份與匯出"
+    },
+    "billing": {
+      "failed": "無法開啟付款頁面,請重試。",
+      "manage": "管理訂閱",
+      "upgrade": "升級方案"
+    },
+    "books": {
+      "awaitingOtherDevice": "等待持有檔案的裝置上傳",
+      "failed": "上傳失敗，稍後重試",
+      "pending": "等待上傳",
+      "quotaFull": "雲端容量已滿——騰出空間或升級方案之前，之後的書只保留在本裝置。",
+      "rejected": "被雲端拒絕",
+      "rejectedQuota": "雲端容量不足，未上傳",
+      "rejectedWith": "被拒絕：{{reason}}",
+      "title": "書籍檔案"
+    },
+    "connect": {
+      "back": "返回",
+      "connect": "連線",
+      "connected": "同步已開啟。",
+      "connecting": "連線中…",
+      "emailLabel": "電子郵件",
+      "emailPlaceholder": "you@example.com",
+      "failed": "連線失敗，請檢查連結後重試。",
+      "freshAccount": "該帳號尚未設定加密口令，將由本裝置設定。請確認這是你本人的帳號：連結後，本裝置的書庫會同步到該帳號。",
+      "github": "使用 GitHub 登入",
+      "google": "使用 Google 登入",
+      "invalidCredentials": "",
+      "oauthStarted": "在瀏覽器完成登入，然後把頁面顯示的權杖貼到下方。",
+      "orEmail": "或使用電子郵件",
+      "passphraseHint": "資料離開裝置前以它加密。第一台裝置設定密語，其他裝置必須輸入同一個。密語無法找回——忘記即無法解讀雲端資料。",
+      "passphraseLabel": "加密密語",
+      "passphraseTooShort": "至少 8 個字元。",
+      "passwordLabel": "",
+      "passwordLogin": "",
+      "send": "傳送登入連結",
+      "sending": "傳送中…",
+      "sent": "請至信箱收信，然後把登入連結或權杖貼到下方。",
+      "serverUrlLabel": "",
+      "serverUrlPlaceholder": "",
+      "signedInAs": "即將連結的帳號",
+      "tokenContinue": "繼續",
+      "tokenInvalid": "登入連結或權杖無效——可能已過期或已被使用，請重新申請。",
+      "tokenLabel": "登入連結或權杖",
+      "tokenRetry": "暫時無法驗證該權杖。請檢查網路後重試，權杖已保留在下方。",
+      "usernameLabel": "",
+      "verifying": "驗證中…",
+      "wrongPassphrase": "密語與該帳號不符。"
+    },
+    "connectAccount": "連結帳號",
+    "connected": {
+      "cancel": "取消",
+      "disconnect": "中斷連線",
+      "disconnectBody": "本裝置保留全部資料並停止同步。可隨時以同一密語重新連線。",
+      "disconnectTitle": "中斷同步？",
+      "plan": "方案:{{tier}}",
+      "planTitle": "方案",
+      "statusTitle": "狀態",
+      "storageUsed": "雲端已用 {{used}}",
+      "storageUsedOfLimit": "雲端已用 {{used}} / {{limit}}",
+      "syncNow": "立即同步"
+    },
+    "dangerZone": "危險區域",
+    "dataLocation": {
+      "descTauri": "儲存在本裝置的 ReadAware 應用程式資料夾中。",
+      "descWeb": "儲存在此瀏覽器中。桌面應用程式會將資料存放於你可掌控的本機資料夾。",
+      "title": "資料位置"
+    },
+    "deleteAll": {
+      "button": "刪除全部資料",
+      "cancel": "取消",
+      "confirmLabel": "輸入 {{phrase}} 以確認",
+      "deleting": "正在刪除…",
+      "description": "抹除此裝置上的一切——書籍、標註、閱讀紀錄、設定與同步憑證。已同步帳號在其他裝置上的副本不受影響。",
+      "dialogBody": "這將抹除此裝置上的所有書籍、標註、記憶、對話與設定，且無法復原。已同步到其他裝置的資料仍保留在那些裝置上。",
+      "dialogTitle": "刪除全部資料？",
+      "failed": "刪除失敗，資料可能未被移除——請重試。",
+      "title": "刪除全部資料"
+    },
+    "description": "ReadAware 以本機優先：你的資料存放於此裝置。同步僅是加密的中繼，並非真實資料來源。",
+    "desktopBadge": "桌面版",
+    "e2e": {
+      "active": "已開啟——由你的密語保護。",
+      "description": "同步的資料在裝置上加密。可在此管理你的密碼短語與裝置。",
+      "title": "端對端加密"
+    },
+    "export": "匯出",
+    "exportError": "無法匯出你的資料。",
+    "exportSuccess": "所有內容已匯出至 {{file}}。",
+    "fullBackup": {
+      "description": "書籍、螢光標示、筆記、收藏、閱讀進度以及所有偏好設定，全部匯集於一個可攜檔案。",
+      "title": "完整備份"
+    },
+    "import": "匯入",
+    "importError": "無法匯入此檔案。",
+    "indicator": {
+      "errorDismiss": "暫時忽略同步錯誤",
+      "label": "同步狀態"
+    },
+    "merge": {
+      "annotations_other": "{{count}} 則註記",
+      "books_other": "{{count}} 本書",
+      "collections_other": "{{count}} 個收藏",
+      "settings_other": "{{count}} 項設定",
+      "summary": "已合併 {{books}}、{{annotations}}、{{collections}} 與 {{settings}}。重新載入中…"
+    },
+    "noticeDone": "完成",
+    "noticeError": "錯誤",
+    "progress": {
+      "blobs": "正在傳輸檔案… {{done}}/{{total}}",
+      "bookDown": "正在下載《{{title}}》",
+      "bookDownParts": "正在下載《{{title}}》（{{done}}/{{total}}）",
+      "bookUp": "正在上傳《{{title}}》",
+      "bookUpParts": "正在上傳《{{title}}》（{{done}}/{{total}}）",
+      "lastCycle": "上次同步：接收 {{pulled}} 條 · 傳送 {{pushed}} 條 · 檔案 {{blobs}} 個",
+      "pending": "待傳送：{{events}} 條變更、{{blobs}} 個檔案",
+      "pendingNone": "沒有待傳送的內容",
+      "pulling": "正在接收變更… 已合併 {{count}} 條",
+      "pulling_other": "",
+      "pushing": "正在傳送變更… 已傳送 {{count}} 條",
+      "pushing_other": ""
+    },
+    "reauth": {
+      "action": "重新登入",
+      "dismiss": "關閉登入提示",
+      "notice": "同步登入已失效"
+    },
+    "reveal": "顯示位置",
+    "storage": "儲存空間",
+    "sync": "同步",
+    "syncStatus": {
+      "error": "同步出錯",
+      "idle": "已同步",
+      "lastSync": "上次同步 {{time}}",
+      "never": "尚未同步",
+      "signedOut": "登入已失效——重新登入後繼續同步",
+      "syncing": "同步中…"
+    },
+    "tier": {
+      "free": "免費",
+      "max": "Max",
+      "pro": "Pro",
+      "staff": "內部",
+      "sync": "Sync"
+    },
+    "title": "資料與同步",
+    "working": "處理中…"
+  },
+  "dialog": {
+    "close": "關閉設定",
+    "sectionsLabel": "設定分類",
+    "title": "設定"
+  },
+  "font": {
+    "custom": "自訂",
+    "customAria": "從此裝置已安裝的字型中挑選",
+    "downloadFailed": "字型下載失敗——請檢查網路。",
+    "downloading": "正在下載字型 · {{percent}}%",
+    "label": "字型",
+    "placeholderCurated": "選擇精選字型",
+    "placeholderCustom": "選擇已安裝的字型",
+    "retry": "重試"
+  },
+  "general": {
+    "crashReports": {
+      "description": "分享當機診斷資訊以協助修復穩定性問題。預設為關閉。",
+      "title": "傳送匿名當機報告"
+    },
+    "description": "全應用程式的行為 — 啟動時開啟的內容、語言與桌面整合。",
+    "desktopIntegration": {
+      "autoUpdate": {
+        "description": "發現新版本時，在主介面安靜地顯示提示。",
+        "title": "自動檢查更新"
+      },
+      "description": "設定儲存於此，由桌面應用程式套用。對瀏覽器預覽無效。",
+      "fileAssociations": {
+        "description": "用 ReadAware 開啟 EPUB、MOBI、AZW3、FB2、CBZ、CBR、TXT、HTML 與 PDF 檔案。",
+        "title": "檔案關聯"
+      },
+      "launchAtStartup": {
+        "description": "登入時自動開啟 ReadAware。",
+        "title": "開機時啟動"
+      },
+      "title": "桌面整合",
+      "whatsNewDialog": {
+        "description": "應用程式更新後，彈出一次小視窗提示可以在哪裡查看更新內容。",
+        "title": "更新後顯示「新內容」提示"
+      }
+    },
+    "language": "語言",
+    "languagePrivacy": "語言與隱私",
+    "onLaunch": "啟動時",
+    "startView": "起始畫面",
+    "startViewOptions": {
+      "resume": "繼續上次閱讀的書",
+      "shelf": "書庫書架"
+    },
+    "title": "一般"
+  },
+  "menus": {
+    "description": "自訂頂欄與選取選單:在「顯示」與「更多選單」之間拖曳項目並調整順序。",
+    "dragHint": "拖曳可排序或在區域間移動。小工具類項目固定內聯顯示。",
     "items": {
-      "library": "書架",
+      "addNote": "新增筆記",
       "agent": "智慧助理",
-      "search": "搜尋",
-      "import": "匯入書籍",
-      "viewControl": "書架檢視",
-      "stats": "閱讀統計",
-      "settings": "設定",
-      "toc": "目錄",
-      "notes": "筆記",
       "appearance": "外觀",
+      "askAI": "問 AI",
       "chat": "聊天",
       "copy": "複製",
       "highlight": "螢光標記",
+      "import": "匯入書籍",
+      "library": "書架",
+      "notes": "筆記",
+      "search": "搜尋",
+      "settings": "設定",
+      "stats": "閱讀統計",
+      "toc": "目錄",
       "underline": "底線",
-      "addNote": "新增筆記",
-      "askAI": "問 AI"
-    }
+      "viewControl": "書架檢視"
+    },
+    "more": "更多",
+    "overflow": "更多選單",
+    "reset": "恢復預設",
+    "shown": "顯示",
+    "surface": {
+      "primaryNav": "主導覽",
+      "readerHeader": "閱讀器頂欄",
+      "selection": "選取選單",
+      "shelfHeader": "書架頂欄"
+    },
+    "title": "自訂"
+  },
+  "pendingBadge": {
+    "comingSoon": "即將推出"
+  },
+  "reading": {
+    "description": "書籍在頁面上的呈現方式。變更會即時套用到閱讀器。",
+    "fontSize": "字級大小",
+    "fontWeight": "字重",
+    "layout": "版面",
+    "lineSpacing": "行距",
+    "pageColor": {
+      "description": "書籍的紙張。「自動」會跟隨應用程式主題；其餘為固定顏色。",
+      "title": "頁面顏色"
+    },
+    "pageMargins": "頁邊距",
+    "paragraphSpacing": "段落間距",
+    "previewLabel": "閱讀預覽",
+    "previewSource": "邱妙津 · 《鱷魚手記》",
+    "previewText": "有時，有些悲哀與痛苦的深度是說不出的，有些愛的深度是再愛不到的，它在身體內發生後，那個地方就空掉了。",
+    "previewTextSecondary": "如果水要流向我，我拿什麼阻截？她天生就會對我如此，根本無須情節。",
+    "readingMode": "閱讀模式",
+    "textAlign": "對齊方式",
+    "title": "閱讀",
+    "typography": "字體排印"
+  },
+  "sections": {
+    "about": "關於",
+    "ai": "AI",
+    "appearance": "主題",
+    "dataSync": "資料與同步",
+    "general": "一般",
+    "menus": "自訂",
+    "plugins": "外掛",
+    "reading": "閱讀",
+    "shortcuts": "快捷鍵"
+  },
+  "shortcuts": {
+    "actions": {
+      "close": "關閉對話框或覆蓋層",
+      "new-conversation": "建立新對話",
+      "next-chapter": "下一章",
+      "next-page": "下一頁",
+      "prev-chapter": "上一章",
+      "prev-page": "上一頁",
+      "primary-nav": "切換主導覽頁面",
+      "search": "開啟搜尋",
+      "selection-add-note": "新增筆記",
+      "selection-ask-ai": "詢問 AI",
+      "selection-copy": "複製",
+      "selection-highlight": "螢光標示",
+      "selection-look-up": "查詢",
+      "selection-underline": "加底線",
+      "settings": "開啟設定",
+      "toggle-controls": "切換閱讀器控制項"
+    },
+    "categories": {
+      "Global": "全域",
+      "Overlays": "覆蓋層",
+      "Plugins": "外掛",
+      "Reading": "閱讀",
+      "Selection": "選取"
+    },
+    "categoryDescriptions": {
+      "plugins": "為外掛提供的命令指定快捷鍵。",
+      "selection": "在閱讀器中選取文字時生效。"
+    },
+    "conflict": "已被「{{label}}」使用",
+    "description": "點按快捷鍵即可重新設定；錄製時按 Esc 取消。",
+    "notSet": "未設定",
+    "rebind": "重新設定 {{label}}",
+    "recording": "請按下快捷鍵…",
+    "reset": "重設 {{label}}",
+    "resetAll": "全部重設為預設值",
+    "title": "快捷鍵"
   }
 }

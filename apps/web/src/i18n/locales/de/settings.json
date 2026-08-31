@@ -1,584 +1,594 @@
 {
-  "dialog": {
-    "title": "Einstellungen",
-    "sectionsLabel": "Einstellungsbereiche",
-    "close": "Einstellungen schließen"
-  },
-  "sections": {
-    "general": "Allgemein",
-    "appearance": "Design",
-    "reading": "Lesen",
-    "ai": "KI",
-    "shortcuts": "Tastenkürzel",
-    "dataSync": "Daten & Sync",
-    "about": "Über",
-    "plugins": "Plugins",
-    "menus": "Anpassen"
-  },
-  "general": {
-    "title": "Allgemein",
-    "description": "App-weites Verhalten — was beim Start geöffnet wird, Sprache und Desktop-Integration.",
-    "onLaunch": "Beim Start",
-    "startView": "Startansicht",
-    "startViewOptions": {
-      "shelf": "Bibliotheksregal",
-      "resume": "Letztes Buch fortsetzen"
+  "about": {
+    "build": "Build",
+    "buildAndroid": "Android (Tauri)",
+    "buildDesktop": "Desktop (Tauri)",
+    "buildIos": "iOS (Tauri)",
+    "buildWeb": "Web-Vorschau",
+    "channel": {
+      "beta": "Beta",
+      "description": "Stabil erhält nur fertige Releases. Beta erhält auch Vorabversionen — frühere Funktionen, rauere Kanten.",
+      "stable": "Stabil",
+      "title": "Update-Kanal"
     },
-    "desktopIntegration": {
-      "title": "Desktop-Integration",
-      "description": "Hier gespeichert und von der Desktop-App angewendet. Ohne Wirkung in der Browservorschau.",
-      "launchAtStartup": {
-        "title": "Beim Anmelden starten",
-        "description": "ReadAware automatisch öffnen, wenn du dich anmeldest."
-      },
-      "fileAssociations": {
-        "title": "Dateizuordnungen",
-        "description": "EPUB-, MOBI-, AZW3-, FB2-, CBZ-, CBR-, TXT-, HTML- und PDF-Dateien mit ReadAware öffnen."
-      },
-      "autoUpdate": {
-        "title": "Automatisch nach Updates suchen",
-        "description": "Bei einer neuen Version einen dezenten Hinweis im Hauptfenster anzeigen."
-      },
-      "whatsNewDialog": {
-        "title": "Hinweis nach Updates anzeigen",
-        "description": "Nach einem Update einmalig einen kleinen Dialog mit den Neuerungen anzeigen."
-      }
+    "checkingUpdates": "Wird geprüft...",
+    "checkUpdates": "Nach Updates suchen",
+    "contact": {
+      "description": "Fragen, Fehler oder Feedback — melde dich direkt.",
+      "title": "Kontakt"
     },
-    "languagePrivacy": "Sprache & Datenschutz",
-    "language": "Sprache",
-    "crashReports": {
-      "title": "Anonyme Absturzberichte senden",
-      "description": "Absturzdiagnosen teilen, um Stabilitätsprobleme zu beheben. Standardmäßig deaktiviert."
+    "description": "Version, Build und die Engine, die das Lesen antreibt.",
+    "diagnostics": {
+      "cancel": "Abbrechen",
+      "description": "ReadAware sendet niemals etwas von selbst. Ein Diagnosepaket enthält App-Protokolle und einen Speicher-Selbsttest – keine Buchinhalte, Notizen oder Unterhaltungen – und du kannst alles prüfen, bevor es dieses Gerät verlässt.",
+      "dialogTitle": "Diagnosebericht senden",
+      "done": "Fertig",
+      "exportError": "Das Paket konnte nicht erstellt oder gespeichert werden.",
+      "exportRow": {
+        "button": "Exportieren",
+        "description": "Als JSON-Datei speichern, um es an eine E-Mail oder ein Issue anzuhängen.",
+        "title": "Diagnosepaket exportieren"
+      },
+      "exportSuccess": "Diagnosepaket gespeichert.",
+      "logsRow": {
+        "button": "Im Ordner zeigen",
+        "description": "Die rotierenden Protokolle, aus denen das Paket entsteht.",
+        "title": "Protokolldateien"
+      },
+      "noticeDone": "Fertig",
+      "noticeError": "Etwas ist schiefgelaufen",
+      "previewBody": "Genau das wird gesendet – sonst verlässt nichts dein Gerät.",
+      "reportError": "Der Bericht konnte nicht gesendet werden. Du kannst das Paket stattdessen exportieren und per E-Mail schicken.",
+      "reportRow": {
+        "button": "Bericht senden…",
+        "description": "Paket prüfen und dann an die Entwickler senden.",
+        "title": "Problem melden"
+      },
+      "send": "Senden",
+      "sentBody": "Gesendet – danke. Gib diese Vorgangsnummer an, wenn du uns zu dem Problem kontaktierst:",
+      "title": "Diagnose"
+    },
+    "engine": {
+      "description": "Jedes Format — EPUB, MOBI, AZW3, FB2, CBZ, CBR, TXT, HTML, PDF — öffnet sich in einem Reader, mit demselben Modell für Auswahl, Anmerkungen und Fortschritt.",
+      "title": "Lese-Engine"
+    },
+    "foliate": {
+      "description": "Die Open-Source-Lese-Engine, auf der ReadAware aufbaut."
+    },
+    "help": "Hilfe",
+    "installUpdate": "Update installieren",
+    "title": "Über",
+    "updates": {
+      "description": "Nach dem neuesten Release suchen und es installieren.",
+      "title": "Updates"
+    },
+    "updateStatus": {
+      "available": "Version {{version}} verfügbar",
+      "downloading": "Wird heruntergeladen...",
+      "downloadingProgress": "Download {{progress}}%",
+      "failed": "Update fehlgeschlagen",
+      "installerOpen": "Systeminstallationsprogramm geöffnet",
+      "installing": "Wird installiert...",
+      "permissionRequired": "Installation in den Android-Einstellungen erlauben",
+      "upToDate": "Aktuell"
+    },
+    "vendored": "Mitgeliefert",
+    "version": "Version",
+    "versionUnknown": "Unbekannt",
+    "website": {
+      "description": "Neuigkeiten, Downloads und Dokumentation.",
+      "title": "Website"
     }
-  },
-  "appearance": {
-    "title": "Darstellung",
-    "description": "Wie die App selbst aussieht — unabhängig von der Seitenfarbe des Buches im Lesemodus.",
-    "theme": {
-      "title": "Design",
-      "description": "„System“ folgt der Hell- oder Dunkeleinstellung deines Betriebssystems."
-    },
-    "themeOptions": {
-      "system": "System",
-      "light": "Hell",
-      "dark": "Dunkel"
-    },
-    "contentType": {
-      "title": "Inhaltstypografie",
-      "description": "Wie Chatantworten, Notizen und Plugin-Ansichten gesetzt sind. Bedienelemente behalten ihre eigene Größe.",
-      "follow": {
-        "title": "Leseeinstellungen folgen",
-        "description": "Schrift und Zeilenabstand aus den Leseeinstellungen übernehmen, auf Gesprächsmaß verkleinert."
-      },
-      "appDefaultFont": "App-Standard",
-      "fontSize": "Größe",
-      "lineSpacing": "Zeilenabstand",
-      "previewLabel": "Vorschau der Inhaltstypografie",
-      "previewQuestion": "Worauf will dieses Kapitel hinaus?",
-      "previewAnswer": "Dass die Reform als Improvisation begann — lauter lokale Experimente, die niemand genehmigt hatte und die überlebten, weil sie funktionierten."
-    },
-    "motion": "Bewegung",
-    "reduceMotion": {
-      "title": "Bewegung reduzieren",
-      "description": "Übergänge und Animationseffekte in der gesamten App deaktivieren."
-    }
-  },
-  "reading": {
-    "title": "Lesen",
-    "description": "Wie Bücher auf der Seite dargestellt werden. Änderungen wirken sich live auf den Reader aus.",
-    "previewLabel": "Lesevorschau",
-    "previewText": "Als Gregor Samsa eines Morgens aus unruhigen Träumen erwachte, fand er sich in seinem Bett zu einem ungeheueren Ungeziefer verwandelt.",
-    "previewTextSecondary": "»Was ist mit mir geschehen?« dachte er. Es war kein Traum…",
-    "previewSource": "Franz Kafka · Die Verwandlung",
-    "typography": "Typografie",
-    "fontSize": "Schriftgröße",
-    "fontWeight": "Schriftstärke",
-    "lineSpacing": "Zeilenabstand",
-    "paragraphSpacing": "Absatzabstand",
-    "textAlign": "Textausrichtung",
-    "layout": "Layout",
-    "readingMode": "Lesemodus",
-    "pageColor": {
-      "title": "Seitenfarbe",
-      "description": "Das Papier des Buches. „Auto“ folgt dem App-Design; die anderen sind fest."
-    },
-    "pageMargins": "Seitenränder"
-  },
-  "shortcuts": {
-    "title": "Tastenkürzel",
-    "description": "Klicke auf ein Kürzel, um es neu zu belegen; drücke während der Aufnahme Esc zum Abbrechen.",
-    "categories": {
-      "Global": "Global",
-      "Reading": "Lesen",
-      "Selection": "Auswahl",
-      "Overlays": "Overlays",
-      "Plugins": "Plugins"
-    },
-    "categoryDescriptions": {
-      "selection": "Aktiv, während Text im Reader ausgewählt ist.",
-      "plugins": "Tasten für Befehle aus Plugins festlegen."
-    },
-    "actions": {
-      "search": "Suche öffnen",
-      "settings": "Einstellungen öffnen",
-      "new-conversation": "Neue Unterhaltung",
-      "primary-nav": "Primäres Ziel wechseln",
-      "next-page": "Nächste Seite",
-      "prev-page": "Vorherige Seite",
-      "next-chapter": "Nächstes Kapitel",
-      "prev-chapter": "Vorheriges Kapitel",
-      "toggle-controls": "Reader-Steuerung umschalten",
-      "selection-copy": "Kopieren",
-      "selection-highlight": "Markieren",
-      "selection-underline": "Unterstreichen",
-      "selection-add-note": "Notiz hinzufügen",
-      "selection-look-up": "Nachschlagen",
-      "selection-ask-ai": "KI fragen",
-      "close": "Dialog oder Overlay schließen"
-    },
-    "recording": "Kürzel drücken…",
-    "conflict": "Bereits verwendet von „{{label}}“",
-    "rebind": "{{label}} neu belegen",
-    "reset": "{{label}} zurücksetzen",
-    "resetAll": "Alle auf Standard zurücksetzen",
-    "notSet": "Nicht belegt"
   },
   "ai": {
-    "title": "KI",
-    "description": "Bring deinen eigenen Modellschlüssel mit und wähle dann, was der Assistent tun darf und was er sehen kann.",
-    "connection": "Verbindung",
-    "features": {
-      "title": "Funktionen",
-      "description": "Lesehilfe, pro Fähigkeit aktivierbar, sobald sie verfügbar ist."
-    },
-    "featureList": {
-      "explainSelection": {
-        "label": "Auswahl erklären",
-        "description": "Eine markierte Passage in einfacher Sprache aufschlüsseln."
-      },
-      "defineTerm": {
-        "label": "Begriff definieren",
-        "description": "Inline-Definitionen für ein ausgewähltes Wort oder eine Phrase."
-      },
-      "translate": {
-        "label": "Übersetzen",
-        "description": "Eine Auswahl in deine Lesesprache übersetzen."
-      },
-      "summarizeChapter": {
-        "label": "Kapitel zusammenfassen",
-        "description": "Das aktuelle Kapitel auf die wichtigsten Punkte verdichten."
-      },
-      "askConversation": {
-        "label": "Dialogbasierte Fragen & Antworten",
-        "description": "Stelle Rückfragen, die im Buch und deinen Notizen verankert sind."
-      }
+    "buildMemory": {
+      "description": "Lass ReadAware mit der Zeit ein beständiges Profil aus deinem Lesen und deinen Notizen lernen.",
+      "title": "Langzeitgedächtnis aufbauen"
     },
     "chat": "Chat",
-    "followStreaming": {
-      "title": "Streaming-Antworten folgen",
-      "description": "Scrollt automatisch mit, während die Antwort eintrifft. Deaktiviert bleibt die Ansicht am Anfang der Antwort."
-    },
-    "memory": "Gedächtnis",
-    "buildMemory": {
-      "title": "Langzeitgedächtnis aufbauen",
-      "description": "Lass ReadAware mit der Zeit ein beständiges Profil aus deinem Lesen und deinen Notizen lernen."
-    },
-    "storedMemory": {
-      "title": "Gespeichertes Gedächtnis",
-      "description": "Überprüfe oder lösche alles, was sich ReadAware über dich gemerkt hat."
-    },
     "clearMemory": "Gedächtnis löschen",
-    "privacy": {
-      "title": "Datenschutz",
-      "description": "Steuere, was dein Gerät verlässt, wenn eine KI-Funktion ausgeführt wird."
+    "connection": "Verbindung",
+    "description": "Bring deinen eigenen Modellschlüssel mit und wähle dann, was der Assistent tun darf und was er sehen kann.",
+    "featureList": {
+      "askConversation": {
+        "description": "Stelle Rückfragen, die im Buch und deinen Notizen verankert sind.",
+        "label": "Dialogbasierte Fragen & Antworten"
+      },
+      "defineTerm": {
+        "description": "Inline-Definitionen für ein ausgewähltes Wort oder eine Phrase.",
+        "label": "Begriff definieren"
+      },
+      "explainSelection": {
+        "description": "Eine markierte Passage in einfacher Sprache aufschlüsseln.",
+        "label": "Auswahl erklären"
+      },
+      "summarizeChapter": {
+        "description": "Das aktuelle Kapitel auf die wichtigsten Punkte verdichten.",
+        "label": "Kapitel zusammenfassen"
+      },
+      "translate": {
+        "description": "Eine Auswahl in deine Lesesprache übersetzen.",
+        "label": "Übersetzen"
+      }
     },
-    "sendHighlightedText": {
-      "title": "Markierten Text senden",
-      "description": "Die von dir ausgewählte Passage in die Anfrage einbeziehen."
+    "features": {
+      "description": "Lesehilfe, pro Fähigkeit aktivierbar, sobald sie verfügbar ist.",
+      "title": "Funktionen"
     },
-    "sendSurroundingContext": {
-      "title": "Umgebenden Kontext senden",
-      "description": "Benachbarte Absätze einbeziehen, damit Antworten im Text verankert bleiben."
+    "followStreaming": {
+      "description": "Scrollt automatisch mit, während die Antwort eintrifft. Deaktiviert bleibt die Ansicht am Anfang der Antwort.",
+      "title": "Streaming-Antworten folgen"
     },
     "localOnly": {
-      "title": "Nur-lokal-Modus",
-      "description": "Niemals ein Remote-Modell aufrufen. KI-Funktionen bleiben deaktiviert, bis ein lokales Modell verfügbar ist."
-    }
+      "description": "Niemals ein Remote-Modell aufrufen. KI-Funktionen bleiben deaktiviert, bis ein lokales Modell verfügbar ist.",
+      "title": "Nur-lokal-Modus"
+    },
+    "memory": "Gedächtnis",
+    "privacy": {
+      "description": "Steuere, was dein Gerät verlässt, wenn eine KI-Funktion ausgeführt wird.",
+      "title": "Datenschutz"
+    },
+    "sendHighlightedText": {
+      "description": "Die von dir ausgewählte Passage in die Anfrage einbeziehen.",
+      "title": "Markierten Text senden"
+    },
+    "sendSurroundingContext": {
+      "description": "Benachbarte Absätze einbeziehen, damit Antworten im Text verankert bleiben.",
+      "title": "Umgebenden Kontext senden"
+    },
+    "storedMemory": {
+      "description": "Überprüfe oder lösche alles, was sich ReadAware über dich gemerkt hat.",
+      "title": "Gespeichertes Gedächtnis"
+    },
+    "title": "KI"
   },
   "aiConfig": {
-    "provider": "KI-Anbieter",
-    "readaware": {
-      "description": "Integrierte Modelle, kein eigener API-Schlüssel nötig — die Nutzung wird monatlich in Credits gemäß Tarif gemessen.",
-      "notConnected": "Verbinde zuerst dein Konto unter „Daten & Sync“ — das Abo meldet sich damit an.",
-      "requiresPaid": "Integrierte KI erfordert den Pro- oder Max-Tarif; der kostenlose Tarif nutzt deinen eigenen Schlüssel.",
-      "credits": "{{used}} / {{total}} Credits diesen Monat verbraucht",
-      "creditsUnlimited": "{{used}} Credits diesen Monat verbraucht (unbegrenzt)"
+    "advancedSettings": "Erweiterte Einstellungen",
+    "apiKey": {
+      "helper": "Dein API-Schlüssel wird verschlüsselt und nur auf diesem Gerät gespeichert. Er wird nie an ReadAware-Server gesendet.",
+      "label": "API-Schlüssel",
+      "placeholder": "Gib deinen {{provider}}-API-Schlüssel ein"
     },
-    "customBaseUrl": {
-      "label": "Benutzerdefinierte Basis-URL",
-      "helper": "Gib die Basis-URL für deinen OpenAI-kompatiblen API-Endpunkt ein."
+    "byok": {
+      "body": "ReadAware nutzt deinen Schlüssel für den ausgewählten Anbieter. Er wird verschlüsselt und nur auf diesem Gerät gespeichert; anfallende API-Gebühren trägst weiterhin du.",
+      "title": "Über BYOK (Bring Your Own Key)"
     },
+    "clear": "Löschen",
     "customApi": {
-      "label": "API-Format",
-      "helper": "Wähle das Endpunktformat, das dein Anbieter unterstützt.",
       "chatCompletions": "Chat Completions (/chat/completions)",
+      "helper": "Wähle das Endpunktformat, das dein Anbieter unterstützt.",
+      "label": "API-Format",
       "responses": "Responses (/responses)"
     },
-    "customSupportsThinking": "Modell unterstützt Denken",
+    "customBaseUrl": {
+      "helper": "Gib die Basis-URL für deinen OpenAI-kompatiblen API-Endpunkt ein.",
+      "label": "Benutzerdefinierte Basis-URL"
+    },
     "customMaxOutputTokens": {
-      "label": "Maximale Ausgabetokens",
-      "placeholder": "Anbieterstandard",
+      "error": "Gib eine positive ganze Zahl ein.",
       "helper": "Optional. Leer lassen, damit der Anbieter sein eigenes Limit wählt.",
-      "error": "Gib eine positive ganze Zahl ein."
+      "label": "Maximale Ausgabetokens",
+      "placeholder": "Anbieterstandard"
     },
-    "apiKey": {
-      "label": "API-Schlüssel",
-      "placeholder": "Gib deinen {{provider}}-API-Schlüssel ein",
-      "helper": "Dein API-Schlüssel wird verschlüsselt und nur auf diesem Gerät gespeichert. Er wird nie an ReadAware-Server gesendet."
+    "customSupportsThinking": "Modell unterstützt Denken",
+    "fastModel": "Fast-Modell",
+    "fastModelCustomPlaceholder": "Leer lassen, um das Smart-Modell zu verwenden",
+    "fastModelHelper": "Wörterbuch, Gedächtnis und Zusammenfassungen – die günstigere, schnellere Stufe.",
+    "fastThinking": "Denkaufwand des Fast-Modells",
+    "fastThinkingHelper": "Denkaufwand für Hintergrundarbeit – niedrigere Stufen sind schneller und günstiger.",
+    "getKey": {
+      "anthropic": "Hol dir deinen API-Schlüssel in der <link>Anthropic-Konsole</link>",
+      "generic": "Hol deinen {{provider}}-API-Schlüssel aus <link>der Anbieter-Konsole</link>.",
+      "openai": "Hol dir deinen API-Schlüssel im <link>OpenAI-Dashboard</link>",
+      "openrouter": "Hol dir deinen API-Schlüssel bei <link>OpenRouter</link>"
     },
-    "show": "Anzeigen",
     "hide": "Verbergen",
     "model": "Primärmodell",
     "modelDefault": "Standard",
     "modelHelper": "Wird standardmäßig für Smart- und Fast-Aufgaben verwendet.",
-    "advancedSettings": "Erweiterte Einstellungen",
-    "separateFastModel": "Separates Fast-Modell verwenden",
-    "getKey": {
-      "openai": "Hol dir deinen API-Schlüssel im <link>OpenAI-Dashboard</link>",
-      "anthropic": "Hol dir deinen API-Schlüssel in der <link>Anthropic-Konsole</link>",
-      "openrouter": "Hol dir deinen API-Schlüssel bei <link>OpenRouter</link>",
-      "generic": "Hol deinen {{provider}}-API-Schlüssel aus <link>der Anbieter-Konsole</link>."
+    "modelPicker": {
+      "empty": "Keine passenden Modelle",
+      "recommended": "Empfohlen",
+      "search": "Modelle durchsuchen…",
+      "useCustom": "„{{id}}“ als Modell-ID verwenden"
     },
-    "test": "Verbindung testen",
-    "testing": "Wird getestet...",
-    "clear": "Löschen",
-    "testSuccessMessage": "Test erfolgreich! Antwort: „{{response}}“",
-    "testEmptyMessage": "Test fehlgeschlagen: Leere Antwort vom KI-Anbieter.",
-    "testUnknownError": "Unbekannter Fehler während des Tests.",
-    "byok": {
-      "title": "Über BYOK (Bring Your Own Key)",
-      "body": "ReadAware nutzt deinen Schlüssel für den ausgewählten Anbieter. Er wird verschlüsselt und nur auf diesem Gerät gespeichert; anfallende API-Gebühren trägst weiterhin du."
-    },
-    "smartModel": "Smart-Modell",
-    "fastModel": "Fast-Modell",
-    "smartModelHelper": "Chat, Onboarding und buchübergreifende Synthese – die langsamere, leistungsfähigere Stufe.",
-    "fastModelHelper": "Wörterbuch, Gedächtnis und Zusammenfassungen – die günstigere, schnellere Stufe.",
     "modelPlaceholder": "z. B. gpt-5.5",
-    "fastModelCustomPlaceholder": "Leer lassen, um das Smart-Modell zu verwenden",
+    "openRouter": {
+      "allowFallbacks": "Auf andere Upstreams ausweichen, wenn bevorzugte nicht verfügbar sind",
+      "order": {
+        "helper": "Kommagetrennte Provider-Slugs, der Reihe nach probiert (z. B. coreweave, deepinfra). Leer = keine Präferenz.",
+        "label": "Bevorzugte Upstreams"
+      },
+      "sort": {
+        "default": "OpenRouter-Standard (lastverteilt)",
+        "helper": "Wie OpenRouter unter den Upstreams wählt, die dein Modell bedienen.",
+        "label": "Upstream-Sortierung",
+        "latency": "Niedrigste Latenz zuerst",
+        "price": "Niedrigster Preis zuerst",
+        "throughput": "Höchster Durchsatz zuerst"
+      }
+    },
+    "provider": "KI-Anbieter",
+    "readaware": {
+      "credits": "{{used}} / {{total}} Credits diesen Monat verbraucht",
+      "creditsUnlimited": "{{used}} Credits diesen Monat verbraucht (unbegrenzt)",
+      "description": "Integrierte Modelle, kein eigener API-Schlüssel nötig — die Nutzung wird monatlich in Credits gemäß Tarif gemessen.",
+      "notConnected": "Verbinde zuerst dein Konto unter „Daten & Sync“ — das Abo meldet sich damit an.",
+      "requiresPaid": "Integrierte KI erfordert den Pro- oder Max-Tarif; der kostenlose Tarif nutzt deinen eigenen Schlüssel."
+    },
+    "separateFastModel": "Separates Fast-Modell verwenden",
+    "show": "Anzeigen",
+    "smartModel": "Smart-Modell",
+    "smartModelHelper": "Chat, Onboarding und buchübergreifende Synthese – die langsamere, leistungsfähigere Stufe.",
+    "smartThinking": "Denkaufwand des Smart-Modells",
+    "smartThinkingHelper": "Denkaufwand für Chat-Antworten – höhere Stufen denken länger nach. Modelle ohne Denkfunktion ignorieren dies.",
+    "test": "Verbindung testen",
+    "testEmptyMessage": "Test fehlgeschlagen: Leere Antwort vom KI-Anbieter.",
+    "testing": "Wird getestet...",
+    "testSuccessMessage": "Test erfolgreich! Antwort: „{{response}}“",
+    "testUnknownError": "Unbekannter Fehler während des Tests.",
     "thinking": "Denkaufwand",
     "thinkingHelper": "Gilt für Smart- und Fast-Aufgaben. Höhere Stufen denken länger nach; Modelle ohne Denkfunktion ignorieren dies.",
-    "smartThinking": "Denkaufwand des Smart-Modells",
-    "fastThinking": "Denkaufwand des Fast-Modells",
-    "smartThinkingHelper": "Denkaufwand für Chat-Antworten – höhere Stufen denken länger nach. Modelle ohne Denkfunktion ignorieren dies.",
-    "fastThinkingHelper": "Denkaufwand für Hintergrundarbeit – niedrigere Stufen sind schneller und günstiger.",
     "thinkingLevels": {
-      "off": "Aus",
-      "minimal": "Minimal",
-      "low": "Niedrig",
-      "medium": "Mittel",
       "high": "Hoch",
-      "xhigh": "Sehr hoch",
-      "max": "Maximum"
-    },
-    "modelPicker": {
-      "search": "Modelle durchsuchen…",
-      "recommended": "Empfohlen",
-      "useCustom": "„{{id}}“ als Modell-ID verwenden",
-      "empty": "Keine passenden Modelle"
-    },
-    "openRouter": {
-      "sort": {
-        "label": "Upstream-Sortierung",
-        "default": "OpenRouter-Standard (lastverteilt)",
-        "price": "Niedrigster Preis zuerst",
-        "throughput": "Höchster Durchsatz zuerst",
-        "latency": "Niedrigste Latenz zuerst",
-        "helper": "Wie OpenRouter unter den Upstreams wählt, die dein Modell bedienen."
-      },
-      "order": {
-        "label": "Bevorzugte Upstreams",
-        "helper": "Kommagetrennte Provider-Slugs, der Reihe nach probiert (z. B. coreweave, deepinfra). Leer = keine Präferenz."
-      },
-      "allowFallbacks": "Auf andere Upstreams ausweichen, wenn bevorzugte nicht verfügbar sind"
+      "low": "Niedrig",
+      "max": "Maximum",
+      "medium": "Mittel",
+      "minimal": "Minimal",
+      "off": "Aus",
+      "xhigh": "Sehr hoch"
     }
   },
-  "font": {
-    "label": "Schriftart",
-    "custom": "Benutzerdefiniert",
-    "customAria": "Aus auf diesem Gerät installierten Schriftarten wählen",
-    "placeholderCurated": "Kuratierte Schriftart wählen",
-    "placeholderCustom": "Installierte Schriftart wählen",
-    "downloading": "Schriftart wird geladen · {{percent}} %",
-    "downloadFailed": "Schriftart konnte nicht geladen werden — Netzwerk prüfen.",
-    "retry": "Erneut versuchen"
-  },
-  "pendingBadge": {
-    "comingSoon": "Demnächst"
+  "appearance": {
+    "contentType": {
+      "appDefaultFont": "App-Standard",
+      "description": "Wie Chatantworten, Notizen und Plugin-Ansichten gesetzt sind. Bedienelemente behalten ihre eigene Größe.",
+      "follow": {
+        "description": "Schrift und Zeilenabstand aus den Leseeinstellungen übernehmen, auf Gesprächsmaß verkleinert.",
+        "title": "Leseeinstellungen folgen"
+      },
+      "fontSize": "Größe",
+      "lineSpacing": "Zeilenabstand",
+      "previewAnswer": "Dass die Reform als Improvisation begann — lauter lokale Experimente, die niemand genehmigt hatte und die überlebten, weil sie funktionierten.",
+      "previewLabel": "Vorschau der Inhaltstypografie",
+      "previewQuestion": "Worauf will dieses Kapitel hinaus?",
+      "title": "Inhaltstypografie"
+    },
+    "description": "Wie die App selbst aussieht — unabhängig von der Seitenfarbe des Buches im Lesemodus.",
+    "motion": "Bewegung",
+    "reduceMotion": {
+      "description": "Übergänge und Animationseffekte in der gesamten App deaktivieren.",
+      "title": "Bewegung reduzieren"
+    },
+    "theme": {
+      "description": "„System“ folgt der Hell- oder Dunkeleinstellung deines Betriebssystems.",
+      "title": "Design"
+    },
+    "themeOptions": {
+      "dark": "Dunkel",
+      "light": "Hell",
+      "system": "System"
+    },
+    "title": "Darstellung"
   },
   "dataSync": {
-    "title": "Daten & Sync",
+    "account": {
+      "description": "Verbinde ein Konto, um dein verschlüsseltes Ereignisprotokoll geräteübergreifend zu synchronisieren.",
+      "title": "Konto"
+    },
+    "backup": {
+      "description": "Speichere alles auf diesem Gerät in einer einzigen Datei — verschiebe sie auf ein anderes Gerät oder bewahre sie als Backup auf. Beim Import wird ein Backup wieder in deine aktuellen Daten eingefügt.",
+      "title": "Backup & Export"
+    },
+    "billing": {
+      "failed": "Die Abrechnungsseite konnte nicht geöffnet werden. Bitte erneut versuchen.",
+      "manage": "Abo verwalten",
+      "upgrade": "Tarif upgraden"
+    },
+    "books": {
+      "awaitingOtherDevice": "Wartet auf das Gerät mit der Datei",
+      "failed": "Upload fehlgeschlagen — wird erneut versucht",
+      "pending": "Wartet auf Upload",
+      "quotaFull": "Cloud-Speicher voll — weitere Bücher bleiben auf diesem Gerät, bis Platz frei wird oder der Tarif wächst.",
+      "rejected": "Vom Server abgelehnt",
+      "rejectedQuota": "Speicherplatz überschritten — nicht hochgeladen",
+      "rejectedWith": "Abgelehnt: {{reason}}",
+      "title": "Buchdateien"
+    },
+    "connect": {
+      "back": "Zurück",
+      "connect": "Verbinden",
+      "connected": "Synchronisierung ist aktiv.",
+      "connecting": "Verbinde…",
+      "emailLabel": "E-Mail",
+      "emailPlaceholder": "du@beispiel.de",
+      "failed": "Verbindung fehlgeschlagen. Prüfe den Link und versuche es erneut.",
+      "freshAccount": "Für dieses Konto ist noch keine Verschlüsselungspassphrase festgelegt — dieses Gerät legt sie fest. Stelle sicher, dass es dein Konto ist: Nach dem Verbinden wird die Bibliothek dieses Geräts dorthin synchronisiert.",
+      "github": "Mit GitHub fortfahren",
+      "google": "Mit Google fortfahren",
+      "invalidCredentials": "",
+      "oauthStarted": "Schließe die Anmeldung im Browser ab und füge das angezeigte Token unten ein.",
+      "orEmail": "oder per E-Mail",
+      "passphraseHint": "Sie verschlüsselt deine Daten, bevor sie dieses Gerät verlassen. Das erste Gerät legt sie fest; jedes weitere muss dieselbe eingeben. Sie ist nicht wiederherstellbar — vergisst du sie, bleiben synchronisierte Daten unlesbar.",
+      "passphraseLabel": "Verschlüsselungspassphrase",
+      "passphraseTooShort": "Mindestens 8 Zeichen.",
+      "passwordLabel": "",
+      "passwordLogin": "",
+      "send": "Anmeldelink senden",
+      "sending": "Wird gesendet…",
+      "sent": "Prüfe dein Postfach und füge den Anmeldelink oder das Token unten ein.",
+      "serverUrlLabel": "",
+      "serverUrlPlaceholder": "",
+      "signedInAs": "Verbindung als",
+      "tokenContinue": "Weiter",
+      "tokenInvalid": "Dieser Anmelde-Link oder Token hat nicht funktioniert — er ist möglicherweise abgelaufen oder bereits verwendet. Fordere einen neuen an.",
+      "tokenLabel": "Anmeldelink oder Token",
+      "tokenRetry": "Dieser Token konnte gerade nicht überprüft werden. Prüfe deine Verbindung und versuche es erneut — der Token bleibt unten erhalten.",
+      "usernameLabel": "",
+      "verifying": "Wird geprüft…",
+      "wrongPassphrase": "Die Passphrase passt nicht zu diesem Konto."
+    },
+    "connectAccount": "Konto verbinden",
+    "connected": {
+      "cancel": "Abbrechen",
+      "disconnect": "Trennen",
+      "disconnectBody": "Dieses Gerät behält alle Daten und stoppt nur die Synchronisierung. Mit derselben Passphrase jederzeit wieder verbindbar.",
+      "disconnectTitle": "Synchronisierung trennen?",
+      "plan": "Tarif: {{tier}}",
+      "planTitle": "Tarif",
+      "statusTitle": "Status",
+      "storageUsed": "{{used}} auf dem Relay belegt",
+      "storageUsedOfLimit": "{{used}} von {{limit}} auf dem Relay belegt",
+      "syncNow": "Jetzt synchronisieren"
+    },
+    "dangerZone": "Gefahrenzone",
+    "dataLocation": {
+      "descTauri": "Im ReadAware-Anwendungsdatenordner auf diesem Gerät gespeichert.",
+      "descWeb": "In diesem Browser gespeichert. Die Desktop-App bewahrt Daten in einem lokalen Ordner auf, den du kontrollierst.",
+      "title": "Speicherort"
+    },
+    "deleteAll": {
+      "button": "Alle Daten löschen",
+      "cancel": "Abbrechen",
+      "confirmLabel": "Zur Bestätigung {{phrase}} eingeben",
+      "deleting": "Wird gelöscht…",
+      "description": "Alles auf diesem Gerät löschen — Bücher, Anmerkungen, Leseverlauf, Einstellungen und Sync-Zugangsdaten. Die Kopien eines synchronisierten Kontos auf anderen Geräten bleiben unberührt.",
+      "dialogBody": "Damit werden alle Bücher, Anmerkungen, Erinnerungen, Unterhaltungen und Einstellungen auf diesem Gerät gelöscht — unwiderruflich. Bereits auf andere Geräte synchronisierte Daten bleiben dort erhalten.",
+      "dialogTitle": "Alle Daten löschen?",
+      "failed": "Daten konnten nicht gelöscht werden. Möglicherweise wurde nichts entfernt — bitte erneut versuchen.",
+      "title": "Alle Daten löschen"
+    },
     "description": "ReadAware ist lokal-first: Deine Daten liegen auf diesem Gerät. Sync ist ein verschlüsseltes Relay, keine Quelle der Wahrheit.",
-    "noticeDone": "Fertig",
-    "noticeError": "Fehler",
-    "exportSuccess": "Alles nach {{file}} exportiert.",
+    "desktopBadge": "Desktop",
+    "e2e": {
+      "active": "Aktiv — geschützt durch deine Passphrase.",
+      "description": "Synchronisierte Daten werden auf dem Gerät verschlüsselt. Verwalte hier deine Passphrase und deine Geräte.",
+      "title": "Ende-zu-Ende-Verschlüsselung"
+    },
+    "export": "Exportieren",
     "exportError": "Deine Daten konnten nicht exportiert werden.",
+    "exportSuccess": "Alles nach {{file}} exportiert.",
+    "fullBackup": {
+      "description": "Bücher, Markierungen, Notizen, Sammlungen, Lesefortschritt und jede Einstellung in einer portablen Datei.",
+      "title": "Vollständiges Backup"
+    },
+    "import": "Importieren",
     "importError": "Diese Datei konnte nicht importiert werden.",
+    "indicator": {
+      "errorDismiss": "Fehlerhinweis vorübergehend ausblenden",
+      "label": "Synchronisierungsstatus"
+    },
     "merge": {
-      "books_one": "{{count}} Buch",
-      "books_other": "{{count}} Bücher",
       "annotations_one": "{{count}} Anmerkung",
       "annotations_other": "{{count}} Anmerkungen",
+      "books_one": "{{count}} Buch",
+      "books_other": "{{count}} Bücher",
       "collections_one": "{{count}} Sammlung",
       "collections_other": "{{count}} Sammlungen",
       "settings_one": "{{count}} Einstellung",
       "settings_other": "{{count}} Einstellungen",
       "summary": "{{books}}, {{annotations}}, {{collections}} und {{settings}} zusammengeführt. Wird neu geladen…"
     },
-    "sync": "Sync",
-    "account": {
-      "title": "Konto",
-      "description": "Verbinde ein Konto, um dein verschlüsseltes Ereignisprotokoll geräteübergreifend zu synchronisieren."
-    },
-    "connectAccount": "Konto verbinden",
-    "e2e": {
-      "title": "Ende-zu-Ende-Verschlüsselung",
-      "description": "Synchronisierte Daten werden auf dem Gerät verschlüsselt. Verwalte hier deine Passphrase und deine Geräte.",
-      "active": "Aktiv — geschützt durch deine Passphrase."
-    },
-    "storage": "Speicher",
-    "dataLocation": {
-      "title": "Speicherort",
-      "descTauri": "Im ReadAware-Anwendungsdatenordner auf diesem Gerät gespeichert.",
-      "descWeb": "In diesem Browser gespeichert. Die Desktop-App bewahrt Daten in einem lokalen Ordner auf, den du kontrollierst."
-    },
-    "desktopBadge": "Desktop",
-    "reveal": "Anzeigen",
-    "backup": {
-      "title": "Backup & Export",
-      "description": "Speichere alles auf diesem Gerät in einer einzigen Datei — verschiebe sie auf ein anderes Gerät oder bewahre sie als Backup auf. Beim Import wird ein Backup wieder in deine aktuellen Daten eingefügt."
-    },
-    "fullBackup": {
-      "title": "Vollständiges Backup",
-      "description": "Bücher, Markierungen, Notizen, Sammlungen, Lesefortschritt und jede Einstellung in einer portablen Datei."
-    },
-    "import": "Importieren",
-    "export": "Exportieren",
-    "working": "Wird ausgeführt…",
-    "dangerZone": "Gefahrenzone",
-    "syncStatus": {
-      "idle": "Synchronisiert",
-      "syncing": "Synchronisiere…",
-      "error": "Synchronisierungsfehler",
-      "lastSync": "Zuletzt synchronisiert {{time}}",
-      "never": "Noch nicht synchronisiert",
-      "signedOut": "Abgemeldet — erneut anmelden, um die Synchronisierung fortzusetzen"
+    "noticeDone": "Fertig",
+    "noticeError": "Fehler",
+    "progress": {
+      "blobs": "Dateien werden übertragen… {{done}}/{{total}}",
+      "bookDown": "„{{title}}“ wird heruntergeladen",
+      "bookDownParts": "„{{title}}“ wird heruntergeladen ({{done}}/{{total}})",
+      "bookUp": "„{{title}}“ wird hochgeladen",
+      "bookUpParts": "„{{title}}“ wird hochgeladen ({{done}}/{{total}})",
+      "lastCycle": "Letzter Durchlauf: {{pulled}} empfangen · {{pushed}} gesendet · {{blobs}} Dateien",
+      "pending": "Zum Senden anstehend: {{events}} Änderungen, {{blobs}} Dateien",
+      "pendingNone": "Nichts zum Senden anstehend",
+      "pulling": "Änderungen werden empfangen… {{count}} zusammengeführt",
+      "pulling_one": "",
+      "pulling_other": "",
+      "pushing": "Änderungen werden gesendet… {{count}} gesendet",
+      "pushing_one": "",
+      "pushing_other": ""
     },
     "reauth": {
-      "notice": "Sync-Anmeldung abgelaufen",
       "action": "Erneut anmelden",
-      "dismiss": "Anmeldehinweis schließen"
+      "dismiss": "Anmeldehinweis schließen",
+      "notice": "Sync-Anmeldung abgelaufen"
     },
-    "connect": {
-      "emailLabel": "E-Mail",
-      "emailPlaceholder": "du@beispiel.de",
-      "send": "Anmeldelink senden",
-      "sending": "Wird gesendet…",
-      "sent": "Prüfe dein Postfach und füge den Anmeldelink oder das Token unten ein.",
-      "tokenLabel": "Anmeldelink oder Token",
-      "passphraseLabel": "Verschlüsselungspassphrase",
-      "passphraseHint": "Sie verschlüsselt deine Daten, bevor sie dieses Gerät verlassen. Das erste Gerät legt sie fest; jedes weitere muss dieselbe eingeben. Sie ist nicht wiederherstellbar — vergisst du sie, bleiben synchronisierte Daten unlesbar.",
-      "passphraseTooShort": "Mindestens 8 Zeichen.",
-      "connect": "Verbinden",
-      "connecting": "Verbinde…",
-      "wrongPassphrase": "Die Passphrase passt nicht zu diesem Konto.",
-      "failed": "Verbindung fehlgeschlagen. Prüfe den Link und versuche es erneut.",
-      "connected": "Synchronisierung ist aktiv.",
-      "google": "Mit Google fortfahren",
-      "github": "Mit GitHub fortfahren",
-      "orEmail": "oder per E-Mail",
-      "oauthStarted": "Schließe die Anmeldung im Browser ab und füge das angezeigte Token unten ein.",
-      "back": "Zurück",
-      "tokenContinue": "Weiter",
-      "verifying": "Wird geprüft…",
-      "tokenInvalid": "Dieser Anmelde-Link oder Token hat nicht funktioniert — er ist möglicherweise abgelaufen oder bereits verwendet. Fordere einen neuen an.",
-      "tokenRetry": "Dieser Token konnte gerade nicht überprüft werden. Prüfe deine Verbindung und versuche es erneut — der Token bleibt unten erhalten.",
-      "signedInAs": "Verbindung als",
-      "freshAccount": "Für dieses Konto ist noch keine Verschlüsselungspassphrase festgelegt — dieses Gerät legt sie fest. Stelle sicher, dass es dein Konto ist: Nach dem Verbinden wird die Bibliothek dieses Geräts dorthin synchronisiert."
-    },
-    "connected": {
-      "statusTitle": "Status",
-      "planTitle": "Tarif",
-      "syncNow": "Jetzt synchronisieren",
-      "disconnect": "Trennen",
-      "disconnectTitle": "Synchronisierung trennen?",
-      "disconnectBody": "Dieses Gerät behält alle Daten und stoppt nur die Synchronisierung. Mit derselben Passphrase jederzeit wieder verbindbar.",
-      "cancel": "Abbrechen",
-      "storageUsed": "{{used}} auf dem Relay belegt",
-      "storageUsedOfLimit": "{{used}} von {{limit}} auf dem Relay belegt",
-      "plan": "Tarif: {{tier}}"
+    "reveal": "Anzeigen",
+    "storage": "Speicher",
+    "sync": "Sync",
+    "syncStatus": {
+      "error": "Synchronisierungsfehler",
+      "idle": "Synchronisiert",
+      "lastSync": "Zuletzt synchronisiert {{time}}",
+      "never": "Noch nicht synchronisiert",
+      "signedOut": "Abgemeldet — erneut anmelden, um die Synchronisierung fortzusetzen",
+      "syncing": "Synchronisiere…"
     },
     "tier": {
       "free": "Kostenlos",
-      "sync": "Sync",
-      "pro": "Pro",
       "max": "Max",
-      "staff": "Intern"
+      "pro": "Pro",
+      "staff": "Intern",
+      "sync": "Sync"
     },
-    "billing": {
-      "upgrade": "Tarif upgraden",
-      "manage": "Abo verwalten",
-      "failed": "Die Abrechnungsseite konnte nicht geöffnet werden. Bitte erneut versuchen."
-    },
-    "progress": {
-      "pulling": "Änderungen werden empfangen… {{count}} zusammengeführt",
-      "pushing": "Änderungen werden gesendet… {{count}} gesendet",
-      "blobs": "Dateien werden übertragen… {{done}}/{{total}}",
-      "pending": "Zum Senden anstehend: {{events}} Änderungen, {{blobs}} Dateien",
-      "pendingNone": "Nichts zum Senden anstehend",
-      "lastCycle": "Letzter Durchlauf: {{pulled}} empfangen · {{pushed}} gesendet · {{blobs}} Dateien",
-      "bookUp": "„{{title}}“ wird hochgeladen",
-      "bookDown": "„{{title}}“ wird heruntergeladen",
-      "bookUpParts": "„{{title}}“ wird hochgeladen ({{done}}/{{total}})",
-      "bookDownParts": "„{{title}}“ wird heruntergeladen ({{done}}/{{total}})"
-    },
-    "indicator": {
-      "label": "Synchronisierungsstatus",
-      "errorDismiss": "Fehlerhinweis vorübergehend ausblenden"
-    },
-    "deleteAll": {
-      "title": "Alle Daten löschen",
-      "description": "Alles auf diesem Gerät löschen — Bücher, Anmerkungen, Leseverlauf, Einstellungen und Sync-Zugangsdaten. Die Kopien eines synchronisierten Kontos auf anderen Geräten bleiben unberührt.",
-      "button": "Alle Daten löschen",
-      "dialogTitle": "Alle Daten löschen?",
-      "dialogBody": "Damit werden alle Bücher, Anmerkungen, Erinnerungen, Unterhaltungen und Einstellungen auf diesem Gerät gelöscht — unwiderruflich. Bereits auf andere Geräte synchronisierte Daten bleiben dort erhalten.",
-      "confirmLabel": "Zur Bestätigung {{phrase}} eingeben",
-      "cancel": "Abbrechen",
-      "deleting": "Wird gelöscht…",
-      "failed": "Daten konnten nicht gelöscht werden. Möglicherweise wurde nichts entfernt — bitte erneut versuchen."
-    },
-    "books": {
-      "title": "Buchdateien",
-      "pending": "Wartet auf Upload",
-      "failed": "Upload fehlgeschlagen — wird erneut versucht",
-      "rejectedQuota": "Speicherplatz überschritten — nicht hochgeladen",
-      "rejected": "Vom Server abgelehnt",
-      "rejectedWith": "Abgelehnt: {{reason}}",
-      "awaitingOtherDevice": "Wartet auf das Gerät mit der Datei",
-      "quotaFull": "Cloud-Speicher voll — weitere Bücher bleiben auf diesem Gerät, bis Platz frei wird oder der Tarif wächst."
-    }
+    "title": "Daten & Sync",
+    "working": "Wird ausgeführt…"
   },
-  "about": {
-    "title": "Über",
-    "description": "Version, Build und die Engine, die das Lesen antreibt.",
-    "version": "Version",
-    "build": "Build",
-    "buildAndroid": "Android (Tauri)",
-    "buildIos": "iOS (Tauri)",
-    "buildDesktop": "Desktop (Tauri)",
-    "buildWeb": "Web-Vorschau",
-    "updates": {
-      "title": "Updates",
-      "description": "Nach dem neuesten Release suchen und es installieren."
+  "dialog": {
+    "close": "Einstellungen schließen",
+    "sectionsLabel": "Einstellungsbereiche",
+    "title": "Einstellungen"
+  },
+  "font": {
+    "custom": "Benutzerdefiniert",
+    "customAria": "Aus auf diesem Gerät installierten Schriftarten wählen",
+    "downloadFailed": "Schriftart konnte nicht geladen werden — Netzwerk prüfen.",
+    "downloading": "Schriftart wird geladen · {{percent}} %",
+    "label": "Schriftart",
+    "placeholderCurated": "Kuratierte Schriftart wählen",
+    "placeholderCustom": "Installierte Schriftart wählen",
+    "retry": "Erneut versuchen"
+  },
+  "general": {
+    "crashReports": {
+      "description": "Absturzdiagnosen teilen, um Stabilitätsprobleme zu beheben. Standardmäßig deaktiviert.",
+      "title": "Anonyme Absturzberichte senden"
     },
-    "channel": {
-      "title": "Update-Kanal",
-      "description": "Stabil erhält nur fertige Releases. Beta erhält auch Vorabversionen — frühere Funktionen, rauere Kanten.",
-      "stable": "Stabil",
-      "beta": "Beta"
-    },
-    "checkUpdates": "Nach Updates suchen",
-    "checkingUpdates": "Wird geprüft...",
-    "installUpdate": "Update installieren",
-    "versionUnknown": "Unbekannt",
-    "updateStatus": {
-      "upToDate": "Aktuell",
-      "available": "Version {{version}} verfügbar",
-      "downloading": "Wird heruntergeladen...",
-      "downloadingProgress": "Download {{progress}}%",
-      "installing": "Wird installiert...",
-      "permissionRequired": "Installation in den Android-Einstellungen erlauben",
-      "installerOpen": "Systeminstallationsprogramm geöffnet",
-      "failed": "Update fehlgeschlagen"
-    },
-    "engine": {
-      "title": "Lese-Engine",
-      "description": "Jedes Format — EPUB, MOBI, AZW3, FB2, CBZ, CBR, TXT, HTML, PDF — öffnet sich in einem Reader, mit demselben Modell für Auswahl, Anmerkungen und Fortschritt."
-    },
-    "foliate": {
-      "description": "Die Open-Source-Lese-Engine, auf der ReadAware aufbaut."
-    },
-    "vendored": "Mitgeliefert",
-    "help": "Hilfe",
-    "website": {
-      "title": "Website",
-      "description": "Neuigkeiten, Downloads und Dokumentation."
-    },
-    "contact": {
-      "title": "Kontakt",
-      "description": "Fragen, Fehler oder Feedback — melde dich direkt."
-    },
-    "diagnostics": {
-      "title": "Diagnose",
-      "description": "ReadAware sendet niemals etwas von selbst. Ein Diagnosepaket enthält App-Protokolle und einen Speicher-Selbsttest – keine Buchinhalte, Notizen oder Unterhaltungen – und du kannst alles prüfen, bevor es dieses Gerät verlässt.",
-      "exportRow": {
-        "title": "Diagnosepaket exportieren",
-        "description": "Als JSON-Datei speichern, um es an eine E-Mail oder ein Issue anzuhängen.",
-        "button": "Exportieren"
+    "description": "App-weites Verhalten — was beim Start geöffnet wird, Sprache und Desktop-Integration.",
+    "desktopIntegration": {
+      "autoUpdate": {
+        "description": "Bei einer neuen Version einen dezenten Hinweis im Hauptfenster anzeigen.",
+        "title": "Automatisch nach Updates suchen"
       },
-      "reportRow": {
-        "title": "Problem melden",
-        "description": "Paket prüfen und dann an die Entwickler senden.",
-        "button": "Bericht senden…"
+      "description": "Hier gespeichert und von der Desktop-App angewendet. Ohne Wirkung in der Browservorschau.",
+      "fileAssociations": {
+        "description": "EPUB-, MOBI-, AZW3-, FB2-, CBZ-, CBR-, TXT-, HTML- und PDF-Dateien mit ReadAware öffnen.",
+        "title": "Dateizuordnungen"
       },
-      "logsRow": {
-        "title": "Protokolldateien",
-        "description": "Die rotierenden Protokolle, aus denen das Paket entsteht.",
-        "button": "Im Ordner zeigen"
+      "launchAtStartup": {
+        "description": "ReadAware automatisch öffnen, wenn du dich anmeldest.",
+        "title": "Beim Anmelden starten"
       },
-      "dialogTitle": "Diagnosebericht senden",
-      "previewBody": "Genau das wird gesendet – sonst verlässt nichts dein Gerät.",
-      "send": "Senden",
-      "cancel": "Abbrechen",
-      "done": "Fertig",
-      "sentBody": "Gesendet – danke. Gib diese Vorgangsnummer an, wenn du uns zu dem Problem kontaktierst:",
-      "noticeDone": "Fertig",
-      "noticeError": "Etwas ist schiefgelaufen",
-      "exportSuccess": "Diagnosepaket gespeichert.",
-      "exportError": "Das Paket konnte nicht erstellt oder gespeichert werden.",
-      "reportError": "Der Bericht konnte nicht gesendet werden. Du kannst das Paket stattdessen exportieren und per E-Mail schicken."
-    }
+      "title": "Desktop-Integration",
+      "whatsNewDialog": {
+        "description": "Nach einem Update einmalig einen kleinen Dialog mit den Neuerungen anzeigen.",
+        "title": "Hinweis nach Updates anzeigen"
+      }
+    },
+    "language": "Sprache",
+    "languagePrivacy": "Sprache & Datenschutz",
+    "onLaunch": "Beim Start",
+    "startView": "Startansicht",
+    "startViewOptions": {
+      "resume": "Letztes Buch fortsetzen",
+      "shelf": "Bibliotheksregal"
+    },
+    "title": "Allgemein"
   },
   "menus": {
-    "title": "Anpassen",
     "description": "Kopfleisten und Auswahlmenü anpassen: Einträge zwischen Sichtbar und Überlaufmenü ziehen und ordnen.",
-    "more": "Mehr",
-    "shown": "Sichtbar",
-    "overflow": "Überlaufmenü",
-    "reset": "Zurücksetzen",
     "dragHint": "Ziehen zum Ordnen oder Verschieben. Widgets bleiben inline.",
-    "surface": {
-      "primaryNav": "Hauptnavigation",
-      "shelfHeader": "Regal-Kopfleiste",
-      "readerHeader": "Reader-Kopfleiste",
-      "selection": "Auswahlmenü"
-    },
     "items": {
-      "library": "Bibliothek",
+      "addNote": "Notiz",
       "agent": "Agent",
-      "search": "Suche",
-      "import": "Importieren",
-      "viewControl": "Ansicht",
-      "stats": "Statistik",
-      "settings": "Einstellungen",
-      "toc": "Inhalt",
-      "notes": "Notizen",
       "appearance": "Darstellung",
+      "askAI": "KI fragen",
       "chat": "Chat",
       "copy": "Kopieren",
       "highlight": "Markieren",
+      "import": "Importieren",
+      "library": "Bibliothek",
+      "notes": "Notizen",
+      "search": "Suche",
+      "settings": "Einstellungen",
+      "stats": "Statistik",
+      "toc": "Inhalt",
       "underline": "Unterstreichen",
-      "addNote": "Notiz",
-      "askAI": "KI fragen"
-    }
+      "viewControl": "Ansicht"
+    },
+    "more": "Mehr",
+    "overflow": "Überlaufmenü",
+    "reset": "Zurücksetzen",
+    "shown": "Sichtbar",
+    "surface": {
+      "primaryNav": "Hauptnavigation",
+      "readerHeader": "Reader-Kopfleiste",
+      "selection": "Auswahlmenü",
+      "shelfHeader": "Regal-Kopfleiste"
+    },
+    "title": "Anpassen"
+  },
+  "pendingBadge": {
+    "comingSoon": "Demnächst"
+  },
+  "reading": {
+    "description": "Wie Bücher auf der Seite dargestellt werden. Änderungen wirken sich live auf den Reader aus.",
+    "fontSize": "Schriftgröße",
+    "fontWeight": "Schriftstärke",
+    "layout": "Layout",
+    "lineSpacing": "Zeilenabstand",
+    "pageColor": {
+      "description": "Das Papier des Buches. „Auto“ folgt dem App-Design; die anderen sind fest.",
+      "title": "Seitenfarbe"
+    },
+    "pageMargins": "Seitenränder",
+    "paragraphSpacing": "Absatzabstand",
+    "previewLabel": "Lesevorschau",
+    "previewSource": "Franz Kafka · Die Verwandlung",
+    "previewText": "Als Gregor Samsa eines Morgens aus unruhigen Träumen erwachte, fand er sich in seinem Bett zu einem ungeheueren Ungeziefer verwandelt.",
+    "previewTextSecondary": "»Was ist mit mir geschehen?« dachte er. Es war kein Traum…",
+    "readingMode": "Lesemodus",
+    "textAlign": "Textausrichtung",
+    "title": "Lesen",
+    "typography": "Typografie"
+  },
+  "sections": {
+    "about": "Über",
+    "ai": "KI",
+    "appearance": "Design",
+    "dataSync": "Daten & Sync",
+    "general": "Allgemein",
+    "menus": "Anpassen",
+    "plugins": "Plugins",
+    "reading": "Lesen",
+    "shortcuts": "Tastenkürzel"
+  },
+  "shortcuts": {
+    "actions": {
+      "close": "Dialog oder Overlay schließen",
+      "new-conversation": "Neue Unterhaltung",
+      "next-chapter": "Nächstes Kapitel",
+      "next-page": "Nächste Seite",
+      "prev-chapter": "Vorheriges Kapitel",
+      "prev-page": "Vorherige Seite",
+      "primary-nav": "Primäres Ziel wechseln",
+      "search": "Suche öffnen",
+      "selection-add-note": "Notiz hinzufügen",
+      "selection-ask-ai": "KI fragen",
+      "selection-copy": "Kopieren",
+      "selection-highlight": "Markieren",
+      "selection-look-up": "Nachschlagen",
+      "selection-underline": "Unterstreichen",
+      "settings": "Einstellungen öffnen",
+      "toggle-controls": "Reader-Steuerung umschalten"
+    },
+    "categories": {
+      "Global": "Global",
+      "Overlays": "Overlays",
+      "Plugins": "Plugins",
+      "Reading": "Lesen",
+      "Selection": "Auswahl"
+    },
+    "categoryDescriptions": {
+      "plugins": "Tasten für Befehle aus Plugins festlegen.",
+      "selection": "Aktiv, während Text im Reader ausgewählt ist."
+    },
+    "conflict": "Bereits verwendet von „{{label}}“",
+    "description": "Klicke auf ein Kürzel, um es neu zu belegen; drücke während der Aufnahme Esc zum Abbrechen.",
+    "notSet": "Nicht belegt",
+    "rebind": "{{label}} neu belegen",
+    "recording": "Kürzel drücken…",
+    "reset": "{{label}} zurücksetzen",
+    "resetAll": "Alle auf Standard zurücksetzen",
+    "title": "Tastenkürzel"
   }
 }

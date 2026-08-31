@@ -1,132 +1,134 @@
 {
-  "chat": {
-    "messageLabel": "訊息",
-    "placeholder": "詢問關於這本書…",
-    "placeholderWithPassage": "詢問關於這段文字…",
-    "send": "傳送",
-    "stopGenerating": "停止生成",
-    "loadingConversation": "正在載入對話",
-    "thinking": "思考中…",
-    "thought": "思考過程",
-    "tools": {
-      "search_memory": "正在回憶",
-      "remember": "正在記下這一點",
-      "search_conversation": "正在檢索過往對話",
-      "get_conversation_insights": "正在查看這本書的對話",
-      "list_books": "正在查看書架",
-      "get_book_overview": "正在查看書籍資訊",
-      "get_annotations": "正在閱讀你的標註",
-      "get_toc": "正在閱讀目錄",
-      "read_chapter": "正在閱讀章節",
-      "search_book_text": "正在檢索內文",
-      "list_collections": "正在查看書架分類",
-      "get_reading_stats": "正在查看閱讀統計",
-      "update_book": "正在更新書籍",
-      "manage_collection": "正在整理分類",
-      "delete_book": "正在移除書籍",
-      "delete_collection": "正在移除分類",
-      "create_annotation": "正在建立標註",
-      "edit_annotation": "正在更新標註",
-      "delete_annotation": "正在移除標註",
-      "open_book": "正在打開書籍",
-      "get_recent_turns": "回顧最近對話",
-      "get_settings": "查看設定",
-      "update_settings": "更新設定",
-      "input": "輸入",
-      "output": "輸出",
-      "running": "執行中…",
-      "fallback": "處理中",
-      "failed": "失敗"
+  "agent": {
+    "annotations": {
+      "title": "高亮與筆記"
     },
-    "interaction": {
-      "customAnswer": "其他答案",
-      "customAnswerLabel": "你的答案",
-      "customAnswerPlaceholder": "輸入不同的答案…",
-      "submit": "繼續",
-      "skip": "略過",
-      "answered": "已回答",
-      "skipped": "已略過",
-      "permission": {
-        "approved": "已允許",
-        "declined": "未允許",
-        "decline": "保留",
-        "deleteBook": {
-          "question": "要從書架刪除《{{subject}}》嗎？",
-          "description": "這會永久移除匯入的原始檔案和本機閱讀資料，且無法復原。",
-          "approve": "刪除書籍"
-        },
-        "deleteCollection": {
-          "question": "要刪除分類「{{subject}}」嗎？",
-          "description": "分類會被刪除，其中的書仍會保留在書架上，但不再屬於任何分類。",
-          "approve": "刪除分類"
-        },
-        "deleteAnnotation": {
-          "question": "要刪除這則標註嗎？",
-          "description": "「{{subject}}」會從你的閱讀上下文中永久移除。",
-          "approve": "刪除標註"
-        }
-      }
-    },
-    "references": {
-      "showAll": "顯示全部 {{count}} 條",
-      "showFewer": "收起",
-      "missingBook": "已不在書架上",
-      "openBook": "打開《{{title}}》",
-      "saveWord": "加入詞彙表",
-      "removeWord": "從詞彙表移除"
-    },
-    "message": {
-      "copy": "複製訊息",
-      "copied": "已複製",
-      "regenerate": "重新生成回覆",
-      "retry": "重試",
-      "failed": "生成失敗"
-    },
-    "removePassage": "移除段落",
     "empty": {
-      "title": "詢問關於這本書",
-      "description": "選取一段文字並選擇「詢問 AI」，或直接開始輸入。這段對話會與這本書一同保存。"
+      "description": "你閱讀時的螢光標示與筆記將顯示於此。",
+      "title": "尚無上下文"
     },
-    "error": {
-      "generic": "取得回覆時發生問題。",
-      "notConfigured": "尚未設定 AI，新增 API 金鑰後即可開始對話。"
+    "threads": {
+      "delete": "刪除討論串",
+      "new": "建立新對話",
+      "title": "討論串",
+      "untitled": "新對話"
+    },
+    "unknownBook": "不明書籍",
+    "vocabulary": {
+      "contextLabel": "語境釋義",
+      "empty": "還沒有儲存的詞。閱讀時查一個詞，點書籤即可儲存。",
+      "etymologyLabel": "詞源",
+      "remove": "移除",
+      "title": "詞彙表"
     }
-  },
-  "note": {
-    "addTitle": "新增筆記",
-    "editTitle": "編輯筆記",
-    "close": "關閉",
-    "bodyLabel": "你的筆記",
-    "placeholder": "你對這段文字有什麼想法？",
-    "delete": "刪除",
-    "cancel": "取消",
-    "save": "儲存",
-    "update": "更新"
   },
   "annotation": {
     "delete": "刪除"
   },
-  "agent": {
-    "threads": {
-      "title": "討論串",
-      "new": "建立新對話",
-      "untitled": "新對話",
-      "delete": "刪除討論串"
-    },
-    "unknownBook": "不明書籍",
+  "chat": {
     "empty": {
-      "title": "尚無上下文",
-      "description": "你閱讀時的螢光標示與筆記將顯示於此。"
+      "description": "選取一段文字並選擇「詢問 AI」，或直接開始輸入。這段對話會與這本書一同保存。",
+      "title": "詢問關於這本書"
     },
-    "annotations": {
-      "title": "高亮與筆記"
+    "error": {
+      "generic": "取得回覆時發生問題。",
+      "notConfigured": "尚未設定 AI，新增 API 金鑰後即可開始對話。"
     },
-    "vocabulary": {
-      "title": "詞彙表",
-      "empty": "還沒有儲存的詞。閱讀時查一個詞，點書籤即可儲存。",
-      "remove": "移除",
-      "contextLabel": "語境釋義",
-      "etymologyLabel": "詞源"
+    "interaction": {
+      "answered": "已回答",
+      "customAnswer": "其他答案",
+      "customAnswerLabel": "你的答案",
+      "customAnswerPlaceholder": "輸入不同的答案…",
+      "permission": {
+        "approved": "已允許",
+        "decline": "保留",
+        "declined": "未允許",
+        "deleteAnnotation": {
+          "approve": "刪除標註",
+          "description": "「{{subject}}」會從你的閱讀上下文中永久移除。",
+          "question": "要刪除這則標註嗎？"
+        },
+        "deleteBook": {
+          "approve": "刪除書籍",
+          "description": "這會永久移除匯入的原始檔案和本機閱讀資料，且無法復原。",
+          "question": "要從書架刪除《{{subject}}》嗎？"
+        },
+        "deleteCollection": {
+          "approve": "刪除分類",
+          "description": "分類會被刪除，其中的書仍會保留在書架上，但不再屬於任何分類。",
+          "question": "要刪除分類「{{subject}}」嗎？"
+        }
+      },
+      "skip": "略過",
+      "skipped": "已略過",
+      "submit": "繼續"
+    },
+    "loadingConversation": "正在載入對話",
+    "message": {
+      "copied": "已複製",
+      "copy": "複製訊息",
+      "failed": "生成失敗",
+      "regenerate": "重新生成回覆",
+      "retry": "重試"
+    },
+    "messageLabel": "訊息",
+    "placeholder": "詢問關於這本書…",
+    "placeholderWithPassage": "詢問關於這段文字…",
+    "references": {
+      "locked": "",
+      "missingBook": "已不在書架上",
+      "openBook": "打開《{{title}}》",
+      "removeWord": "從詞彙表移除",
+      "saveWord": "加入詞彙表",
+      "showAll": "顯示全部 {{count}} 條",
+      "showAll_other": "",
+      "showFewer": "收起"
+    },
+    "removePassage": "移除段落",
+    "send": "傳送",
+    "stopGenerating": "停止生成",
+    "thinking": "思考中…",
+    "thought": "思考過程",
+    "tools": {
+      "create_annotation": "正在建立標註",
+      "delete_annotation": "正在移除標註",
+      "delete_book": "正在移除書籍",
+      "delete_collection": "正在移除分類",
+      "edit_annotation": "正在更新標註",
+      "failed": "失敗",
+      "fallback": "處理中",
+      "get_annotations": "正在閱讀你的標註",
+      "get_book_overview": "正在查看書籍資訊",
+      "get_conversation_insights": "正在查看這本書的對話",
+      "get_reading_stats": "正在查看閱讀統計",
+      "get_recent_turns": "回顧最近對話",
+      "get_settings": "查看設定",
+      "get_toc": "正在閱讀目錄",
+      "input": "輸入",
+      "list_books": "正在查看書架",
+      "list_collections": "正在查看書架分類",
+      "manage_collection": "正在整理分類",
+      "open_book": "正在打開書籍",
+      "output": "輸出",
+      "read_chapter": "正在閱讀章節",
+      "remember": "正在記下這一點",
+      "running": "執行中…",
+      "search_book_text": "正在檢索內文",
+      "search_conversation": "正在檢索過往對話",
+      "search_memory": "正在回憶",
+      "update_book": "正在更新書籍",
+      "update_settings": "更新設定"
     }
+  },
+  "note": {
+    "addTitle": "新增筆記",
+    "bodyLabel": "你的筆記",
+    "cancel": "取消",
+    "close": "關閉",
+    "delete": "刪除",
+    "editTitle": "編輯筆記",
+    "placeholder": "你對這段文字有什麼想法？",
+    "save": "儲存",
+    "update": "更新"
   }
 }

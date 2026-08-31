@@ -1,133 +1,135 @@
 {
-  "chat": {
-    "messageLabel": "Message",
-    "placeholder": "Ask about this book…",
-    "placeholderWithPassage": "Ask about this passage…",
-    "send": "Send",
-    "stopGenerating": "Stop generating",
-    "loadingConversation": "Loading conversation",
-    "thinking": "Thinking…",
-    "thought": "Thought process",
-    "tools": {
-      "search_memory": "Recalling memories",
-      "remember": "Saving a memory",
-      "search_conversation": "Searching past conversations",
-      "get_conversation_insights": "Reviewing the book's thread",
-      "list_books": "Scanning the shelf",
-      "get_book_overview": "Looking up the book",
-      "get_annotations": "Reading your highlights",
-      "get_toc": "Reading the table of contents",
-      "read_chapter": "Reading a chapter",
-      "search_book_text": "Searching the text",
-      "list_collections": "Reviewing collections",
-      "get_reading_stats": "Reviewing reading activity",
-      "update_book": "Updating the book",
-      "manage_collection": "Organizing collections",
-      "delete_book": "Removing a book",
-      "delete_collection": "Removing a collection",
-      "create_annotation": "Creating an annotation",
-      "edit_annotation": "Updating an annotation",
-      "delete_annotation": "Removing an annotation",
-      "open_book": "Opening the book",
-      "get_recent_turns": "Reviewing recent turns",
-      "get_settings": "Reading settings",
-      "update_settings": "Updating settings",
-      "input": "Input",
-      "output": "Output",
-      "running": "Running…",
-      "fallback": "Working",
-      "failed": "failed"
+  "agent": {
+    "annotations": {
+      "title": "Highlights & notes"
     },
-    "interaction": {
-      "customAnswer": "Something else",
-      "customAnswerLabel": "Your answer",
-      "customAnswerPlaceholder": "Type a different answer…",
-      "submit": "Continue",
-      "skip": "Skip",
-      "answered": "Answered",
-      "skipped": "Skipped",
-      "permission": {
-        "approved": "Approved",
-        "declined": "Not approved",
-        "decline": "Keep it",
-        "deleteBook": {
-          "question": "Delete “{{subject}}” from your shelf?",
-          "description": "This permanently removes the imported source file and its local reading data. This cannot be undone.",
-          "approve": "Delete book"
-        },
-        "deleteCollection": {
-          "question": "Delete the collection “{{subject}}”?",
-          "description": "The collection will be removed. Its books will stay on your shelf without a collection.",
-          "approve": "Delete collection"
-        },
-        "deleteAnnotation": {
-          "question": "Delete this annotation?",
-          "description": "“{{subject}}” will be permanently removed from your reading context.",
-          "approve": "Delete annotation"
-        }
-      }
-    },
-    "references": {
-      "showAll": "Show all {{count}}",
-      "showFewer": "Show fewer",
-      "missingBook": "No longer on the shelf",
-      "locked": "Locked folder — unlock to preview",
-      "openBook": "Open {{title}}",
-      "saveWord": "Add to vocabulary",
-      "removeWord": "Remove from vocabulary"
-    },
-    "message": {
-      "copy": "Copy message",
-      "copied": "Copied",
-      "regenerate": "Regenerate response",
-      "retry": "Retry",
-      "failed": "Generation failed"
-    },
-    "removePassage": "Remove passage",
     "empty": {
-      "title": "Ask about this book",
-      "description": "Select a passage and choose Ask AI, or just start typing. This conversation stays with the book."
+      "description": "Highlights and notes from your reading will appear here.",
+      "title": "No context yet"
     },
-    "error": {
-      "generic": "Something went wrong getting a reply.",
-      "notConfigured": "AI isn't set up yet — add an API key to start chatting."
+    "threads": {
+      "delete": "Delete thread",
+      "new": "New conversation",
+      "title": "Threads",
+      "untitled": "New conversation"
+    },
+    "unknownBook": "Unknown Book",
+    "vocabulary": {
+      "contextLabel": "In context",
+      "empty": "No saved words yet. Look up a word while reading and tap the bookmark to save it.",
+      "etymologyLabel": "Origin",
+      "remove": "Remove",
+      "title": "Vocabulary"
     }
-  },
-  "note": {
-    "addTitle": "Add Note",
-    "editTitle": "Edit Note",
-    "close": "Close",
-    "bodyLabel": "Your note",
-    "placeholder": "What are your thoughts on this passage?",
-    "delete": "Delete",
-    "cancel": "Cancel",
-    "save": "Save",
-    "update": "Update"
   },
   "annotation": {
     "delete": "Delete"
   },
-  "agent": {
-    "threads": {
-      "title": "Threads",
-      "new": "New conversation",
-      "untitled": "New conversation",
-      "delete": "Delete thread"
-    },
-    "unknownBook": "Unknown Book",
+  "chat": {
     "empty": {
-      "title": "No context yet",
-      "description": "Highlights and notes from your reading will appear here."
+      "description": "Select a passage and choose Ask AI, or just start typing. This conversation stays with the book.",
+      "title": "Ask about this book"
     },
-    "annotations": {
-      "title": "Highlights & notes"
+    "error": {
+      "generic": "Something went wrong getting a reply.",
+      "notConfigured": "AI isn't set up yet — add an API key to start chatting."
     },
-    "vocabulary": {
-      "title": "Vocabulary",
-      "empty": "No saved words yet. Look up a word while reading and tap the bookmark to save it.",
-      "remove": "Remove",
-      "contextLabel": "In context",
-      "etymologyLabel": "Origin"
+    "interaction": {
+      "answered": "Answered",
+      "customAnswer": "Something else",
+      "customAnswerLabel": "Your answer",
+      "customAnswerPlaceholder": "Type a different answer…",
+      "permission": {
+        "approved": "Approved",
+        "decline": "Keep it",
+        "declined": "Not approved",
+        "deleteAnnotation": {
+          "approve": "Delete annotation",
+          "description": "“{{subject}}” will be permanently removed from your reading context.",
+          "question": "Delete this annotation?"
+        },
+        "deleteBook": {
+          "approve": "Delete book",
+          "description": "This permanently removes the imported source file and its local reading data. This cannot be undone.",
+          "question": "Delete “{{subject}}” from your shelf?"
+        },
+        "deleteCollection": {
+          "approve": "Delete collection",
+          "description": "The collection will be removed. Its books will stay on your shelf without a collection.",
+          "question": "Delete the collection “{{subject}}”?"
+        }
+      },
+      "skip": "Skip",
+      "skipped": "Skipped",
+      "submit": "Continue"
+    },
+    "loadingConversation": "Loading conversation",
+    "message": {
+      "copied": "Copied",
+      "copy": "Copy message",
+      "failed": "Generation failed",
+      "regenerate": "Regenerate response",
+      "retry": "Retry"
+    },
+    "messageLabel": "Message",
+    "placeholder": "Ask about this book…",
+    "placeholderWithPassage": "Ask about this passage…",
+    "references": {
+      "locked": "Locked folder — unlock to preview",
+      "missingBook": "No longer on the shelf",
+      "openBook": "Open {{title}}",
+      "removeWord": "Remove from vocabulary",
+      "saveWord": "Add to vocabulary",
+      "showAll": "Show all {{count}}",
+      "showAll_one": "chat.references.showAll",
+      "showAll_other": "chat.references.showAll",
+      "showFewer": "Show fewer"
+    },
+    "removePassage": "Remove passage",
+    "send": "Send",
+    "stopGenerating": "Stop generating",
+    "thinking": "Thinking…",
+    "thought": "Thought process",
+    "tools": {
+      "create_annotation": "Creating an annotation",
+      "delete_annotation": "Removing an annotation",
+      "delete_book": "Removing a book",
+      "delete_collection": "Removing a collection",
+      "edit_annotation": "Updating an annotation",
+      "failed": "failed",
+      "fallback": "Working",
+      "get_annotations": "Reading your highlights",
+      "get_book_overview": "Looking up the book",
+      "get_conversation_insights": "Reviewing the book's thread",
+      "get_reading_stats": "Reviewing reading activity",
+      "get_recent_turns": "Reviewing recent turns",
+      "get_settings": "Reading settings",
+      "get_toc": "Reading the table of contents",
+      "input": "Input",
+      "list_books": "Scanning the shelf",
+      "list_collections": "Reviewing collections",
+      "manage_collection": "Organizing collections",
+      "open_book": "Opening the book",
+      "output": "Output",
+      "read_chapter": "Reading a chapter",
+      "remember": "Saving a memory",
+      "running": "Running…",
+      "search_book_text": "Searching the text",
+      "search_conversation": "Searching past conversations",
+      "search_memory": "Recalling memories",
+      "update_book": "Updating the book",
+      "update_settings": "Updating settings"
     }
+  },
+  "note": {
+    "addTitle": "Add Note",
+    "bodyLabel": "Your note",
+    "cancel": "Cancel",
+    "close": "Close",
+    "delete": "Delete",
+    "editTitle": "Edit Note",
+    "placeholder": "What are your thoughts on this passage?",
+    "save": "Save",
+    "update": "Update"
   }
 }

@@ -1,8 +1,8 @@
 {
+  "avatar": "头像",
+  "breadcrumb": "面包屑导航",
   "loading": "加载中",
   "progress": "进度",
-  "tabs": "标签页",
-  "breadcrumb": "面包屑导航",
-  "avatar": "头像",
-  "remove": "移除 {{name}}"
+  "remove": "移除 {{name}}",
+  "tabs": "标签页"
 }

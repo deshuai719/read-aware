@@ -1,132 +1,136 @@
 {
-  "chat": {
-    "messageLabel": "Message",
-    "placeholder": "Posez une question sur ce livre…",
-    "placeholderWithPassage": "Posez une question sur ce passage…",
-    "send": "Envoyer",
-    "stopGenerating": "Arrêter la génération",
-    "loadingConversation": "Chargement de la conversation",
-    "thinking": "Réflexion…",
-    "thought": "Cheminement de pensée",
-    "tools": {
-      "search_memory": "Rappel des souvenirs",
-      "remember": "Enregistrement d'un souvenir",
-      "search_conversation": "Recherche dans les conversations passées",
-      "get_conversation_insights": "Relecture du fil du livre",
-      "list_books": "Parcours de la bibliothèque",
-      "get_book_overview": "Consultation du livre",
-      "get_annotations": "Lecture de vos surlignages",
-      "get_toc": "Lecture de la table des matières",
-      "read_chapter": "Lecture d'un chapitre",
-      "search_book_text": "Recherche dans le texte",
-      "list_collections": "Consultation des collections",
-      "get_reading_stats": "Consultation de l’activité de lecture",
-      "update_book": "Mise à jour du livre",
-      "manage_collection": "Organisation des collections",
-      "delete_book": "Suppression d’un livre",
-      "delete_collection": "Suppression d’une collection",
-      "create_annotation": "Création d’une annotation",
-      "edit_annotation": "Mise à jour d’une annotation",
-      "delete_annotation": "Suppression d’une annotation",
-      "open_book": "Ouverture du livre",
-      "get_recent_turns": "Relecture des échanges récents",
-      "get_settings": "Consultation des réglages",
-      "update_settings": "Mise à jour des réglages",
-      "input": "Entrée",
-      "output": "Sortie",
-      "running": "Exécution…",
-      "fallback": "En cours",
-      "failed": "échec"
+  "agent": {
+    "annotations": {
+      "title": "Surlignages et notes"
     },
-    "interaction": {
-      "customAnswer": "Autre réponse",
-      "customAnswerLabel": "Votre réponse",
-      "customAnswerPlaceholder": "Saisissez une autre réponse…",
-      "submit": "Continuer",
-      "skip": "Ignorer",
-      "answered": "Répondu",
-      "skipped": "Ignoré",
-      "permission": {
-        "approved": "Autorisé",
-        "declined": "Non autorisé",
-        "decline": "Conserver",
-        "deleteBook": {
-          "question": "Supprimer « {{subject}} » de votre bibliothèque ?",
-          "description": "Le fichier source importé et ses données de lecture locales seront définitivement supprimés. Cette action est irréversible.",
-          "approve": "Supprimer le livre"
-        },
-        "deleteCollection": {
-          "question": "Supprimer la collection « {{subject}} » ?",
-          "description": "La collection sera supprimée. Ses livres resteront dans votre bibliothèque sans collection.",
-          "approve": "Supprimer la collection"
-        },
-        "deleteAnnotation": {
-          "question": "Supprimer cette annotation ?",
-          "description": "« {{subject}} » sera définitivement retiré de votre contexte de lecture.",
-          "approve": "Supprimer l’annotation"
-        }
-      }
-    },
-    "references": {
-      "showAll": "Tout afficher ({{count}})",
-      "showFewer": "Afficher moins",
-      "missingBook": "N'est plus dans la bibliothèque",
-      "openBook": "Ouvrir {{title}}",
-      "saveWord": "Ajouter au lexique",
-      "removeWord": "Retirer du lexique"
-    },
-    "message": {
-      "copy": "Copier le message",
-      "copied": "Copié",
-      "regenerate": "Régénérer la réponse",
-      "retry": "Réessayer",
-      "failed": "Échec de la génération"
-    },
-    "removePassage": "Retirer le passage",
     "empty": {
-      "title": "Posez une question sur ce livre",
-      "description": "Sélectionnez un passage et choisissez Demander à l’IA, ou commencez simplement à écrire. Cette conversation reste liée au livre."
+      "description": "Les surlignages et notes de vos lectures apparaîtront ici.",
+      "title": "Aucun contexte pour l’instant"
     },
-    "error": {
-      "generic": "Une erreur s’est produite lors de l’obtention d’une réponse.",
-      "notConfigured": "L'IA n'est pas encore configurée — ajoutez une clé API pour commencer à discuter."
+    "threads": {
+      "delete": "Supprimer le fil",
+      "new": "Nouvelle conversation",
+      "title": "Fils",
+      "untitled": "Nouvelle conversation"
+    },
+    "unknownBook": "Livre inconnu",
+    "vocabulary": {
+      "contextLabel": "En contexte",
+      "empty": "Aucun mot enregistré. Cherchez un mot pendant la lecture et touchez le signet pour l'enregistrer.",
+      "etymologyLabel": "Origine",
+      "remove": "Retirer",
+      "title": "Lexique"
     }
-  },
-  "note": {
-    "addTitle": "Ajouter une note",
-    "editTitle": "Modifier la note",
-    "close": "Fermer",
-    "bodyLabel": "Votre note",
-    "placeholder": "Que pensez-vous de ce passage ?",
-    "delete": "Supprimer",
-    "cancel": "Annuler",
-    "save": "Enregistrer",
-    "update": "Mettre à jour"
   },
   "annotation": {
     "delete": "Supprimer"
   },
-  "agent": {
-    "threads": {
-      "title": "Fils",
-      "new": "Nouvelle conversation",
-      "untitled": "Nouvelle conversation",
-      "delete": "Supprimer le fil"
-    },
-    "unknownBook": "Livre inconnu",
+  "chat": {
     "empty": {
-      "title": "Aucun contexte pour l’instant",
-      "description": "Les surlignages et notes de vos lectures apparaîtront ici."
+      "description": "Sélectionnez un passage et choisissez Demander à l’IA, ou commencez simplement à écrire. Cette conversation reste liée au livre.",
+      "title": "Posez une question sur ce livre"
     },
-    "annotations": {
-      "title": "Surlignages et notes"
+    "error": {
+      "generic": "Une erreur s’est produite lors de l’obtention d’une réponse.",
+      "notConfigured": "L'IA n'est pas encore configurée — ajoutez une clé API pour commencer à discuter."
     },
-    "vocabulary": {
-      "title": "Lexique",
-      "empty": "Aucun mot enregistré. Cherchez un mot pendant la lecture et touchez le signet pour l'enregistrer.",
-      "remove": "Retirer",
-      "contextLabel": "En contexte",
-      "etymologyLabel": "Origine"
+    "interaction": {
+      "answered": "Répondu",
+      "customAnswer": "Autre réponse",
+      "customAnswerLabel": "Votre réponse",
+      "customAnswerPlaceholder": "Saisissez une autre réponse…",
+      "permission": {
+        "approved": "Autorisé",
+        "decline": "Conserver",
+        "declined": "Non autorisé",
+        "deleteAnnotation": {
+          "approve": "Supprimer l’annotation",
+          "description": "« {{subject}} » sera définitivement retiré de votre contexte de lecture.",
+          "question": "Supprimer cette annotation ?"
+        },
+        "deleteBook": {
+          "approve": "Supprimer le livre",
+          "description": "Le fichier source importé et ses données de lecture locales seront définitivement supprimés. Cette action est irréversible.",
+          "question": "Supprimer « {{subject}} » de votre bibliothèque ?"
+        },
+        "deleteCollection": {
+          "approve": "Supprimer la collection",
+          "description": "La collection sera supprimée. Ses livres resteront dans votre bibliothèque sans collection.",
+          "question": "Supprimer la collection « {{subject}} » ?"
+        }
+      },
+      "skip": "Ignorer",
+      "skipped": "Ignoré",
+      "submit": "Continuer"
+    },
+    "loadingConversation": "Chargement de la conversation",
+    "message": {
+      "copied": "Copié",
+      "copy": "Copier le message",
+      "failed": "Échec de la génération",
+      "regenerate": "Régénérer la réponse",
+      "retry": "Réessayer"
+    },
+    "messageLabel": "Message",
+    "placeholder": "Posez une question sur ce livre…",
+    "placeholderWithPassage": "Posez une question sur ce passage…",
+    "references": {
+      "locked": "",
+      "missingBook": "N'est plus dans la bibliothèque",
+      "openBook": "Ouvrir {{title}}",
+      "removeWord": "Retirer du lexique",
+      "saveWord": "Ajouter au lexique",
+      "showAll": "Tout afficher ({{count}})",
+      "showAll_one": "",
+      "showAll_many": "",
+      "showAll_other": "",
+      "showFewer": "Afficher moins"
+    },
+    "removePassage": "Retirer le passage",
+    "send": "Envoyer",
+    "stopGenerating": "Arrêter la génération",
+    "thinking": "Réflexion…",
+    "thought": "Cheminement de pensée",
+    "tools": {
+      "create_annotation": "Création d’une annotation",
+      "delete_annotation": "Suppression d’une annotation",
+      "delete_book": "Suppression d’un livre",
+      "delete_collection": "Suppression d’une collection",
+      "edit_annotation": "Mise à jour d’une annotation",
+      "failed": "échec",
+      "fallback": "En cours",
+      "get_annotations": "Lecture de vos surlignages",
+      "get_book_overview": "Consultation du livre",
+      "get_conversation_insights": "Relecture du fil du livre",
+      "get_reading_stats": "Consultation de l’activité de lecture",
+      "get_recent_turns": "Relecture des échanges récents",
+      "get_settings": "Consultation des réglages",
+      "get_toc": "Lecture de la table des matières",
+      "input": "Entrée",
+      "list_books": "Parcours de la bibliothèque",
+      "list_collections": "Consultation des collections",
+      "manage_collection": "Organisation des collections",
+      "open_book": "Ouverture du livre",
+      "output": "Sortie",
+      "read_chapter": "Lecture d'un chapitre",
+      "remember": "Enregistrement d'un souvenir",
+      "running": "Exécution…",
+      "search_book_text": "Recherche dans le texte",
+      "search_conversation": "Recherche dans les conversations passées",
+      "search_memory": "Rappel des souvenirs",
+      "update_book": "Mise à jour du livre",
+      "update_settings": "Mise à jour des réglages"
     }
+  },
+  "note": {
+    "addTitle": "Ajouter une note",
+    "bodyLabel": "Votre note",
+    "cancel": "Annuler",
+    "close": "Fermer",
+    "delete": "Supprimer",
+    "editTitle": "Modifier la note",
+    "placeholder": "Que pensez-vous de ce passage ?",
+    "save": "Enregistrer",
+    "update": "Mettre à jour"
   }
 }

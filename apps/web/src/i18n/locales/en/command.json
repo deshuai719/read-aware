@@ -1,74 +1,74 @@
 {
-  "search": {
-    "placeholder": "Search books, collections, commands…"
+  "actions": {
+    "goAgent": {
+      "keywords": "agent ai chat ask context notes",
+      "title": "Ask ReadAware"
+    },
+    "goShelf": {
+      "keywords": "shelf books home",
+      "title": "Library"
+    },
+    "goStats": {
+      "keywords": "statistics charts streak time",
+      "title": "Reading stats"
+    },
+    "import": {
+      "keywords": "add file epub pdf",
+      "title": "Import book"
+    },
+    "openSettings": {
+      "keywords": "preferences appearance",
+      "title": "Settings"
+    },
+    "select": {
+      "keywords": "batch multiple manage",
+      "title": "Select books"
+    }
+  },
+  "collection": {
+    "keywords": "collection folder group",
+    "subtitle": "Collection"
+  },
+  "footer": {
+    "close": "Esc Close",
+    "navigate": "↑↓ Navigate",
+    "run": "↵ Run"
+  },
+  "group": {
+    "by": {
+      "author": "Group by author",
+      "format": "Group by format",
+      "status": "Group by reading status"
+    },
+    "keywords": "group section",
+    "none": "Don’t group"
+  },
+  "groups": {
+    "books": "Books",
+    "collections": "Collections",
+    "goto": "Go to",
+    "plugins": "Plugins",
+    "shelf": "Shelf"
+  },
+  "layout": {
+    "grid": "Switch to grid view",
+    "keywords": "layout grid list view",
+    "list": "Switch to list view"
   },
   "noMatches": "No matches for “{{query}}”",
   "results_one": "{{count}} result",
   "results_other": "{{count}} results",
-  "footer": {
-    "navigate": "↑↓ Navigate",
-    "run": "↵ Run",
-    "close": "Esc Close"
-  },
-  "groups": {
-    "goto": "Go to",
-    "shelf": "Shelf",
-    "collections": "Collections",
-    "books": "Books",
-    "plugins": "Plugins"
-  },
-  "actions": {
-    "goShelf": {
-      "title": "Library",
-      "keywords": "shelf books home"
-    },
-    "goStats": {
-      "title": "Reading stats",
-      "keywords": "statistics charts streak time"
-    },
-    "openSettings": {
-      "title": "Settings",
-      "keywords": "preferences appearance"
-    },
-    "import": {
-      "title": "Import book",
-      "keywords": "add file epub pdf"
-    },
-    "select": {
-      "title": "Select books",
-      "keywords": "batch multiple manage"
-    },
-    "goAgent": {
-      "title": "Ask ReadAware",
-      "keywords": "agent ai chat ask context notes"
-    }
-  },
-  "layout": {
-    "grid": "Switch to grid view",
-    "list": "Switch to list view",
-    "keywords": "layout grid list view"
+  "search": {
+    "placeholder": "Search books, collections, commands…"
   },
   "sort": {
-    "keywords": "order sort",
     "by": {
-      "recent": "Sort by recently opened",
       "added": "Sort by recently added",
-      "title": "Sort by title",
       "author": "Sort by author",
-      "progress": "Sort by progress"
-    }
-  },
-  "group": {
-    "keywords": "group section",
-    "none": "Don’t group",
-    "by": {
-      "status": "Group by reading status",
-      "author": "Group by author",
-      "format": "Group by format"
-    }
-  },
-  "collection": {
-    "subtitle": "Collection",
-    "keywords": "collection folder group"
+      "progress": "Sort by progress",
+      "recent": "Sort by recently opened",
+      "title": "Sort by title"
+    },
+    "keywords": "order sort"
   }
 }

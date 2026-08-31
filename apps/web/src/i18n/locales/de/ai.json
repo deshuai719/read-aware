@@ -1,132 +1,135 @@
 {
-  "chat": {
-    "messageLabel": "Nachricht",
-    "placeholder": "Frag etwas über dieses Buch…",
-    "placeholderWithPassage": "Frag etwas über diese Passage…",
-    "send": "Senden",
-    "stopGenerating": "Generierung stoppen",
-    "loadingConversation": "Unterhaltung wird geladen",
-    "thinking": "Denkt nach…",
-    "thought": "Gedankengang",
-    "tools": {
-      "search_memory": "Ruft Erinnerungen ab",
-      "remember": "Speichert eine Erinnerung",
-      "search_conversation": "Durchsucht frühere Gespräche",
-      "get_conversation_insights": "Sieht den Buch-Thread durch",
-      "list_books": "Sieht das Regal durch",
-      "get_book_overview": "Schlägt das Buch nach",
-      "get_annotations": "Liest deine Markierungen",
-      "get_toc": "Liest das Inhaltsverzeichnis",
-      "read_chapter": "Liest ein Kapitel",
-      "search_book_text": "Durchsucht den Text",
-      "list_collections": "Prüft Sammlungen",
-      "get_reading_stats": "Prüft die Leseaktivität",
-      "update_book": "Aktualisiert das Buch",
-      "manage_collection": "Organisiert Sammlungen",
-      "delete_book": "Entfernt ein Buch",
-      "delete_collection": "Entfernt eine Sammlung",
-      "create_annotation": "Erstellt eine Anmerkung",
-      "edit_annotation": "Aktualisiert eine Anmerkung",
-      "delete_annotation": "Entfernt eine Annotation",
-      "open_book": "Öffnet das Buch",
-      "get_recent_turns": "Prüft die letzten Gesprächsschritte",
-      "get_settings": "Prüft Einstellungen",
-      "update_settings": "Aktualisiert Einstellungen",
-      "input": "Eingabe",
-      "output": "Ausgabe",
-      "running": "Wird ausgeführt…",
-      "fallback": "Arbeitet",
-      "failed": "fehlgeschlagen"
+  "agent": {
+    "annotations": {
+      "title": "Markierungen & Notizen"
     },
-    "interaction": {
-      "customAnswer": "Etwas anderes",
-      "customAnswerLabel": "Deine Antwort",
-      "customAnswerPlaceholder": "Andere Antwort eingeben…",
-      "submit": "Weiter",
-      "skip": "Überspringen",
-      "answered": "Beantwortet",
-      "skipped": "Übersprungen",
-      "permission": {
-        "approved": "Genehmigt",
-        "declined": "Nicht genehmigt",
-        "decline": "Behalten",
-        "deleteBook": {
-          "question": "„{{subject}}“ aus dem Regal löschen?",
-          "description": "Dadurch werden die importierte Quelldatei und die lokalen Lesedaten dauerhaft entfernt. Dies kann nicht rückgängig gemacht werden.",
-          "approve": "Buch löschen"
-        },
-        "deleteCollection": {
-          "question": "Die Sammlung „{{subject}}“ löschen?",
-          "description": "Die Sammlung wird entfernt. Ihre Bücher bleiben ohne Sammlung im Regal.",
-          "approve": "Sammlung löschen"
-        },
-        "deleteAnnotation": {
-          "question": "Diese Annotation löschen?",
-          "description": "„{{subject}}“ wird dauerhaft aus deinem Lesekontext entfernt.",
-          "approve": "Annotation löschen"
-        }
-      }
-    },
-    "references": {
-      "showAll": "Alle {{count}} anzeigen",
-      "showFewer": "Weniger anzeigen",
-      "missingBook": "Nicht mehr im Regal",
-      "openBook": "{{title}} öffnen",
-      "saveWord": "Zum Vokabular hinzufügen",
-      "removeWord": "Aus dem Vokabular entfernen"
-    },
-    "message": {
-      "copy": "Nachricht kopieren",
-      "copied": "Kopiert",
-      "regenerate": "Antwort neu generieren",
-      "retry": "Erneut versuchen",
-      "failed": "Generierung fehlgeschlagen"
-    },
-    "removePassage": "Passage entfernen",
     "empty": {
-      "title": "Frag zu diesem Buch",
-      "description": "Wähle eine Passage aus und wähle „KI fragen“, oder tippe einfach los. Diese Unterhaltung bleibt beim Buch."
+      "description": "Markierungen und Notizen aus deinem Lesen erscheinen hier.",
+      "title": "Noch kein Kontext"
     },
-    "error": {
-      "generic": "Beim Abrufen einer Antwort ist etwas schiefgelaufen.",
-      "notConfigured": "KI ist noch nicht eingerichtet — fügen Sie einen API-Schlüssel hinzu, um zu chatten."
+    "threads": {
+      "delete": "Thread löschen",
+      "new": "Neue Unterhaltung",
+      "title": "Threads",
+      "untitled": "Neue Unterhaltung"
+    },
+    "unknownBook": "Unbekanntes Buch",
+    "vocabulary": {
+      "contextLabel": "Im Kontext",
+      "empty": "Noch keine gespeicherten Wörter. Schlage beim Lesen ein Wort nach und tippe auf das Lesezeichen zum Speichern.",
+      "etymologyLabel": "Herkunft",
+      "remove": "Entfernen",
+      "title": "Vokabular"
     }
-  },
-  "note": {
-    "addTitle": "Notiz hinzufügen",
-    "editTitle": "Notiz bearbeiten",
-    "close": "Schließen",
-    "bodyLabel": "Deine Notiz",
-    "placeholder": "Was denkst du über diese Passage?",
-    "delete": "Löschen",
-    "cancel": "Abbrechen",
-    "save": "Speichern",
-    "update": "Aktualisieren"
   },
   "annotation": {
     "delete": "Löschen"
   },
-  "agent": {
-    "threads": {
-      "title": "Threads",
-      "new": "Neue Unterhaltung",
-      "untitled": "Neue Unterhaltung",
-      "delete": "Thread löschen"
-    },
-    "unknownBook": "Unbekanntes Buch",
+  "chat": {
     "empty": {
-      "title": "Noch kein Kontext",
-      "description": "Markierungen und Notizen aus deinem Lesen erscheinen hier."
+      "description": "Wähle eine Passage aus und wähle „KI fragen“, oder tippe einfach los. Diese Unterhaltung bleibt beim Buch.",
+      "title": "Frag zu diesem Buch"
     },
-    "annotations": {
-      "title": "Markierungen & Notizen"
+    "error": {
+      "generic": "Beim Abrufen einer Antwort ist etwas schiefgelaufen.",
+      "notConfigured": "KI ist noch nicht eingerichtet — fügen Sie einen API-Schlüssel hinzu, um zu chatten."
     },
-    "vocabulary": {
-      "title": "Vokabular",
-      "empty": "Noch keine gespeicherten Wörter. Schlage beim Lesen ein Wort nach und tippe auf das Lesezeichen zum Speichern.",
-      "remove": "Entfernen",
-      "contextLabel": "Im Kontext",
-      "etymologyLabel": "Herkunft"
+    "interaction": {
+      "answered": "Beantwortet",
+      "customAnswer": "Etwas anderes",
+      "customAnswerLabel": "Deine Antwort",
+      "customAnswerPlaceholder": "Andere Antwort eingeben…",
+      "permission": {
+        "approved": "Genehmigt",
+        "decline": "Behalten",
+        "declined": "Nicht genehmigt",
+        "deleteAnnotation": {
+          "approve": "Annotation löschen",
+          "description": "„{{subject}}“ wird dauerhaft aus deinem Lesekontext entfernt.",
+          "question": "Diese Annotation löschen?"
+        },
+        "deleteBook": {
+          "approve": "Buch löschen",
+          "description": "Dadurch werden die importierte Quelldatei und die lokalen Lesedaten dauerhaft entfernt. Dies kann nicht rückgängig gemacht werden.",
+          "question": "„{{subject}}“ aus dem Regal löschen?"
+        },
+        "deleteCollection": {
+          "approve": "Sammlung löschen",
+          "description": "Die Sammlung wird entfernt. Ihre Bücher bleiben ohne Sammlung im Regal.",
+          "question": "Die Sammlung „{{subject}}“ löschen?"
+        }
+      },
+      "skip": "Überspringen",
+      "skipped": "Übersprungen",
+      "submit": "Weiter"
+    },
+    "loadingConversation": "Unterhaltung wird geladen",
+    "message": {
+      "copied": "Kopiert",
+      "copy": "Nachricht kopieren",
+      "failed": "Generierung fehlgeschlagen",
+      "regenerate": "Antwort neu generieren",
+      "retry": "Erneut versuchen"
+    },
+    "messageLabel": "Nachricht",
+    "placeholder": "Frag etwas über dieses Buch…",
+    "placeholderWithPassage": "Frag etwas über diese Passage…",
+    "references": {
+      "locked": "",
+      "missingBook": "Nicht mehr im Regal",
+      "openBook": "{{title}} öffnen",
+      "removeWord": "Aus dem Vokabular entfernen",
+      "saveWord": "Zum Vokabular hinzufügen",
+      "showAll": "Alle {{count}} anzeigen",
+      "showAll_one": "",
+      "showAll_other": "",
+      "showFewer": "Weniger anzeigen"
+    },
+    "removePassage": "Passage entfernen",
+    "send": "Senden",
+    "stopGenerating": "Generierung stoppen",
+    "thinking": "Denkt nach…",
+    "thought": "Gedankengang",
+    "tools": {
+      "create_annotation": "Erstellt eine Anmerkung",
+      "delete_annotation": "Entfernt eine Annotation",
+      "delete_book": "Entfernt ein Buch",
+      "delete_collection": "Entfernt eine Sammlung",
+      "edit_annotation": "Aktualisiert eine Anmerkung",
+      "failed": "fehlgeschlagen",
+      "fallback": "Arbeitet",
+      "get_annotations": "Liest deine Markierungen",
+      "get_book_overview": "Schlägt das Buch nach",
+      "get_conversation_insights": "Sieht den Buch-Thread durch",
+      "get_reading_stats": "Prüft die Leseaktivität",
+      "get_recent_turns": "Prüft die letzten Gesprächsschritte",
+      "get_settings": "Prüft Einstellungen",
+      "get_toc": "Liest das Inhaltsverzeichnis",
+      "input": "Eingabe",
+      "list_books": "Sieht das Regal durch",
+      "list_collections": "Prüft Sammlungen",
+      "manage_collection": "Organisiert Sammlungen",
+      "open_book": "Öffnet das Buch",
+      "output": "Ausgabe",
+      "read_chapter": "Liest ein Kapitel",
+      "remember": "Speichert eine Erinnerung",
+      "running": "Wird ausgeführt…",
+      "search_book_text": "Durchsucht den Text",
+      "search_conversation": "Durchsucht frühere Gespräche",
+      "search_memory": "Ruft Erinnerungen ab",
+      "update_book": "Aktualisiert das Buch",
+      "update_settings": "Aktualisiert Einstellungen"
     }
+  },
+  "note": {
+    "addTitle": "Notiz hinzufügen",
+    "bodyLabel": "Deine Notiz",
+    "cancel": "Abbrechen",
+    "close": "Schließen",
+    "delete": "Löschen",
+    "editTitle": "Notiz bearbeiten",
+    "placeholder": "Was denkst du über diese Passage?",
+    "save": "Speichern",
+    "update": "Aktualisieren"
   }
 }

@@ -2,11 +2,48 @@
   "actions": {
     "backToLibrary": "ライブラリに戻る",
     "dismiss": "閉じる",
-    "openSettings": "設定を開く"
+    "goAgent": {
+      "keywords": "",
+      "title": ""
+    },
+    "goShelf": {
+      "keywords": "",
+      "title": ""
+    },
+    "goStats": {
+      "keywords": "",
+      "title": ""
+    },
+    "import": {
+      "keywords": "",
+      "title": ""
+    },
+    "openSettings": "設定を開く",
+    "select": {
+      "keywords": "",
+      "title": ""
+    }
+  },
+  "collection": {
+    "keywords": "",
+    "subtitle": ""
   },
   "errorBoundary": {
-    "title": "この画面で問題が発生しました",
     "body": "エラーはログに記録されました。ReadAware の他の部分はそのまま利用できます。もう一度お試しください。",
-    "retry": "再試行"
+    "retry": "再試行",
+    "title": "この画面で問題が発生しました"
+  },
+  "group": {
+    "keywords": "",
+    "none": ""
+  },
+  "layout": {
+    "keywords": ""
+  },
+  "settings": {
+    "updateAvailableToast": ""
+  },
+  "sort": {
+    "keywords": ""
   }
 }

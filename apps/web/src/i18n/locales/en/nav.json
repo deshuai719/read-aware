@@ -1,49 +1,52 @@
 {
-  "meta": {
-    "description": "AI-native reading workspace for context-rich EPUB and PDF reading."
+  "actions": {
+    "dismiss": "actions.dismiss"
+  },
+  "error": {
+    "body": "Refresh the page to continue. If the problem persists, reopen the book from your shelf.",
+    "title": "Something interrupted the reading flow."
   },
   "header": {
+    "agent": "Agent",
     "back": {
       "allBooks": "All books",
       "toShelf": "Back to shelf"
     },
-    "search": "Search",
     "import": "Import",
     "importing": "Importing...",
     "library": "Library",
-    "agent": "Agent",
+    "more": "More",
     "primaryNavigation": "Primary navigation",
-    "stats": "Reading stats",
+    "search": "Search",
     "settings": "Settings",
-    "more": "More"
+    "stats": "Reading stats"
+  },
+  "meta": {
+    "description": "AI-native reading workspace for context-rich EPUB and PDF reading."
+  },
+  "notFound": {
+    "body": "Return to the main reading workspace and pick up where you left off.",
+    "title": "This page does not exist."
   },
   "update": {
     "available": "Update available",
     "availableVersion": "Version {{version}} is ready to install",
     "downloading": "Downloading update...",
     "downloadingProgress": "Downloading {{progress}}%",
-    "installing": "Installing update...",
     "failed": "Update failed. Retry",
-    "whatsNewTitle": "ReadAware is now v{{version}}",
+    "installing": "Installing update...",
     "whatsNewBody": "Take a look at what changed in this release.",
     "whatsNewChangelog": "View changelog",
     "whatsNewDone": "Got it",
-    "whatsNewNew": "New",
+    "whatsNewFixed": "Fixed",
     "whatsNewImproved": "Improved",
-    "whatsNewFixed": "Fixed"
-  },
-  "error": {
-    "title": "Something interrupted the reading flow.",
-    "body": "Refresh the page to continue. If the problem persists, reopen the book from your shelf."
-  },
-  "notFound": {
-    "title": "This page does not exist.",
-    "body": "Return to the main reading workspace and pick up where you left off."
+    "whatsNewNew": "New",
+    "whatsNewTitle": "ReadAware is now v{{version}}"
   },
   "window": {
-    "minimize": "Minimize",
+    "close": "Close window",
     "maximize": "Maximize",
-    "restore": "Restore",
-    "close": "Close window"
+    "minimize": "Minimize",
+    "restore": "Restore"
   }
 }

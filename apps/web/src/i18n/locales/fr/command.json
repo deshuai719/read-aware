@@ -1,75 +1,75 @@
 {
-  "search": {
-    "placeholder": "Rechercher des livres, collections, commandes…"
+  "actions": {
+    "goAgent": {
+      "keywords": "agent ia discussion demander contexte notes",
+      "title": "Demander à ReadAware"
+    },
+    "goShelf": {
+      "keywords": "étagère livres accueil",
+      "title": "Bibliothèque"
+    },
+    "goStats": {
+      "keywords": "statistiques graphiques série temps",
+      "title": "Statistiques de lecture"
+    },
+    "import": {
+      "keywords": "ajouter fichier epub pdf",
+      "title": "Importer un livre"
+    },
+    "openSettings": {
+      "keywords": "préférences apparence",
+      "title": "Paramètres"
+    },
+    "select": {
+      "keywords": "lot multiple gérer",
+      "title": "Sélectionner des livres"
+    }
+  },
+  "collection": {
+    "keywords": "collection dossier groupe",
+    "subtitle": "Collection"
+  },
+  "footer": {
+    "close": "Esc Fermer",
+    "navigate": "↑↓ Naviguer",
+    "run": "↵ Exécuter"
+  },
+  "group": {
+    "by": {
+      "author": "Grouper par auteur",
+      "format": "Grouper par format",
+      "status": "Grouper par statut de lecture"
+    },
+    "keywords": "grouper section",
+    "none": "Ne pas grouper"
+  },
+  "groups": {
+    "books": "Livres",
+    "collections": "Collections",
+    "goto": "Aller à",
+    "plugins": "Extensions",
+    "shelf": "Étagère"
+  },
+  "layout": {
+    "grid": "Passer en vue grille",
+    "keywords": "disposition grille liste vue",
+    "list": "Passer en vue liste"
   },
   "noMatches": "Aucun résultat pour « {{query}} »",
   "results_one": "{{count}} résultat",
   "results_many": "{{count}} résultats",
   "results_other": "{{count}} résultats",
-  "footer": {
-    "navigate": "↑↓ Naviguer",
-    "run": "↵ Exécuter",
-    "close": "Esc Fermer"
-  },
-  "groups": {
-    "goto": "Aller à",
-    "shelf": "Étagère",
-    "collections": "Collections",
-    "books": "Livres",
-    "plugins": "Extensions"
-  },
-  "actions": {
-    "goShelf": {
-      "title": "Bibliothèque",
-      "keywords": "étagère livres accueil"
-    },
-    "goStats": {
-      "title": "Statistiques de lecture",
-      "keywords": "statistiques graphiques série temps"
-    },
-    "openSettings": {
-      "title": "Paramètres",
-      "keywords": "préférences apparence"
-    },
-    "import": {
-      "title": "Importer un livre",
-      "keywords": "ajouter fichier epub pdf"
-    },
-    "select": {
-      "title": "Sélectionner des livres",
-      "keywords": "lot multiple gérer"
-    },
-    "goAgent": {
-      "title": "Demander à ReadAware",
-      "keywords": "agent ia discussion demander contexte notes"
-    }
-  },
-  "layout": {
-    "grid": "Passer en vue grille",
-    "list": "Passer en vue liste",
-    "keywords": "disposition grille liste vue"
+  "search": {
+    "placeholder": "Rechercher des livres, collections, commandes…"
   },
   "sort": {
-    "keywords": "ordre trier",
     "by": {
-      "recent": "Trier par récemment ouverts",
       "added": "Trier par récemment ajoutés",
-      "title": "Trier par titre",
       "author": "Trier par auteur",
-      "progress": "Trier par progression"
-    }
-  },
-  "group": {
-    "keywords": "grouper section",
-    "none": "Ne pas grouper",
-    "by": {
-      "status": "Grouper par statut de lecture",
-      "author": "Grouper par auteur",
-      "format": "Grouper par format"
-    }
-  },
-  "collection": {
-    "subtitle": "Collection",
-    "keywords": "collection dossier groupe"
+      "progress": "Trier par progression",
+      "recent": "Trier par récemment ouverts",
+      "title": "Trier par titre"
+    },
+    "keywords": "ordre trier"
   }
 }

@@ -2,11 +2,48 @@
   "actions": {
     "backToLibrary": "Retour à la bibliothèque",
     "dismiss": "Fermer",
-    "openSettings": "Ouvrir les réglages"
+    "goAgent": {
+      "keywords": "",
+      "title": ""
+    },
+    "goShelf": {
+      "keywords": "",
+      "title": ""
+    },
+    "goStats": {
+      "keywords": "",
+      "title": ""
+    },
+    "import": {
+      "keywords": "",
+      "title": ""
+    },
+    "openSettings": "Ouvrir les réglages",
+    "select": {
+      "keywords": "",
+      "title": ""
+    }
+  },
+  "collection": {
+    "keywords": "",
+    "subtitle": ""
   },
   "errorBoundary": {
-    "title": "Un problème est survenu dans cette vue",
     "body": "L'erreur a été consignée dans le journal. Le reste de ReadAware continue de fonctionner — vous pouvez réessayer.",
-    "retry": "Réessayer"
+    "retry": "Réessayer",
+    "title": "Un problème est survenu dans cette vue"
+  },
+  "group": {
+    "keywords": "",
+    "none": ""
+  },
+  "layout": {
+    "keywords": ""
+  },
+  "settings": {
+    "updateAvailableToast": ""
+  },
+  "sort": {
+    "keywords": ""
   }
 }

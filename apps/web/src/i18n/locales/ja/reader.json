@@ -1,179 +1,197 @@
 {
-  "shelf": "本棚",
-  "backToShelf": "本棚に戻る",
-  "contents": "目次",
-  "tableOfContents": "目次",
-  "chat": "チャット",
   "aiChat": "AIチャット",
-  "resizeContents": "目次パネルのサイズを変更",
-  "resizeChat": "チャットパネルのサイズを変更",
-  "noToc": "このファイルには操作可能な目次がありません。",
-  "progress": "{{page}} / {{total}} · {{percent}}",
-  "readingPosition": "読書位置",
-  "notes": "メモ",
-  "emptyNotes": "ハイライトやメモはまだありません。リーダーでテキストを選択してマークしましょう。",
-  "previousPage": "前のページ",
-  "nextPage": "次のページ",
-  "go": "移動",
-  "readerLabel": "書籍リーダー",
-  "opening": "{{name}}を開いています",
-  "book": "本",
-  "loadError": "このファイルを読み込めませんでした。",
-  "tryAgain": "再試行",
-  "backToLibrary": "ライブラリに戻る",
-  "readingAppearance": "読書の外観",
   "applyTo": "適用先",
-  "scopeHintBook": "この本のみに変更が適用されます。",
-  "scopeHintGlobal": "グローバル設定に従うすべての本に変更が適用されます。",
-  "pageColor": "ページの色",
-  "fontSize": "文字サイズ",
-  "fontWeight": "字の太さ",
-  "lineSpacing": "行間",
-  "paragraphSpacing": "段落間隔",
-  "textAlign": "行揃え",
-  "readingMode": "読書モード",
-  "fixedLayoutHint": "固定レイアウトの本（PDF・コミック）は組版が作品側で決まっているため、フォントや行間はここでは変更できません。",
+  "backToLibrary": "ライブラリに戻る",
+  "backToShelf": "本棚に戻る",
+  "book": "本",
+  "chat": "チャット",
+  "closeNote": "メモを閉じる",
+  "colors": {
+    "blue": "青",
+    "green": "緑",
+    "pink": "ピンク",
+    "yellow": "黄色"
+  },
+  "completion": {
+    "backToBook": "本文に戻る",
+    "hours": "{{count}}時間",
+    "hours_other": "",
+    "hoursMinutes": "{{hours}}時間{{minutes}}分",
+    "lookBack": "この本を振り返る",
+    "lookBackPrompt": "『{{title}}』を読み終えました。一緒に振り返ってください——私がマークした箇所を見て、何が私の関心を引いたか、それらの箇所にどんな筋が通っているかを教えてください。実際のマークに基づいてください。あらすじは不要です。",
+    "markedFinished": "読了",
+    "markFinished": "読了にする",
+    "marksTitle": "あなたのマーク（{{count}}）",
+    "marksTitle_other": "",
+    "minutes": "{{count}}分",
+    "minutes_other": "",
+    "summary": "{{days}}日間で{{time}}読みました。",
+    "summaryDetail": "1日平均{{perDay}} · 最長連続{{streak}}日"
+  },
+  "contents": "目次",
+  "contextMenu": {
+    "openContents": "目次を開く",
+    "openNotes": "ノートを開く",
+    "openSearch": "検索を開く"
+  },
+  "dictionary": {
+    "addToVocab": "単語帳に追加",
+    "contextLabel": "この文脈での意味",
+    "copied": "コピーしました",
+    "copy": "コピー",
+    "empty": "この語の語義が見つかりませんでした。",
+    "error": "調べられませんでした。設定で AI プロバイダーを確認して、もう一度お試しください。",
+    "etymologyLabel": "語源",
+    "explainInLabel": "説明する言語",
+    "footer": "AI が生成した内容です。語義は不正確な場合があります。",
+    "glossesLabel": "語句の解説",
+    "inVocab": "単語帳に登録済み",
+    "languageAuto": "アプリの言語に合わせる",
+    "loading": "調べています…",
+    "noteLabel": "補足",
+    "regenerate": "再生成",
+    "retry": "再試行",
+    "title": "辞書",
+    "translationLabel": "翻訳",
+    "unconfigured": "設定で AI プロバイダーを接続すると、語義を表示できます。"
+  },
+  "dismissNote": "メモを閉じる",
+  "emptyNotes": "ハイライトやメモはまだありません。リーダーでテキストを選択してマークしましょう。",
+  "fileMissing": {
+    "no-sync": "この本のファイルはこの端末になく、同期もオフです。元のファイルを再度読み込むとここで読めます。",
+    "not-on-relay": "この本のファイルは、読み込んだ端末からのアップロードが完了していません。その端末で ReadAware を開いてアップロードさせるか、ここで元のファイルを再度読み込んでください。",
+    "reimport": "ファイルを読み込む",
+    "unauthenticated": "同期アカウントに再ログインすると、この本のファイルをダウンロードできます。",
+    "undecodable": "ダウンロードしたファイルを、この端末の同期パスフレーズで復号できませんでした。",
+    "unreachable": "この本のファイルはクラウドにありますが、現在同期サーバーに接続できません。"
+  },
   "fixedLayoutColor": "ページの描画",
   "fixedLayoutColorHint": "暗いページカラーではページが2階調で描き直され、元の色は失われます。",
   "fixedLayoutColorOption": {
-    "theme": "ページカラーに合わせる",
-    "original": "そのまま"
+    "original": "そのまま",
+    "theme": "ページカラーに合わせる"
   },
-  "scope": {
-    "global": "すべての本",
-    "book": "この本"
-  },
-  "menu": {
-    "copied": "コピーしました",
-    "copySelection": "選択範囲をコピー",
-    "copy": "コピー",
-    "highlight": "ハイライト",
-    "underline": "下線",
-    "addNote": "メモを追加",
-    "askAi": "これについてAIに質問",
-    "remove": "削除"
-  },
-  "recolor": "{{color}}に色を変更",
-  "colors": {
-    "yellow": "黄色",
-    "green": "緑",
-    "blue": "青",
-    "pink": "ピンク"
-  },
-  "footnote": {
-    "footnote": "脚注",
-    "endnote": "文末脚注",
-    "reference": "参照",
-    "definition": "定義",
-    "note": "注釈"
-  },
-  "imageViewer": {
-    "label": "画像ビューア",
-    "close": "画像ビューアを閉じる",
-    "zoomIn": "拡大",
-    "zoomOut": "縮小",
-    "rotate": "回転",
-    "copy": "画像をコピー",
-    "copied": "コピーしました"
-  },
-  "dismissNote": "メモを閉じる",
-  "closeNote": "メモを閉じる",
-  "dictionary": {
-    "title": "辞書",
-    "loading": "調べています…",
-    "error": "調べられませんでした。設定で AI プロバイダーを確認して、もう一度お試しください。",
-    "retry": "再試行",
-    "unconfigured": "設定で AI プロバイダーを接続すると、語義を表示できます。",
-    "empty": "この語の語義が見つかりませんでした。",
-    "contextLabel": "この文脈での意味",
-    "etymologyLabel": "語源",
-    "translationLabel": "翻訳",
-    "glossesLabel": "語句の解説",
-    "noteLabel": "補足",
-    "explainInLabel": "説明する言語",
-    "languageAuto": "アプリの言語に合わせる",
-    "footer": "AI が生成した内容です。語義は不正確な場合があります。",
-    "regenerate": "再生成",
-    "copy": "コピー",
-    "copied": "コピーしました",
-    "addToVocab": "単語帳に追加",
-    "inVocab": "単語帳に登録済み"
-  },
+  "fixedLayoutHint": "固定レイアウトの本（PDF・コミック）は組版が作品側で決まっているため、フォントや行間はここでは変更できません。",
+  "fontSize": "文字サイズ",
   "fontSizeOption": {
-    "xx-small": "XXS",
-    "x-small": "XS",
-    "small": "小",
-    "medium": "中",
     "large": "大",
+    "medium": "中",
+    "small": "小",
     "x-large": "XL",
+    "x-small": "XS",
     "xx-large": "XXL",
+    "xx-small": "XXS",
     "xxx-large": "XXXL"
   },
+  "fontWeight": "字の太さ",
   "fontWeightOption": {
+    "bold": "太め",
     "light": "細め",
-    "regular": "標準",
     "medium": "中太",
-    "bold": "太め"
+    "regular": "標準"
   },
+  "footnote": {
+    "definition": "定義",
+    "endnote": "文末脚注",
+    "footnote": "脚注",
+    "note": "注釈",
+    "reference": "参照"
+  },
+  "go": "移動",
+  "imageViewer": {
+    "close": "画像ビューアを閉じる",
+    "copied": "コピーしました",
+    "copy": "画像をコピー",
+    "label": "画像ビューア",
+    "rotate": "回転",
+    "zoomIn": "拡大",
+    "zoomOut": "縮小"
+  },
+  "lineSpacing": "行間",
   "lineSpacingOption": {
-    "compact": "狭い",
     "comfortable": "標準",
+    "compact": "狭い",
     "relaxed": "広い"
   },
-  "paragraphSpacingOption": {
-    "tight": "狭い",
-    "normal": "標準",
-    "loose": "広い"
+  "loadError": "このファイルを読み込めませんでした。",
+  "menu": {
+    "addNote": "メモを追加",
+    "askAi": "これについてAIに質問",
+    "copied": "コピーしました",
+    "copy": "コピー",
+    "copySelection": "選択範囲をコピー",
+    "highlight": "ハイライト",
+    "remove": "削除",
+    "underline": "下線"
   },
-  "textAlignOption": {
-    "book": "原書のまま",
-    "start": "左揃え",
-    "justify": "両端揃え"
+  "nextPage": "次のページ",
+  "notes": "メモ",
+  "noToc": "このファイルには操作可能な目次がありません。",
+  "opening": "{{name}}を開いています",
+  "pageColor": "ページの色",
+  "pageColorOption": {
+    "auto": "自動",
+    "dark": "ダーク",
+    "light": "ライト",
+    "warm": "ウォーム"
   },
   "pageMargins": "余白",
   "pageMarginsOption": {
-    "narrow": "狭い",
     "medium": "標準",
+    "narrow": "狭い",
     "wide": "広い"
   },
-  "readingModeOption": {
-    "scroll": "スクロール",
-    "paginated-single": "単ページ",
-    "paginated-double": "見開き"
+  "paragraphSpacing": "段落間隔",
+  "paragraphSpacingOption": {
+    "loose": "広い",
+    "normal": "標準",
+    "tight": "狭い"
   },
-  "pageColorOption": {
-    "auto": "自動",
-    "light": "ライト",
-    "warm": "ウォーム",
-    "dark": "ダーク"
-  },
-  "completion": {
-    "markFinished": "読了にする",
-    "markedFinished": "読了",
-    "minutes": "{{count}}分",
-    "hours": "{{count}}時間",
-    "hoursMinutes": "{{hours}}時間{{minutes}}分",
-    "marksTitle": "あなたのマーク（{{count}}）",
-    "summary": "{{days}}日間で{{time}}読みました。",
-    "summaryDetail": "1日平均{{perDay}} · 最長連続{{streak}}日",
-    "backToBook": "本文に戻る",
-    "lookBack": "この本を振り返る",
-    "lookBackPrompt": "『{{title}}』を読み終えました。一緒に振り返ってください——私がマークした箇所を見て、何が私の関心を引いたか、それらの箇所にどんな筋が通っているかを教えてください。実際のマークに基づいてください。あらすじは不要です。"
-  },
+  "previousPage": "前のページ",
+  "progress": "{{page}} / {{total}} · {{percent}}",
   "readAloud": {
     "start": "読み上げ",
     "stop": "読み上げを停止"
+  },
+  "readerLabel": "書籍リーダー",
+  "readingAppearance": "読書の外観",
+  "readingMode": "読書モード",
+  "readingModeOption": {
+    "paginated-double": "見開き",
+    "paginated-single": "単ページ",
+    "scroll": "スクロール"
+  },
+  "readingPosition": "読書位置",
+  "recolor": "{{color}}に色を変更",
+  "resizeChat": "チャットパネルのサイズを変更",
+  "resizeContents": "目次パネルのサイズを変更",
+  "resizeSearch": "検索パネルのサイズ変更",
+  "scope": {
+    "book": "この本",
+    "global": "すべての本"
+  },
+  "scopeHintBook": "この本のみに変更が適用されます。",
+  "scopeHintGlobal": "グローバル設定に従うすべての本に変更が適用されます。",
+  "search": {
+    "label": "書籍内検索",
+    "noResults": "一致する結果はありません",
+    "placeholder": "書籍内を検索…",
+    "running": "検索中",
+    "truncated_other": "最初の {{count}} 件のみ表示",
+    "truncated": "最初の {{count}} 件のみ表示",
+    "truncated_one": "最初の {{count}} 件のみ表示"
+  },
+  "shelf": "本棚",
+  "tableOfContents": "目次",
+  "textAlign": "行揃え",
+  "textAlignOption": {
+    "book": "原書のまま",
+    "justify": "両端揃え",
+    "start": "左揃え"
   },
   "textUnitMode": {
     "progress": "章内の位置",
     "sessionTime": "今回の経過時間"
   },
-  "fileMissing": {
-    "no-sync": "この本のファイルはこの端末になく、同期もオフです。元のファイルを再度読み込むとここで読めます。",
-    "not-on-relay": "この本のファイルは、読み込んだ端末からのアップロードが完了していません。その端末で ReadAware を開いてアップロードさせるか、ここで元のファイルを再度読み込んでください。",
-    "unauthenticated": "同期アカウントに再ログインすると、この本のファイルをダウンロードできます。",
-    "unreachable": "この本のファイルはクラウドにありますが、現在同期サーバーに接続できません。",
-    "undecodable": "ダウンロードしたファイルを、この端末の同期パスフレーズで復号できませんでした。",
-    "reimport": "ファイルを読み込む"
-  }
+  "tryAgain": "再試行"
 }

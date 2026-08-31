@@ -1,179 +1,197 @@
 {
-  "shelf": "書架",
-  "backToShelf": "返回書架",
-  "contents": "目錄",
-  "tableOfContents": "目錄",
-  "chat": "聊天",
   "aiChat": "AI 聊天",
-  "resizeContents": "調整目錄面板大小",
-  "resizeChat": "調整聊天面板大小",
-  "noToc": "此檔案未提供可導覽的目錄。",
-  "progress": "{{page}} / {{total}} · {{percent}}",
-  "readingPosition": "閱讀位置",
-  "notes": "筆記",
-  "emptyNotes": "尚無螢光標示或筆記。在閱讀器中選取文字即可標記。",
-  "previousPage": "上一頁",
-  "nextPage": "下一頁",
-  "go": "前往",
-  "readerLabel": "書籍閱讀器",
-  "opening": "正在開啟 {{name}}",
-  "book": "書",
-  "loadError": "無法載入此檔案。",
-  "tryAgain": "重試",
-  "backToLibrary": "返回書庫",
-  "readingAppearance": "閱讀外觀",
   "applyTo": "套用至",
-  "scopeHintBook": "變更僅影響這本書。",
-  "scopeHintGlobal": "變更會影響所有跟隨全域設定的書籍。",
-  "pageColor": "頁面顏色",
-  "fontSize": "字級大小",
-  "fontWeight": "字重",
-  "lineSpacing": "行距",
-  "paragraphSpacing": "段落間距",
-  "textAlign": "對齊方式",
-  "readingMode": "閱讀模式",
-  "fixedLayoutHint": "固定版式書籍（PDF、漫畫）的排版由檔案本身決定，字體和間距無法在此調整。",
+  "backToLibrary": "返回書庫",
+  "backToShelf": "返回書架",
+  "book": "書",
+  "chat": "聊天",
+  "closeNote": "關閉註釋",
+  "colors": {
+    "blue": "藍色",
+    "green": "綠色",
+    "pink": "粉紅色",
+    "yellow": "黃色"
+  },
+  "completion": {
+    "backToBook": "回到正文",
+    "hours": "{{count}} 小時",
+    "hours_other": "",
+    "hoursMinutes": "{{hours}} 小時 {{minutes}} 分",
+    "lookBack": "回顧這本書",
+    "lookBackPrompt": "我剛讀完《{{title}}》。陪我回顧一下——過一遍我標註的內容，說說是什麼吸引了我的注意，這些段落之間貫穿著什麼線索。只依據我實際標註的內容，不要複述情節。",
+    "markedFinished": "已讀完",
+    "markFinished": "標記為已讀完",
+    "marksTitle": "你的標註（{{count}}）",
+    "marksTitle_other": "",
+    "minutes": "{{count}} 分",
+    "minutes_other": "",
+    "summary": "讀了 {{time}}，跨越 {{days}} 天。",
+    "summaryDetail": "平均每天 {{perDay}} · 最長連續 {{streak}} 天"
+  },
+  "contents": "目錄",
+  "contextMenu": {
+    "openContents": "開啟目錄",
+    "openNotes": "開啟筆記",
+    "openSearch": "開啟搜尋"
+  },
+  "dictionary": {
+    "addToVocab": "加入詞彙表",
+    "contextLabel": "在此段落中",
+    "copied": "已複製",
+    "copy": "複製",
+    "empty": "找不到這個詞條的釋義。",
+    "error": "查詢失敗。請檢查設定裡的 AI 供應商後重試。",
+    "etymologyLabel": "詞源",
+    "explainInLabel": "解釋語言",
+    "footer": "由 AI 生成，釋義可能不完美。",
+    "glossesLabel": "詞語解釋",
+    "inVocab": "已在詞彙表",
+    "languageAuto": "跟隨應用程式語言",
+    "loading": "正在查詢…",
+    "noteLabel": "說明",
+    "regenerate": "重新生成",
+    "retry": "重試",
+    "title": "字典",
+    "translationLabel": "翻譯",
+    "unconfigured": "在設定裡連接一個 AI 供應商即可啟用釋義。"
+  },
+  "dismissNote": "忽略註釋",
+  "emptyNotes": "尚無螢光標示或筆記。在閱讀器中選取文字即可標記。",
+  "fileMissing": {
+    "no-sync": "這本書的檔案不在此裝置上，且未開啟同步。重新匯入原檔案即可在此閱讀。",
+    "not-on-relay": "這本書的檔案尚未從匯入它的裝置上傳完成。在那台裝置上開啟 ReadAware 讓它上傳，或在這裡重新匯入原檔案。",
+    "reimport": "重新匯入檔案",
+    "unauthenticated": "重新登入同步帳號後即可下載這本書的檔案。",
+    "undecodable": "已下載的檔案無法用此裝置的同步口令解密。",
+    "unreachable": "這本書的檔案在雲端書庫中，但目前無法連接同步伺服器。"
+  },
   "fixedLayoutColor": "頁面算繪",
   "fixedLayoutColorHint": "深色的頁面顏色會把頁面重繪為雙色調，原有色彩會遺失。",
   "fixedLayoutColorOption": {
-    "theme": "跟隨頁面顏色",
-    "original": "保持原樣"
+    "original": "保持原樣",
+    "theme": "跟隨頁面顏色"
   },
-  "scope": {
-    "global": "所有書籍",
-    "book": "這本書"
-  },
-  "menu": {
-    "copied": "已複製",
-    "copySelection": "複製選取內容",
-    "copy": "複製",
-    "highlight": "螢光標示",
-    "underline": "加底線",
-    "addNote": "新增筆記",
-    "askAi": "詢問 AI 關於此內容",
-    "remove": "移除"
-  },
-  "recolor": "改為{{color}}",
-  "colors": {
-    "yellow": "黃色",
-    "green": "綠色",
-    "blue": "藍色",
-    "pink": "粉紅色"
-  },
-  "footnote": {
-    "footnote": "註腳",
-    "endnote": "尾註",
-    "reference": "參考資料",
-    "definition": "定義",
-    "note": "註釋"
-  },
-  "imageViewer": {
-    "label": "圖片檢視",
-    "close": "關閉圖片檢視",
-    "zoomIn": "放大",
-    "zoomOut": "縮小",
-    "rotate": "旋轉",
-    "copy": "複製圖片",
-    "copied": "已複製"
-  },
-  "dismissNote": "忽略註釋",
-  "closeNote": "關閉註釋",
-  "dictionary": {
-    "title": "字典",
-    "loading": "正在查詢…",
-    "error": "查詢失敗。請檢查設定裡的 AI 供應商後重試。",
-    "retry": "重試",
-    "unconfigured": "在設定裡連接一個 AI 供應商即可啟用釋義。",
-    "empty": "找不到這個詞條的釋義。",
-    "contextLabel": "在此段落中",
-    "etymologyLabel": "詞源",
-    "translationLabel": "翻譯",
-    "glossesLabel": "詞語解釋",
-    "noteLabel": "說明",
-    "explainInLabel": "解釋語言",
-    "languageAuto": "跟隨應用程式語言",
-    "footer": "由 AI 生成，釋義可能不完美。",
-    "regenerate": "重新生成",
-    "copy": "複製",
-    "copied": "已複製",
-    "addToVocab": "加入詞彙表",
-    "inVocab": "已在詞彙表"
-  },
+  "fixedLayoutHint": "固定版式書籍（PDF、漫畫）的排版由檔案本身決定，字體和間距無法在此調整。",
+  "fontSize": "字級大小",
   "fontSizeOption": {
-    "xx-small": "XXS",
-    "x-small": "XS",
-    "small": "小",
-    "medium": "中",
     "large": "大",
+    "medium": "中",
+    "small": "小",
     "x-large": "XL",
+    "x-small": "XS",
     "xx-large": "XXL",
+    "xx-small": "XXS",
     "xxx-large": "XXXL"
   },
+  "fontWeight": "字重",
   "fontWeightOption": {
+    "bold": "加粗",
     "light": "細",
-    "regular": "標準",
     "medium": "中等",
-    "bold": "加粗"
+    "regular": "標準"
   },
+  "footnote": {
+    "definition": "定義",
+    "endnote": "尾註",
+    "footnote": "註腳",
+    "note": "註釋",
+    "reference": "參考資料"
+  },
+  "go": "前往",
+  "imageViewer": {
+    "close": "關閉圖片檢視",
+    "copied": "已複製",
+    "copy": "複製圖片",
+    "label": "圖片檢視",
+    "rotate": "旋轉",
+    "zoomIn": "放大",
+    "zoomOut": "縮小"
+  },
+  "lineSpacing": "行距",
   "lineSpacingOption": {
-    "compact": "緊湊",
     "comfortable": "舒適",
+    "compact": "緊湊",
     "relaxed": "寬鬆"
   },
-  "paragraphSpacingOption": {
-    "tight": "緊密",
-    "normal": "標準",
-    "loose": "寬鬆"
+  "loadError": "無法載入此檔案。",
+  "menu": {
+    "addNote": "新增筆記",
+    "askAi": "詢問 AI 關於此內容",
+    "copied": "已複製",
+    "copy": "複製",
+    "copySelection": "複製選取內容",
+    "highlight": "螢光標示",
+    "remove": "移除",
+    "underline": "加底線"
   },
-  "textAlignOption": {
-    "book": "遵從原書",
-    "start": "靠左對齊",
-    "justify": "左右對齊"
+  "nextPage": "下一頁",
+  "notes": "筆記",
+  "noToc": "此檔案未提供可導覽的目錄。",
+  "opening": "正在開啟 {{name}}",
+  "pageColor": "頁面顏色",
+  "pageColorOption": {
+    "auto": "自動",
+    "dark": "深色",
+    "light": "淺色",
+    "warm": "暖色"
   },
   "pageMargins": "頁邊距",
   "pageMarginsOption": {
-    "narrow": "窄",
     "medium": "適中",
+    "narrow": "窄",
     "wide": "寬"
   },
-  "readingModeOption": {
-    "scroll": "捲動",
-    "paginated-single": "單頁",
-    "paginated-double": "雙頁"
+  "paragraphSpacing": "段落間距",
+  "paragraphSpacingOption": {
+    "loose": "寬鬆",
+    "normal": "標準",
+    "tight": "緊密"
   },
-  "pageColorOption": {
-    "auto": "自動",
-    "light": "淺色",
-    "warm": "暖色",
-    "dark": "深色"
-  },
-  "completion": {
-    "markFinished": "標記為已讀完",
-    "markedFinished": "已讀完",
-    "minutes": "{{count}} 分",
-    "hours": "{{count}} 小時",
-    "hoursMinutes": "{{hours}} 小時 {{minutes}} 分",
-    "marksTitle": "你的標註（{{count}}）",
-    "summary": "讀了 {{time}}，跨越 {{days}} 天。",
-    "summaryDetail": "平均每天 {{perDay}} · 最長連續 {{streak}} 天",
-    "backToBook": "回到正文",
-    "lookBack": "回顧這本書",
-    "lookBackPrompt": "我剛讀完《{{title}}》。陪我回顧一下——過一遍我標註的內容，說說是什麼吸引了我的注意，這些段落之間貫穿著什麼線索。只依據我實際標註的內容，不要複述情節。"
-  },
+  "previousPage": "上一頁",
+  "progress": "{{page}} / {{total}} · {{percent}}",
   "readAloud": {
     "start": "朗讀",
     "stop": "停止朗讀"
+  },
+  "readerLabel": "書籍閱讀器",
+  "readingAppearance": "閱讀外觀",
+  "readingMode": "閱讀模式",
+  "readingModeOption": {
+    "paginated-double": "雙頁",
+    "paginated-single": "單頁",
+    "scroll": "捲動"
+  },
+  "readingPosition": "閱讀位置",
+  "recolor": "改為{{color}}",
+  "resizeChat": "調整聊天面板大小",
+  "resizeContents": "調整目錄面板大小",
+  "resizeSearch": "調整搜尋面板大小",
+  "scope": {
+    "book": "這本書",
+    "global": "所有書籍"
+  },
+  "scopeHintBook": "變更僅影響這本書。",
+  "scopeHintGlobal": "變更會影響所有跟隨全域設定的書籍。",
+  "search": {
+    "label": "在書內搜尋",
+    "noResults": "未找到符合結果",
+    "placeholder": "在書內搜尋…",
+    "running": "正在搜尋",
+    "truncated_other": "僅顯示前 {{count}} 條結果",
+    "truncated": "僅顯示前 {{count}} 條結果",
+    "truncated_one": "僅顯示前 {{count}} 條結果"
+  },
+  "shelf": "書架",
+  "tableOfContents": "目錄",
+  "textAlign": "對齊方式",
+  "textAlignOption": {
+    "book": "遵從原書",
+    "justify": "左右對齊",
+    "start": "靠左對齊"
   },
   "textUnitMode": {
     "progress": "本章位置",
     "sessionTime": "本次用時"
   },
-  "fileMissing": {
-    "no-sync": "這本書的檔案不在此裝置上，且未開啟同步。重新匯入原檔案即可在此閱讀。",
-    "not-on-relay": "這本書的檔案尚未從匯入它的裝置上傳完成。在那台裝置上開啟 ReadAware 讓它上傳，或在這裡重新匯入原檔案。",
-    "unauthenticated": "重新登入同步帳號後即可下載這本書的檔案。",
-    "unreachable": "這本書的檔案在雲端書庫中，但目前無法連接同步伺服器。",
-    "undecodable": "已下載的檔案無法用此裝置的同步口令解密。",
-    "reimport": "重新匯入檔案"
-  }
+  "tryAgain": "重試"
 }

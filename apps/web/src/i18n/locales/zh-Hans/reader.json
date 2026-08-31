@@ -1,179 +1,197 @@
 {
-  "shelf": "书架",
-  "backToShelf": "返回书架",
-  "contents": "目录",
-  "tableOfContents": "目录",
-  "chat": "对话",
   "aiChat": "AI 对话",
-  "resizeContents": "调整目录面板大小",
-  "resizeChat": "调整对话面板大小",
-  "noToc": "此文件未提供可导航的目录。",
-  "progress": "{{page}} / {{total}} · {{percent}}",
-  "readingPosition": "阅读位置",
-  "notes": "笔记",
-  "emptyNotes": "还没有高亮或笔记。在阅读器中选中文本即可标记。",
-  "previousPage": "上一页",
-  "nextPage": "下一页",
-  "go": "跳转",
-  "readerLabel": "图书阅读器",
-  "opening": "正在打开 {{name}}",
-  "book": "书籍",
-  "loadError": "无法加载此文件。",
-  "tryAgain": "重试",
-  "backToLibrary": "返回书库",
-  "readingAppearance": "阅读外观",
   "applyTo": "应用到",
-  "scopeHintBook": "更改仅影响本书。",
-  "scopeHintGlobal": "更改会影响所有采用全局设置的书籍。",
-  "pageColor": "页面颜色",
-  "fontSize": "字号",
-  "fontWeight": "字重",
-  "lineSpacing": "行距",
-  "paragraphSpacing": "段间距",
-  "textAlign": "对齐方式",
-  "readingMode": "阅读模式",
-  "fixedLayoutHint": "固定版式书籍（PDF、漫画）的排版由文件本身决定，字体和间距无法在此调整。",
+  "backToLibrary": "返回书库",
+  "backToShelf": "返回书架",
+  "book": "书籍",
+  "chat": "对话",
+  "closeNote": "关闭注释",
+  "colors": {
+    "blue": "蓝色",
+    "green": "绿色",
+    "pink": "粉色",
+    "yellow": "黄色"
+  },
+  "completion": {
+    "backToBook": "回到正文",
+    "hours": "{{count}} 小时",
+    "hours_other": "",
+    "hoursMinutes": "{{hours}} 小时 {{minutes}} 分",
+    "lookBack": "回顾这本书",
+    "lookBackPrompt": "我刚读完《{{title}}》。陪我回顾一下——过一遍我标注的内容，说说是什么吸引了我的注意，这些段落之间贯穿着什么线索。只依据我实际标注的内容，不要复述情节。",
+    "markedFinished": "已读完",
+    "markFinished": "标记为已读完",
+    "marksTitle": "你的标注（{{count}}）",
+    "marksTitle_other": "",
+    "minutes": "{{count}} 分",
+    "minutes_other": "",
+    "summary": "读了 {{time}}，跨越 {{days}} 天。",
+    "summaryDetail": "平均每天 {{perDay}} · 最长连续 {{streak}} 天"
+  },
+  "contents": "目录",
+  "contextMenu": {
+    "openContents": "打开目录",
+    "openNotes": "打开笔记",
+    "openSearch": "打开搜索"
+  },
+  "dictionary": {
+    "addToVocab": "加入词汇表",
+    "contextLabel": "在此段落中",
+    "copied": "已复制",
+    "copy": "复制",
+    "empty": "未找到该词条的释义。",
+    "error": "查询失败。请检查设置里的 AI 提供方后重试。",
+    "etymologyLabel": "词源",
+    "explainInLabel": "解释语言",
+    "footer": "由 AI 生成，释义可能不完美。",
+    "glossesLabel": "词语解释",
+    "inVocab": "已在词汇表",
+    "languageAuto": "跟随应用语言",
+    "loading": "正在查询…",
+    "noteLabel": "说明",
+    "regenerate": "重新生成",
+    "retry": "重试",
+    "title": "词典",
+    "translationLabel": "翻译",
+    "unconfigured": "在设置里连接一个 AI 提供方即可启用释义。"
+  },
+  "dismissNote": "忽略注释",
+  "emptyNotes": "还没有高亮或笔记。在阅读器中选中文本即可标记。",
+  "fileMissing": {
+    "no-sync": "这本书的文件不在此设备上，且未开启同步。重新导入原文件即可在此阅读。",
+    "not-on-relay": "这本书的文件尚未从导入它的设备上传完成。在那台设备上打开 ReadAware 让它上传，或在这里重新导入原文件。",
+    "reimport": "重新导入文件",
+    "unauthenticated": "重新登录同步账号后即可下载这本书的文件。",
+    "undecodable": "已下载的文件无法用此设备的同步口令解密。",
+    "unreachable": "这本书的文件在云端书库中，但目前无法连接同步服务器。"
+  },
   "fixedLayoutColor": "页面渲染",
   "fixedLayoutColorHint": "深色的页面颜色会把页面重绘为双色调，原有色彩会丢失。",
   "fixedLayoutColorOption": {
-    "theme": "跟随页面颜色",
-    "original": "保持原样"
+    "original": "保持原样",
+    "theme": "跟随页面颜色"
   },
-  "scope": {
-    "global": "所有书籍",
-    "book": "本书"
-  },
-  "menu": {
-    "copied": "已复制",
-    "copySelection": "复制选中内容",
-    "copy": "复制",
-    "highlight": "高亮",
-    "underline": "下划线",
-    "addNote": "添加笔记",
-    "askAi": "就此询问 AI",
-    "remove": "移除"
-  },
-  "recolor": "改为{{color}}",
-  "colors": {
-    "yellow": "黄色",
-    "green": "绿色",
-    "blue": "蓝色",
-    "pink": "粉色"
-  },
-  "footnote": {
-    "footnote": "脚注",
-    "endnote": "尾注",
-    "reference": "引用",
-    "definition": "释义",
-    "note": "注释"
-  },
-  "imageViewer": {
-    "label": "图片查看",
-    "close": "关闭图片查看",
-    "zoomIn": "放大",
-    "zoomOut": "缩小",
-    "rotate": "旋转",
-    "copy": "复制图片",
-    "copied": "已复制"
-  },
-  "dismissNote": "忽略注释",
-  "closeNote": "关闭注释",
-  "dictionary": {
-    "title": "词典",
-    "loading": "正在查询…",
-    "error": "查询失败。请检查设置里的 AI 提供方后重试。",
-    "retry": "重试",
-    "unconfigured": "在设置里连接一个 AI 提供方即可启用释义。",
-    "empty": "未找到该词条的释义。",
-    "contextLabel": "在此段落中",
-    "etymologyLabel": "词源",
-    "translationLabel": "翻译",
-    "glossesLabel": "词语解释",
-    "noteLabel": "说明",
-    "explainInLabel": "解释语言",
-    "languageAuto": "跟随应用语言",
-    "footer": "由 AI 生成，释义可能不完美。",
-    "regenerate": "重新生成",
-    "copy": "复制",
-    "copied": "已复制",
-    "addToVocab": "加入词汇表",
-    "inVocab": "已在词汇表"
-  },
+  "fixedLayoutHint": "固定版式书籍（PDF、漫画）的排版由文件本身决定，字体和间距无法在此调整。",
+  "fontSize": "字号",
   "fontSizeOption": {
-    "xx-small": "极小",
-    "x-small": "特小",
-    "small": "小",
-    "medium": "中",
     "large": "大",
+    "medium": "中",
+    "small": "小",
     "x-large": "特大",
+    "x-small": "特小",
     "xx-large": "超大",
+    "xx-small": "极小",
     "xxx-large": "巨大"
   },
+  "fontWeight": "字重",
   "fontWeightOption": {
+    "bold": "加粗",
     "light": "细",
-    "regular": "标准",
     "medium": "中等",
-    "bold": "加粗"
+    "regular": "标准"
   },
+  "footnote": {
+    "definition": "释义",
+    "endnote": "尾注",
+    "footnote": "脚注",
+    "note": "注释",
+    "reference": "引用"
+  },
+  "go": "跳转",
+  "imageViewer": {
+    "close": "关闭图片查看",
+    "copied": "已复制",
+    "copy": "复制图片",
+    "label": "图片查看",
+    "rotate": "旋转",
+    "zoomIn": "放大",
+    "zoomOut": "缩小"
+  },
+  "lineSpacing": "行距",
   "lineSpacingOption": {
-    "compact": "紧凑",
     "comfortable": "舒适",
+    "compact": "紧凑",
     "relaxed": "宽松"
   },
-  "paragraphSpacingOption": {
-    "tight": "紧凑",
-    "normal": "正常",
-    "loose": "宽松"
+  "loadError": "无法加载此文件。",
+  "menu": {
+    "addNote": "添加笔记",
+    "askAi": "就此询问 AI",
+    "copied": "已复制",
+    "copy": "复制",
+    "copySelection": "复制选中内容",
+    "highlight": "高亮",
+    "remove": "移除",
+    "underline": "下划线"
   },
-  "textAlignOption": {
-    "book": "遵从原书",
-    "start": "左对齐",
-    "justify": "两端对齐"
+  "nextPage": "下一页",
+  "notes": "笔记",
+  "noToc": "此文件未提供可导航的目录。",
+  "opening": "正在打开 {{name}}",
+  "pageColor": "页面颜色",
+  "pageColorOption": {
+    "auto": "自动",
+    "dark": "深色",
+    "light": "浅色",
+    "warm": "暖色"
   },
   "pageMargins": "页边距",
   "pageMarginsOption": {
-    "narrow": "窄",
     "medium": "适中",
+    "narrow": "窄",
     "wide": "宽"
   },
-  "readingModeOption": {
-    "scroll": "滚动",
-    "paginated-single": "单页",
-    "paginated-double": "双页"
+  "paragraphSpacing": "段间距",
+  "paragraphSpacingOption": {
+    "loose": "宽松",
+    "normal": "正常",
+    "tight": "紧凑"
   },
-  "pageColorOption": {
-    "auto": "自动",
-    "light": "浅色",
-    "warm": "暖色",
-    "dark": "深色"
-  },
-  "completion": {
-    "markFinished": "标记为已读完",
-    "markedFinished": "已读完",
-    "minutes": "{{count}} 分",
-    "hours": "{{count}} 小时",
-    "hoursMinutes": "{{hours}} 小时 {{minutes}} 分",
-    "marksTitle": "你的标注（{{count}}）",
-    "summary": "读了 {{time}}，跨越 {{days}} 天。",
-    "summaryDetail": "平均每天 {{perDay}} · 最长连续 {{streak}} 天",
-    "backToBook": "回到正文",
-    "lookBack": "回顾这本书",
-    "lookBackPrompt": "我刚读完《{{title}}》。陪我回顾一下——过一遍我标注的内容，说说是什么吸引了我的注意，这些段落之间贯穿着什么线索。只依据我实际标注的内容，不要复述情节。"
-  },
+  "previousPage": "上一页",
+  "progress": "{{page}} / {{total}} · {{percent}}",
   "readAloud": {
     "start": "朗读",
     "stop": "停止朗读"
+  },
+  "readerLabel": "图书阅读器",
+  "readingAppearance": "阅读外观",
+  "readingMode": "阅读模式",
+  "readingModeOption": {
+    "paginated-double": "双页",
+    "paginated-single": "单页",
+    "scroll": "滚动"
+  },
+  "readingPosition": "阅读位置",
+  "recolor": "改为{{color}}",
+  "resizeChat": "调整对话面板大小",
+  "resizeContents": "调整目录面板大小",
+  "resizeSearch": "调整搜索面板大小",
+  "scope": {
+    "book": "本书",
+    "global": "所有书籍"
+  },
+  "scopeHintBook": "更改仅影响本书。",
+  "scopeHintGlobal": "更改会影响所有采用全局设置的书籍。",
+  "search": {
+    "label": "在书内搜索",
+    "noResults": "未找到匹配",
+    "placeholder": "在书内搜索…",
+    "running": "正在搜索",
+    "truncated_other": "仅显示前 {{count}} 条结果",
+    "truncated": "仅显示前 {{count}} 条结果",
+    "truncated_one": "仅显示前 {{count}} 条结果"
+  },
+  "shelf": "书架",
+  "tableOfContents": "目录",
+  "textAlign": "对齐方式",
+  "textAlignOption": {
+    "book": "遵从原书",
+    "justify": "两端对齐",
+    "start": "左对齐"
   },
   "textUnitMode": {
     "progress": "本章位置",
     "sessionTime": "本次用时"
   },
-  "fileMissing": {
-    "no-sync": "这本书的文件不在此设备上，且未开启同步。重新导入原文件即可在此阅读。",
-    "not-on-relay": "这本书的文件尚未从导入它的设备上传完成。在那台设备上打开 ReadAware 让它上传，或在这里重新导入原文件。",
-    "unauthenticated": "重新登录同步账号后即可下载这本书的文件。",
-    "unreachable": "这本书的文件在云端书库中，但目前无法连接同步服务器。",
-    "undecodable": "已下载的文件无法用此设备的同步口令解密。",
-    "reimport": "重新导入文件"
-  }
+  "tryAgain": "重试"
 }

@@ -1,8 +1,8 @@
 {
+  "avatar": "Avatar",
+  "breadcrumb": "Fil d’Ariane",
   "loading": "Chargement",
   "progress": "Progression",
-  "tabs": "Onglets",
-  "breadcrumb": "Fil d’Ariane",
-  "avatar": "Avatar",
-  "remove": "Supprimer {{name}}"
+  "remove": "Supprimer {{name}}",
+  "tabs": "Onglets"
 }

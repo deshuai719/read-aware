@@ -1,49 +1,52 @@
 {
-  "meta": {
-    "description": "コンテキスト豊かなEPUB・PDF読書のためのAIネイティブな読書ワークスペース。"
+  "actions": {
+    "dismiss": ""
+  },
+  "error": {
+    "body": "ページを再読み込みして続行してください。問題が解決しない場合は、本棚から本を開き直してください。",
+    "title": "読書の流れが中断されました。"
   },
   "header": {
+    "agent": "エージェント",
     "back": {
       "allBooks": "すべての本",
       "toShelf": "本棚に戻る"
     },
-    "search": "検索",
     "import": "インポート",
     "importing": "インポート中...",
     "library": "ライブラリ",
-    "agent": "エージェント",
+    "more": "その他",
     "primaryNavigation": "メインナビゲーション",
-    "stats": "読書統計",
+    "search": "検索",
     "settings": "設定",
-    "more": "その他"
+    "stats": "読書統計"
+  },
+  "meta": {
+    "description": "コンテキスト豊かなEPUB・PDF読書のためのAIネイティブな読書ワークスペース。"
+  },
+  "notFound": {
+    "body": "メインの読書ワークスペースに戻り、前回の続きから再開してください。",
+    "title": "このページは存在しません。"
   },
   "update": {
     "available": "アップデートがあります",
     "availableVersion": "バージョン {{version}} をインストールできます",
     "downloading": "アップデートをダウンロード中…",
     "downloadingProgress": "ダウンロード中 {{progress}}%",
-    "installing": "アップデートをインストール中…",
     "failed": "アップデートに失敗しました。再試行",
-    "whatsNewTitle": "ReadAware が v{{version}} になりました",
+    "installing": "アップデートをインストール中…",
     "whatsNewBody": "このバージョンの変更点をチェックしてみましょう。",
     "whatsNewChangelog": "更新履歴を見る",
     "whatsNewDone": "閉じる",
-    "whatsNewNew": "新機能",
+    "whatsNewFixed": "修正",
     "whatsNewImproved": "改善",
-    "whatsNewFixed": "修正"
-  },
-  "error": {
-    "title": "読書の流れが中断されました。",
-    "body": "ページを再読み込みして続行してください。問題が解決しない場合は、本棚から本を開き直してください。"
-  },
-  "notFound": {
-    "title": "このページは存在しません。",
-    "body": "メインの読書ワークスペースに戻り、前回の続きから再開してください。"
+    "whatsNewNew": "新機能",
+    "whatsNewTitle": "ReadAware が v{{version}} になりました"
   },
   "window": {
-    "minimize": "最小化",
+    "close": "ウィンドウを閉じる",
     "maximize": "最大化",
-    "restore": "元に戻す",
-    "close": "ウィンドウを閉じる"
+    "minimize": "最小化",
+    "restore": "元に戻す"
   }
 }

@@ -1,49 +1,52 @@
 {
-  "meta": {
-    "description": "Espacio de lectura nativo de IA para leer EPUB y PDF con contexto enriquecido."
+  "actions": {
+    "dismiss": ""
+  },
+  "error": {
+    "body": "Actualiza la página para continuar. Si el problema persiste, vuelve a abrir el libro desde tu estantería.",
+    "title": "Algo interrumpió el flujo de lectura."
   },
   "header": {
+    "agent": "Agente",
     "back": {
       "allBooks": "Todos los libros",
       "toShelf": "Volver a la estantería"
     },
-    "search": "Buscar",
     "import": "Importar",
     "importing": "Importando...",
     "library": "Biblioteca",
-    "agent": "Agente",
+    "more": "Más",
     "primaryNavigation": "Navegación principal",
-    "stats": "Estadísticas de lectura",
+    "search": "Buscar",
     "settings": "Ajustes",
-    "more": "Más"
+    "stats": "Estadísticas de lectura"
+  },
+  "meta": {
+    "description": "Espacio de lectura nativo de IA para leer EPUB y PDF con contexto enriquecido."
+  },
+  "notFound": {
+    "body": "Vuelve al espacio de lectura principal y retoma donde lo dejaste.",
+    "title": "Esta página no existe."
   },
   "update": {
     "available": "Actualización disponible",
     "availableVersion": "La versión {{version}} está lista para instalar",
     "downloading": "Descargando actualización...",
     "downloadingProgress": "Descargando {{progress}}%",
-    "installing": "Instalando actualización...",
     "failed": "Error al actualizar. Reintentar",
-    "whatsNewTitle": "ReadAware ahora está en v{{version}}",
+    "installing": "Instalando actualización...",
     "whatsNewBody": "Echa un vistazo a lo que cambió en esta versión.",
     "whatsNewChangelog": "Ver el registro de cambios",
     "whatsNewDone": "Entendido",
-    "whatsNewNew": "Novedades",
+    "whatsNewFixed": "Correcciones",
     "whatsNewImproved": "Mejoras",
-    "whatsNewFixed": "Correcciones"
-  },
-  "error": {
-    "title": "Algo interrumpió el flujo de lectura.",
-    "body": "Actualiza la página para continuar. Si el problema persiste, vuelve a abrir el libro desde tu estantería."
-  },
-  "notFound": {
-    "title": "Esta página no existe.",
-    "body": "Vuelve al espacio de lectura principal y retoma donde lo dejaste."
+    "whatsNewNew": "Novedades",
+    "whatsNewTitle": "ReadAware ahora está en v{{version}}"
   },
   "window": {
-    "minimize": "Minimizar",
+    "close": "Cerrar ventana",
     "maximize": "Maximizar",
-    "restore": "Restaurar",
-    "close": "Cerrar ventana"
+    "minimize": "Minimizar",
+    "restore": "Restaurar"
   }
 }

@@ -1,580 +1,588 @@
 {
-  "dialog": {
-    "title": "設定",
-    "sectionsLabel": "設定セクション",
-    "close": "設定を閉じる"
-  },
-  "sections": {
-    "general": "一般",
-    "appearance": "テーマ",
-    "reading": "読書",
-    "ai": "AI",
-    "shortcuts": "ショートカット",
-    "dataSync": "データと同期",
-    "about": "アプリについて",
-    "plugins": "プラグイン",
-    "menus": "カスタマイズ"
-  },
-  "general": {
-    "title": "一般",
-    "description": "アプリ全体の動作 — 起動時に開く画面、言語、デスクトップ連携。",
-    "onLaunch": "起動時",
-    "startView": "開始画面",
-    "startViewOptions": {
-      "shelf": "ライブラリの本棚",
-      "resume": "前回の本を再開"
-    },
-    "desktopIntegration": {
-      "title": "デスクトップ連携",
-      "description": "ここに保存され、デスクトップアプリで適用されます。ブラウザのプレビューでは効果がありません。",
-      "launchAtStartup": {
-        "title": "起動時に自動で開く",
-        "description": "サインイン時にReadAwareを自動的に開きます。"
-      },
-      "fileAssociations": {
-        "title": "ファイルの関連付け",
-        "description": "EPUB、MOBI、AZW3、FB2、CBZ、CBR、TXT、HTML、PDFファイルをReadAwareで開きます。"
-      },
-      "autoUpdate": {
-        "title": "アップデートを自動確認",
-        "description": "新しいバージョンがあるとき、メイン画面に控えめな通知を表示します。"
-      },
-      "whatsNewDialog": {
-        "title": "アップデート後にお知らせを表示",
-        "description": "アップデートのあと、変更内容への案内を一度だけダイアログで表示します。"
-      }
-    },
-    "languagePrivacy": "言語とプライバシー",
-    "language": "言語",
-    "crashReports": {
-      "title": "匿名のクラッシュレポートを送信",
-      "description": "安定性の問題を修正するためにクラッシュ診断情報を共有します。既定ではオフです。"
-    }
-  },
-  "appearance": {
-    "title": "外観",
-    "description": "アプリ自体の見た目 — 読書中の本のページ色とは独立しています。",
-    "theme": {
-      "title": "テーマ",
-      "description": "「システム」はお使いのOSのライト/ダーク設定に従います。"
-    },
-    "themeOptions": {
-      "system": "システム",
-      "light": "ライト",
-      "dark": "ダーク"
-    },
-    "contentType": {
-      "title": "コンテンツの組版",
-      "description": "チャットの返信、ノート、プラグインビューの組み方。アプリの操作系は独自のサイズを保ちます。",
-      "follow": {
-        "title": "読書設定に従う",
-        "description": "本に選んだフォントと行間を、会話向けに縮めて使います。"
-      },
-      "appDefaultFont": "アプリ標準",
-      "fontSize": "サイズ",
-      "lineSpacing": "行間",
-      "previewLabel": "コンテンツ組版のプレビュー",
-      "previewQuestion": "この章は何を論じているのですか。",
-      "previewAnswer": "改革は即興から始まった——誰の許可もない地方の実験が、うまくいったから生き延びたのだ。"
-    },
-    "motion": "モーション",
-    "reduceMotion": {
-      "title": "モーションを減らす",
-      "description": "アプリ全体のトランジションやアニメーション演出をオフにします。"
-    }
-  },
-  "reading": {
-    "title": "読書",
-    "description": "本がページ上でどう表示されるか。変更はリーダーに即座に反映されます。",
-    "previewLabel": "読書プレビュー",
-    "previewText": "永いあひだ、私は自分が生れたときの光景を見たことがあると言ひ張つてゐた。",
-    "previewTextSecondary": "私には凡てがわかった。一刻も早く逃げなければならぬ。",
-    "previewSource": "三島由紀夫 · 『仮面の告白』",
-    "typography": "タイポグラフィ",
-    "fontSize": "文字サイズ",
-    "fontWeight": "字の太さ",
-    "lineSpacing": "行間",
-    "paragraphSpacing": "段落間隔",
-    "textAlign": "行揃え",
-    "layout": "レイアウト",
-    "readingMode": "読書モード",
-    "pageColor": {
-      "title": "ページの色",
-      "description": "本の紙の色。「自動」はアプリのテーマに従い、その他は固定です。"
-    },
-    "pageMargins": "余白"
-  },
-  "shortcuts": {
-    "title": "ショートカット",
-    "description": "ショートカットをクリックして再設定できます。記録中にEscを押すとキャンセルします。",
-    "categories": {
-      "Global": "全体",
-      "Reading": "読書",
-      "Selection": "選択",
-      "Overlays": "オーバーレイ",
-      "Plugins": "プラグイン"
-    },
-    "categoryDescriptions": {
-      "selection": "リーダーでテキストを選択しているときに有効です。",
-      "plugins": "プラグインが提供するコマンドにキーを割り当てます。"
-    },
-    "actions": {
-      "search": "検索を開く",
-      "settings": "設定を開く",
-      "new-conversation": "新しい会話",
-      "primary-nav": "メインナビゲーションを切り替え",
-      "next-page": "次のページ",
-      "prev-page": "前のページ",
-      "next-chapter": "次の章",
-      "prev-chapter": "前の章",
-      "toggle-controls": "リーダーの操作を切り替え",
-      "selection-copy": "コピー",
-      "selection-highlight": "ハイライト",
-      "selection-underline": "下線",
-      "selection-add-note": "メモを追加",
-      "selection-look-up": "調べる",
-      "selection-ask-ai": "AIに質問",
-      "close": "ダイアログまたはオーバーレイを閉じる"
-    },
-    "recording": "ショートカットを押してください…",
-    "conflict": "すでに「{{label}}」で使用されています",
-    "rebind": "{{label}}を再設定",
-    "reset": "{{label}}をリセット",
-    "resetAll": "すべて既定値にリセット",
-    "notSet": "未設定"
-  },
-  "ai": {
-    "title": "AI",
-    "description": "独自のモデルキーを設定し、アシスタントができることと参照できる内容を選びます。",
-    "connection": "接続",
-    "features": {
-      "title": "機能",
-      "description": "リーダーの補助機能。各機能が提供され次第、個別にオンにできます。"
-    },
-    "featureList": {
-      "explainSelection": {
-        "label": "選択範囲を説明",
-        "description": "ハイライトした一節をわかりやすい言葉で読み解きます。"
-      },
-      "defineTerm": {
-        "label": "用語を定義",
-        "description": "選択した単語やフレーズのインライン定義。"
-      },
-      "translate": {
-        "label": "翻訳",
-        "description": "選択範囲を読書言語に翻訳します。"
-      },
-      "summarizeChapter": {
-        "label": "章を要約",
-        "description": "現在の章を要点にまとめます。"
-      },
-      "askConversation": {
-        "label": "対話型Q&A",
-        "description": "本とメモに基づいて追加の質問ができます。"
-      }
-    },
-    "chat": "チャット",
-    "followStreaming": {
-      "title": "ストリーミング返信に追従",
-      "description": "返信の生成に合わせて自動でスクロールします。オフの場合は返信の冒頭に留まります。"
-    },
-    "memory": "メモリ",
-    "buildMemory": {
-      "title": "長期メモリを構築",
-      "description": "ReadAwareが読書やメモから、時間をかけて永続的なプロフィールを学習します。"
-    },
-    "storedMemory": {
-      "title": "保存されたメモリ",
-      "description": "ReadAwareが記憶したあなたに関するすべての情報を確認または消去します。"
-    },
-    "clearMemory": "メモリを消去",
-    "privacy": {
-      "title": "プライバシー",
-      "description": "AI機能の実行時に端末から送信される内容を制御します。"
-    },
-    "sendHighlightedText": {
-      "title": "ハイライトしたテキストを送信",
-      "description": "選択した一節をリクエストに含めます。"
-    },
-    "sendSurroundingContext": {
-      "title": "周辺のコンテキストを送信",
-      "description": "回答が本文に基づくよう、近くの段落を含めます。"
-    },
-    "localOnly": {
-      "title": "ローカルのみモード",
-      "description": "リモートモデルを一切呼び出しません。ローカルモデルが利用可能になるまでAI機能はオフのままです。"
-    }
-  },
-  "aiConfig": {
-    "provider": "AIプロバイダー",
-    "readaware": {
-      "description": "内蔵モデル。ご自身の API キーは不要で、利用量はプランに応じてクレジットで毎月計測されます。",
-      "notConnected": "まず「データと同期」でアカウントを接続してください。サブスクリプションはそのアカウントでサインインします。",
-      "requiresPaid": "内蔵 AI には Pro または Max プランが必要です。無料プランではご自身のキーをお使いください。",
-      "credits": "今月の使用量 {{used}} / {{total}} クレジット",
-      "creditsUnlimited": "今月の使用量 {{used}} クレジット(無制限)"
-    },
-    "customBaseUrl": {
-      "label": "カスタムベースURL",
-      "helper": "OpenAI互換APIエンドポイントのベースURLを入力してください。"
-    },
-    "customApi": {
-      "label": "API形式",
-      "helper": "プロバイダーが実装しているエンドポイント形式を選択します。",
-      "chatCompletions": "Chat Completions（/chat/completions）",
-      "responses": "Responses（/responses）"
-    },
-    "customSupportsThinking": "モデルが思考に対応",
-    "customMaxOutputTokens": {
-      "label": "最大出力トークン数",
-      "placeholder": "プロバイダーの既定値",
-      "helper": "任意。空欄の場合、上限はプロバイダーに委ねられます。",
-      "error": "正の整数を入力してください。"
-    },
-    "apiKey": {
-      "label": "APIキー",
-      "placeholder": "{{provider}}のAPIキーを入力",
-      "helper": "APIキーは暗号化され、この端末にのみ保存されます。ReadAwareのサーバーには送信されません。"
-    },
-    "show": "表示",
-    "hide": "非表示",
-    "model": "メインモデル",
-    "modelDefault": "既定",
-    "modelHelper": "既定ではスマートタスクと高速タスクの両方に使用します。",
-    "advancedSettings": "詳細設定",
-    "separateFastModel": "高速タスクに別のモデルを使用",
-    "getKey": {
-      "openai": "APIキーは<link>OpenAIダッシュボード</link>から取得できます",
-      "anthropic": "APIキーは<link>Anthropicコンソール</link>から取得できます",
-      "openrouter": "APIキーは<link>OpenRouter</link>から取得できます",
-      "generic": "{{provider}} のコンソールで API キーを取得：<link>開く</link>。"
-    },
-    "test": "接続をテスト",
-    "testing": "テスト中...",
-    "clear": "クリア",
-    "testSuccessMessage": "テスト成功！応答：「{{response}}」",
-    "testEmptyMessage": "テスト失敗：AIプロバイダーからの応答が空です。",
-    "testUnknownError": "テスト中に不明なエラーが発生しました。",
-    "byok": {
-      "title": "BYOK（自分のキーを使用）について",
-      "body": "ReadAwareは選択したプロバイダーの呼び出しにあなたのキーを使用します。キーは暗号化され、この端末にのみ保存されます。API利用料金は引き続きご自身の負担となります。"
-    },
-    "smartModel": "スマートモデル",
-    "fastModel": "高速モデル",
-    "smartModelHelper": "チャット・オンボーディング・横断的な統合など、遅くて賢い段階。",
-    "fastModelHelper": "辞書・記憶・要約など、安くて速い段階。",
-    "modelPlaceholder": "例：gpt-5.5",
-    "fastModelCustomPlaceholder": "空欄の場合はスマートモデルと同じ",
-    "thinking": "思考量",
-    "thinkingHelper": "スマートタスクと高速タスクの両方に使用します。高いほど長く考え、思考非対応モデルでは無視されます。",
-    "smartThinking": "スマートモデルの思考",
-    "fastThinking": "高速モデルの思考",
-    "smartThinkingHelper": "チャット応答の推論量。高いほど回答前に長く考えます。思考に対応しないモデルでは無視されます。",
-    "fastThinkingHelper": "バックグラウンド処理の推論量。低いほど高速で、料金も抑えられます。",
-    "thinkingLevels": {
-      "off": "オフ",
-      "minimal": "最小",
-      "low": "低",
-      "medium": "中",
-      "high": "高",
-      "xhigh": "非常に高い",
-      "max": "最大"
-    },
-    "modelPicker": {
-      "search": "モデルを検索…",
-      "recommended": "おすすめ",
-      "useCustom": "「{{id}}」をモデル ID として使用",
-      "empty": "一致するモデルがありません"
-    },
-    "openRouter": {
-      "sort": {
-        "label": "アップストリームの並び順",
-        "default": "OpenRouter 既定（負荷分散）",
-        "price": "価格優先",
-        "throughput": "スループット優先",
-        "latency": "レイテンシ優先",
-        "helper": "モデルを提供する複数のアップストリームから OpenRouter がどう選ぶかを指定します。"
-      },
-      "order": {
-        "label": "優先アップストリーム",
-        "helper": "順に試すプロバイダー slug をカンマ区切りで（例: coreweave, deepinfra）。空欄で指定なし。"
-      },
-      "allowFallbacks": "優先アップストリームが利用できない場合は他へフォールバック"
-    }
-  },
-  "font": {
-    "label": "フォント",
-    "custom": "カスタム",
-    "customAria": "この端末にインストールされたフォントから選択",
-    "placeholderCurated": "厳選フォントを選択",
-    "placeholderCustom": "インストール済みフォントを選択",
-    "downloading": "フォントをダウンロード中 · {{percent}}%",
-    "downloadFailed": "フォントのダウンロードに失敗しました。ネットワークをご確認ください。",
-    "retry": "再試行"
-  },
-  "pendingBadge": {
-    "comingSoon": "近日公開"
-  },
-  "dataSync": {
-    "title": "データと同期",
-    "description": "ReadAwareはローカルファースト：データはこの端末に保存されます。同期は暗号化された中継であり、信頼できる情報源ではありません。",
-    "noticeDone": "完了",
-    "noticeError": "エラー",
-    "exportSuccess": "すべてを{{file}}にエクスポートしました。",
-    "exportError": "データをエクスポートできませんでした。",
-    "importError": "このファイルをインポートできませんでした。",
-    "merge": {
-      "books_other": "{{count}}冊の本",
-      "annotations_other": "{{count}}件の注釈",
-      "collections_other": "{{count}}件のコレクション",
-      "settings_other": "{{count}}件の設定",
-      "summary": "{{books}}、{{annotations}}、{{collections}}、{{settings}}を統合しました。再読み込みしています…"
-    },
-    "sync": "同期",
-    "account": {
-      "title": "アカウント",
-      "description": "アカウントを接続して、暗号化されたイベントログを複数の端末間で同期します。"
-    },
-    "connectAccount": "アカウントを接続",
-    "e2e": {
-      "title": "エンドツーエンド暗号化",
-      "description": "同期されるデータは端末上で暗号化されます。パスフレーズと端末をここで管理します。",
-      "active": "オン——パスフレーズで保護されています。"
-    },
-    "storage": "ストレージ",
-    "dataLocation": {
-      "title": "データの保存場所",
-      "descTauri": "この端末の ReadAware アプリケーションデータフォルダに保存されています。",
-      "descWeb": "このブラウザに保存されています。デスクトップアプリでは、あなたが管理するローカルフォルダにデータを保存します。"
-    },
-    "desktopBadge": "デスクトップ",
-    "reveal": "表示",
-    "backup": {
-      "title": "バックアップとエクスポート",
-      "description": "この端末上のすべてを1つのファイルに保存します — 別の端末に移したり、バックアップとして保管できます。インポートすると、バックアップが現在のデータに統合されます。"
-    },
-    "fullBackup": {
-      "title": "完全バックアップ",
-      "description": "本、ハイライト、メモ、コレクション、読書の進捗、すべての設定を、1つの持ち運び可能なファイルにまとめます。"
-    },
-    "import": "インポート",
-    "export": "エクスポート",
-    "working": "処理中…",
-    "dangerZone": "危険な操作",
-    "syncStatus": {
-      "idle": "同期済み",
-      "syncing": "同期中…",
-      "error": "同期エラー",
-      "lastSync": "最終同期 {{time}}",
-      "never": "まだ同期していません",
-      "signedOut": "サインインが無効になりました——再サインインすると同期を再開します"
-    },
-    "reauth": {
-      "notice": "同期のサインインが無効です",
-      "action": "再サインイン",
-      "dismiss": "サインインの通知を閉じる"
-    },
-    "connect": {
-      "emailLabel": "メールアドレス",
-      "emailPlaceholder": "you@example.com",
-      "send": "サインインリンクを送信",
-      "sending": "送信中…",
-      "sent": "メールを確認し、サインインリンクまたはトークンを下に貼り付けてください。",
-      "tokenLabel": "サインインリンクまたはトークン",
-      "passphraseLabel": "暗号化パスフレーズ",
-      "passphraseHint": "データは端末を離れる前にこのパスフレーズで暗号化されます。最初の端末で設定し、他の端末でも同じものを入力します。復元はできません——忘れると同期データは読めなくなります。",
-      "passphraseTooShort": "8文字以上にしてください。",
-      "connect": "接続",
-      "connecting": "接続中…",
-      "wrongPassphrase": "パスフレーズがこのアカウントと一致しません。",
-      "failed": "接続できませんでした。リンクを確認して再試行してください。",
-      "connected": "同期がオンになりました。",
-      "google": "Google で続行",
-      "github": "GitHub で続行",
-      "orEmail": "またはメールで",
-      "oauthStarted": "ブラウザでサインインを完了し、表示されたトークンを下に貼り付けてください。",
-      "back": "戻る",
-      "tokenContinue": "続ける",
-      "verifying": "確認中…",
-      "tokenInvalid": "サインインリンクまたはトークンが機能しませんでした。期限切れか使用済みの可能性があります。新しいものを請求してください。",
-      "tokenRetry": "現在このトークンを確認できません。接続を確認してもう一度お試しください。トークンは下に保持されています。",
-      "signedInAs": "接続するアカウント",
-      "freshAccount": "このアカウントには暗号化パスフレーズがまだ設定されていません。このデバイスで設定します。接続するとこのデバイスのライブラリがこのアカウントに同期されるため、ご自身のアカウントか確認してください。"
-    },
-    "connected": {
-      "statusTitle": "ステータス",
-      "planTitle": "プラン",
-      "syncNow": "今すぐ同期",
-      "disconnect": "接続解除",
-      "disconnectTitle": "同期を解除しますか？",
-      "disconnectBody": "この端末のデータはすべて保持され、同期のみ停止します。同じパスフレーズでいつでも再接続できます。",
-      "cancel": "キャンセル",
-      "storageUsed": "リレー使用量 {{used}}",
-      "storageUsedOfLimit": "リレー使用量 {{used}} / {{limit}}",
-      "plan": "プラン: {{tier}}"
-    },
-    "tier": {
-      "free": "無料",
-      "sync": "Sync",
-      "pro": "Pro",
-      "max": "Max",
-      "staff": "スタッフ"
-    },
-    "billing": {
-      "upgrade": "プランをアップグレード",
-      "manage": "サブスクリプションを管理",
-      "failed": "決済ページを開けませんでした。もう一度お試しください。"
-    },
-    "progress": {
-      "pulling": "変更を受信中… {{count}} 件マージ済み",
-      "pushing": "変更を送信中… {{count}} 件送信済み",
-      "blobs": "ファイルを転送中… {{done}}/{{total}}",
-      "pending": "送信待ち：変更 {{events}} 件、ファイル {{blobs}} 件",
-      "pendingNone": "送信待ちはありません",
-      "lastCycle": "前回の同期：受信 {{pulled}} 件 · 送信 {{pushed}} 件 · ファイル {{blobs}} 件",
-      "bookUp": "「{{title}}」をアップロード中",
-      "bookDown": "「{{title}}」をダウンロード中",
-      "bookUpParts": "「{{title}}」をアップロード中（{{done}}/{{total}}）",
-      "bookDownParts": "「{{title}}」をダウンロード中（{{done}}/{{total}}）"
-    },
-    "indicator": {
-      "label": "同期の状態",
-      "errorDismiss": "同期エラーをしばらく非表示にする"
-    },
-    "deleteAll": {
-      "title": "すべてのデータを削除",
-      "description": "この端末上のすべて——書籍、注釈、読書履歴、設定、同期資格情報——を消去します。同期済みアカウントの他の端末上のコピーには影響しません。",
-      "button": "すべてのデータを削除",
-      "dialogTitle": "すべてのデータを削除しますか？",
-      "dialogBody": "この端末上のすべての書籍、注釈、メモリー、会話、設定を消去します。元に戻せません。他の端末に同期済みのデータはその端末に残ります。",
-      "confirmLabel": "確認のため {{phrase}} と入力してください",
-      "cancel": "キャンセル",
-      "deleting": "削除中…",
-      "failed": "削除に失敗しました。データは削除されていない可能性があります——もう一度お試しください。"
-    },
-    "books": {
-      "title": "書籍ファイル",
-      "pending": "アップロード待ち",
-      "failed": "アップロード失敗 — 再試行します",
-      "rejectedQuota": "クラウド容量不足のため未アップロード",
-      "rejected": "サーバーに拒否されました",
-      "rejectedWith": "拒否: {{reason}}",
-      "awaitingOtherDevice": "ファイルを持つ端末の送信待ち",
-      "quotaFull": "クラウド容量が上限に達しました。空きを作るかプランを拡張するまで、以降の本はこの端末のみに保存されます。"
-    }
-  },
   "about": {
-    "title": "アプリについて",
-    "description": "バージョン、ビルド、そして読書を支えるエンジン。",
-    "version": "バージョン",
     "build": "ビルド",
     "buildAndroid": "Android（Tauri）",
-    "buildIos": "iOS（Tauri）",
     "buildDesktop": "デスクトップ（Tauri）",
+    "buildIos": "iOS（Tauri）",
     "buildWeb": "Webプレビュー",
-    "updates": {
-      "title": "更新",
-      "description": "最新リリースを確認してインストールします。"
-    },
     "channel": {
-      "title": "更新チャンネル",
+      "beta": "ベータ版",
       "description": "安定版は正式リリースのみを受け取ります。ベータ版はプレリリースも受け取ります——新機能をいち早く、ただし粗さも含めて。",
       "stable": "安定版",
-      "beta": "ベータ版"
+      "title": "更新チャンネル"
     },
-    "checkUpdates": "更新を確認",
     "checkingUpdates": "確認中…",
-    "installUpdate": "アップデートをインストール",
-    "versionUnknown": "不明",
-    "updateStatus": {
-      "upToDate": "最新版です",
-      "available": "バージョン {{version}} が利用できます",
-      "downloading": "ダウンロード中…",
-      "downloadingProgress": "ダウンロード中 {{progress}}%",
-      "installing": "インストール中…",
-      "permissionRequired": "Androidの設定でインストールを許可してください",
-      "installerOpen": "システムインストーラーを開きました",
-      "failed": "アップデートに失敗しました"
+    "checkUpdates": "更新を確認",
+    "contact": {
+      "description": "質問・バグ・フィードバックはお気軽にどうぞ。",
+      "title": "お問い合わせ"
+    },
+    "description": "バージョン、ビルド、そして読書を支えるエンジン。",
+    "diagnostics": {
+      "cancel": "キャンセル",
+      "description": "ReadAware が自動的に何かを送信することはありません。診断バンドルにはアプリのログとストレージ自己チェックの結果のみが含まれ、書籍の内容・メモ・会話は含まれません。送信前にすべての内容を確認できます。",
+      "dialogTitle": "診断報告を送信",
+      "done": "完了",
+      "exportError": "診断バンドルの作成または保存に失敗しました。",
+      "exportRow": {
+        "button": "書き出す",
+        "description": "メールや issue に添付できる JSON ファイルとして保存します。",
+        "title": "診断バンドルを書き出す"
+      },
+      "exportSuccess": "診断バンドルを保存しました。",
+      "logsRow": {
+        "button": "フォルダで表示",
+        "description": "診断バンドルの元になるローテーションログです。",
+        "title": "ログファイル"
+      },
+      "noticeDone": "完了",
+      "noticeError": "エラーが発生しました",
+      "previewBody": "送信されるのは以下の内容だけです。それ以外のデータが端末を離れることはありません。",
+      "reportError": "報告を送信できませんでした。代わりにバンドルを書き出してメールで送ることもできます。",
+      "reportRow": {
+        "button": "報告を送信…",
+        "description": "バンドルの内容を確認してから開発者に送信します。",
+        "title": "問題を報告"
+      },
+      "send": "送信",
+      "sentBody": "送信しました。ありがとうございます。この問題についてお問い合わせの際は、次の受付 ID をお知らせください:",
+      "title": "診断"
     },
     "engine": {
-      "title": "読書エンジン",
-      "description": "すべての形式 — EPUB、MOBI、AZW3、FB2、CBZ、CBR、TXT、HTML、PDF — が1つのリーダーで開き、選択・注釈・進捗のモデルを共有します。"
+      "description": "すべての形式 — EPUB、MOBI、AZW3、FB2、CBZ、CBR、TXT、HTML、PDF — が1つのリーダーで開き、選択・注釈・進捗のモデルを共有します。",
+      "title": "読書エンジン"
     },
     "foliate": {
       "description": "ReadAwareの基盤となっているオープンソースの読書エンジン。"
     },
-    "vendored": "ベンダー化",
     "help": "ヘルプ",
+    "installUpdate": "アップデートをインストール",
+    "title": "アプリについて",
+    "updates": {
+      "description": "最新リリースを確認してインストールします。",
+      "title": "更新"
+    },
+    "updateStatus": {
+      "available": "バージョン {{version}} が利用できます",
+      "downloading": "ダウンロード中…",
+      "downloadingProgress": "ダウンロード中 {{progress}}%",
+      "failed": "アップデートに失敗しました",
+      "installerOpen": "システムインストーラーを開きました",
+      "installing": "インストール中…",
+      "permissionRequired": "Androidの設定でインストールを許可してください",
+      "upToDate": "最新版です"
+    },
+    "vendored": "ベンダー化",
+    "version": "バージョン",
+    "versionUnknown": "不明",
     "website": {
-      "title": "ウェブサイト",
-      "description": "製品情報、ダウンロード、ドキュメント。"
-    },
-    "contact": {
-      "title": "お問い合わせ",
-      "description": "質問・バグ・フィードバックはお気軽にどうぞ。"
-    },
-    "diagnostics": {
-      "title": "診断",
-      "description": "ReadAware が自動的に何かを送信することはありません。診断バンドルにはアプリのログとストレージ自己チェックの結果のみが含まれ、書籍の内容・メモ・会話は含まれません。送信前にすべての内容を確認できます。",
-      "exportRow": {
-        "title": "診断バンドルを書き出す",
-        "description": "メールや issue に添付できる JSON ファイルとして保存します。",
-        "button": "書き出す"
-      },
-      "reportRow": {
-        "title": "問題を報告",
-        "description": "バンドルの内容を確認してから開発者に送信します。",
-        "button": "報告を送信…"
-      },
-      "logsRow": {
-        "title": "ログファイル",
-        "description": "診断バンドルの元になるローテーションログです。",
-        "button": "フォルダで表示"
-      },
-      "dialogTitle": "診断報告を送信",
-      "previewBody": "送信されるのは以下の内容だけです。それ以外のデータが端末を離れることはありません。",
-      "send": "送信",
-      "cancel": "キャンセル",
-      "done": "完了",
-      "sentBody": "送信しました。ありがとうございます。この問題についてお問い合わせの際は、次の受付 ID をお知らせください:",
-      "noticeDone": "完了",
-      "noticeError": "エラーが発生しました",
-      "exportSuccess": "診断バンドルを保存しました。",
-      "exportError": "診断バンドルの作成または保存に失敗しました。",
-      "reportError": "報告を送信できませんでした。代わりにバンドルを書き出してメールで送ることもできます。"
+      "description": "製品情報、ダウンロード、ドキュメント。",
+      "title": "ウェブサイト"
     }
   },
-  "menus": {
-    "title": "カスタマイズ",
-    "description": "ヘッダーバーと選択メニューをカスタマイズ:項目を「表示」とオーバーフローの間でドラッグし、並べ替えます。",
-    "more": "その他",
-    "shown": "表示",
-    "overflow": "オーバーフローメニュー",
-    "reset": "デフォルトに戻す",
-    "dragHint": "ドラッグで並べ替え・移動。ウィジェット項目はインライン固定です。",
-    "surface": {
-      "primaryNav": "メインナビゲーション",
-      "shelfHeader": "本棚ヘッダー",
-      "readerHeader": "リーダーヘッダー",
-      "selection": "選択メニュー"
+  "ai": {
+    "buildMemory": {
+      "description": "ReadAwareが読書やメモから、時間をかけて永続的なプロフィールを学習します。",
+      "title": "長期メモリを構築"
     },
+    "chat": "チャット",
+    "clearMemory": "メモリを消去",
+    "connection": "接続",
+    "description": "独自のモデルキーを設定し、アシスタントができることと参照できる内容を選びます。",
+    "featureList": {
+      "askConversation": {
+        "description": "本とメモに基づいて追加の質問ができます。",
+        "label": "対話型Q&A"
+      },
+      "defineTerm": {
+        "description": "選択した単語やフレーズのインライン定義。",
+        "label": "用語を定義"
+      },
+      "explainSelection": {
+        "description": "ハイライトした一節をわかりやすい言葉で読み解きます。",
+        "label": "選択範囲を説明"
+      },
+      "summarizeChapter": {
+        "description": "現在の章を要点にまとめます。",
+        "label": "章を要約"
+      },
+      "translate": {
+        "description": "選択範囲を読書言語に翻訳します。",
+        "label": "翻訳"
+      }
+    },
+    "features": {
+      "description": "リーダーの補助機能。各機能が提供され次第、個別にオンにできます。",
+      "title": "機能"
+    },
+    "followStreaming": {
+      "description": "返信の生成に合わせて自動でスクロールします。オフの場合は返信の冒頭に留まります。",
+      "title": "ストリーミング返信に追従"
+    },
+    "localOnly": {
+      "description": "リモートモデルを一切呼び出しません。ローカルモデルが利用可能になるまでAI機能はオフのままです。",
+      "title": "ローカルのみモード"
+    },
+    "memory": "メモリ",
+    "privacy": {
+      "description": "AI機能の実行時に端末から送信される内容を制御します。",
+      "title": "プライバシー"
+    },
+    "sendHighlightedText": {
+      "description": "選択した一節をリクエストに含めます。",
+      "title": "ハイライトしたテキストを送信"
+    },
+    "sendSurroundingContext": {
+      "description": "回答が本文に基づくよう、近くの段落を含めます。",
+      "title": "周辺のコンテキストを送信"
+    },
+    "storedMemory": {
+      "description": "ReadAwareが記憶したあなたに関するすべての情報を確認または消去します。",
+      "title": "保存されたメモリ"
+    },
+    "title": "AI"
+  },
+  "aiConfig": {
+    "advancedSettings": "詳細設定",
+    "apiKey": {
+      "helper": "APIキーは暗号化され、この端末にのみ保存されます。ReadAwareのサーバーには送信されません。",
+      "label": "APIキー",
+      "placeholder": "{{provider}}のAPIキーを入力"
+    },
+    "byok": {
+      "body": "ReadAwareは選択したプロバイダーの呼び出しにあなたのキーを使用します。キーは暗号化され、この端末にのみ保存されます。API利用料金は引き続きご自身の負担となります。",
+      "title": "BYOK（自分のキーを使用）について"
+    },
+    "clear": "クリア",
+    "customApi": {
+      "chatCompletions": "Chat Completions（/chat/completions）",
+      "helper": "プロバイダーが実装しているエンドポイント形式を選択します。",
+      "label": "API形式",
+      "responses": "Responses（/responses）"
+    },
+    "customBaseUrl": {
+      "helper": "OpenAI互換APIエンドポイントのベースURLを入力してください。",
+      "label": "カスタムベースURL"
+    },
+    "customMaxOutputTokens": {
+      "error": "正の整数を入力してください。",
+      "helper": "任意。空欄の場合、上限はプロバイダーに委ねられます。",
+      "label": "最大出力トークン数",
+      "placeholder": "プロバイダーの既定値"
+    },
+    "customSupportsThinking": "モデルが思考に対応",
+    "fastModel": "高速モデル",
+    "fastModelCustomPlaceholder": "空欄の場合はスマートモデルと同じ",
+    "fastModelHelper": "辞書・記憶・要約など、安くて速い段階。",
+    "fastThinking": "高速モデルの思考",
+    "fastThinkingHelper": "バックグラウンド処理の推論量。低いほど高速で、料金も抑えられます。",
+    "getKey": {
+      "anthropic": "APIキーは<link>Anthropicコンソール</link>から取得できます",
+      "generic": "{{provider}} のコンソールで API キーを取得：<link>開く</link>。",
+      "openai": "APIキーは<link>OpenAIダッシュボード</link>から取得できます",
+      "openrouter": "APIキーは<link>OpenRouter</link>から取得できます"
+    },
+    "hide": "非表示",
+    "model": "メインモデル",
+    "modelDefault": "既定",
+    "modelHelper": "既定ではスマートタスクと高速タスクの両方に使用します。",
+    "modelPicker": {
+      "empty": "一致するモデルがありません",
+      "recommended": "おすすめ",
+      "search": "モデルを検索…",
+      "useCustom": "「{{id}}」をモデル ID として使用"
+    },
+    "modelPlaceholder": "例：gpt-5.5",
+    "openRouter": {
+      "allowFallbacks": "優先アップストリームが利用できない場合は他へフォールバック",
+      "order": {
+        "helper": "順に試すプロバイダー slug をカンマ区切りで（例: coreweave, deepinfra）。空欄で指定なし。",
+        "label": "優先アップストリーム"
+      },
+      "sort": {
+        "default": "OpenRouter 既定（負荷分散）",
+        "helper": "モデルを提供する複数のアップストリームから OpenRouter がどう選ぶかを指定します。",
+        "label": "アップストリームの並び順",
+        "latency": "レイテンシ優先",
+        "price": "価格優先",
+        "throughput": "スループット優先"
+      }
+    },
+    "provider": "AIプロバイダー",
+    "readaware": {
+      "credits": "今月の使用量 {{used}} / {{total}} クレジット",
+      "creditsUnlimited": "今月の使用量 {{used}} クレジット(無制限)",
+      "description": "内蔵モデル。ご自身の API キーは不要で、利用量はプランに応じてクレジットで毎月計測されます。",
+      "notConnected": "まず「データと同期」でアカウントを接続してください。サブスクリプションはそのアカウントでサインインします。",
+      "requiresPaid": "内蔵 AI には Pro または Max プランが必要です。無料プランではご自身のキーをお使いください。"
+    },
+    "separateFastModel": "高速タスクに別のモデルを使用",
+    "show": "表示",
+    "smartModel": "スマートモデル",
+    "smartModelHelper": "チャット・オンボーディング・横断的な統合など、遅くて賢い段階。",
+    "smartThinking": "スマートモデルの思考",
+    "smartThinkingHelper": "チャット応答の推論量。高いほど回答前に長く考えます。思考に対応しないモデルでは無視されます。",
+    "test": "接続をテスト",
+    "testEmptyMessage": "テスト失敗：AIプロバイダーからの応答が空です。",
+    "testing": "テスト中...",
+    "testSuccessMessage": "テスト成功！応答：「{{response}}」",
+    "testUnknownError": "テスト中に不明なエラーが発生しました。",
+    "thinking": "思考量",
+    "thinkingHelper": "スマートタスクと高速タスクの両方に使用します。高いほど長く考え、思考非対応モデルでは無視されます。",
+    "thinkingLevels": {
+      "high": "高",
+      "low": "低",
+      "max": "最大",
+      "medium": "中",
+      "minimal": "最小",
+      "off": "オフ",
+      "xhigh": "非常に高い"
+    }
+  },
+  "appearance": {
+    "contentType": {
+      "appDefaultFont": "アプリ標準",
+      "description": "チャットの返信、ノート、プラグインビューの組み方。アプリの操作系は独自のサイズを保ちます。",
+      "follow": {
+        "description": "本に選んだフォントと行間を、会話向けに縮めて使います。",
+        "title": "読書設定に従う"
+      },
+      "fontSize": "サイズ",
+      "lineSpacing": "行間",
+      "previewAnswer": "改革は即興から始まった——誰の許可もない地方の実験が、うまくいったから生き延びたのだ。",
+      "previewLabel": "コンテンツ組版のプレビュー",
+      "previewQuestion": "この章は何を論じているのですか。",
+      "title": "コンテンツの組版"
+    },
+    "description": "アプリ自体の見た目 — 読書中の本のページ色とは独立しています。",
+    "motion": "モーション",
+    "reduceMotion": {
+      "description": "アプリ全体のトランジションやアニメーション演出をオフにします。",
+      "title": "モーションを減らす"
+    },
+    "theme": {
+      "description": "「システム」はお使いのOSのライト/ダーク設定に従います。",
+      "title": "テーマ"
+    },
+    "themeOptions": {
+      "dark": "ダーク",
+      "light": "ライト",
+      "system": "システム"
+    },
+    "title": "外観"
+  },
+  "dataSync": {
+    "account": {
+      "description": "アカウントを接続して、暗号化されたイベントログを複数の端末間で同期します。",
+      "title": "アカウント"
+    },
+    "backup": {
+      "description": "この端末上のすべてを1つのファイルに保存します — 別の端末に移したり、バックアップとして保管できます。インポートすると、バックアップが現在のデータに統合されます。",
+      "title": "バックアップとエクスポート"
+    },
+    "billing": {
+      "failed": "決済ページを開けませんでした。もう一度お試しください。",
+      "manage": "サブスクリプションを管理",
+      "upgrade": "プランをアップグレード"
+    },
+    "books": {
+      "awaitingOtherDevice": "ファイルを持つ端末の送信待ち",
+      "failed": "アップロード失敗 — 再試行します",
+      "pending": "アップロード待ち",
+      "quotaFull": "クラウド容量が上限に達しました。空きを作るかプランを拡張するまで、以降の本はこの端末のみに保存されます。",
+      "rejected": "サーバーに拒否されました",
+      "rejectedQuota": "クラウド容量不足のため未アップロード",
+      "rejectedWith": "拒否: {{reason}}",
+      "title": "書籍ファイル"
+    },
+    "connect": {
+      "back": "戻る",
+      "connect": "接続",
+      "connected": "同期がオンになりました。",
+      "connecting": "接続中…",
+      "emailLabel": "メールアドレス",
+      "emailPlaceholder": "you@example.com",
+      "failed": "接続できませんでした。リンクを確認して再試行してください。",
+      "freshAccount": "このアカウントには暗号化パスフレーズがまだ設定されていません。このデバイスで設定します。接続するとこのデバイスのライブラリがこのアカウントに同期されるため、ご自身のアカウントか確認してください。",
+      "github": "GitHub で続行",
+      "google": "Google で続行",
+      "invalidCredentials": "",
+      "oauthStarted": "ブラウザでサインインを完了し、表示されたトークンを下に貼り付けてください。",
+      "orEmail": "またはメールで",
+      "passphraseHint": "データは端末を離れる前にこのパスフレーズで暗号化されます。最初の端末で設定し、他の端末でも同じものを入力します。復元はできません——忘れると同期データは読めなくなります。",
+      "passphraseLabel": "暗号化パスフレーズ",
+      "passphraseTooShort": "8文字以上にしてください。",
+      "passwordLabel": "",
+      "passwordLogin": "",
+      "send": "サインインリンクを送信",
+      "sending": "送信中…",
+      "sent": "メールを確認し、サインインリンクまたはトークンを下に貼り付けてください。",
+      "serverUrlLabel": "",
+      "serverUrlPlaceholder": "",
+      "signedInAs": "接続するアカウント",
+      "tokenContinue": "続ける",
+      "tokenInvalid": "サインインリンクまたはトークンが機能しませんでした。期限切れか使用済みの可能性があります。新しいものを請求してください。",
+      "tokenLabel": "サインインリンクまたはトークン",
+      "tokenRetry": "現在このトークンを確認できません。接続を確認してもう一度お試しください。トークンは下に保持されています。",
+      "usernameLabel": "",
+      "verifying": "確認中…",
+      "wrongPassphrase": "パスフレーズがこのアカウントと一致しません。"
+    },
+    "connectAccount": "アカウントを接続",
+    "connected": {
+      "cancel": "キャンセル",
+      "disconnect": "接続解除",
+      "disconnectBody": "この端末のデータはすべて保持され、同期のみ停止します。同じパスフレーズでいつでも再接続できます。",
+      "disconnectTitle": "同期を解除しますか？",
+      "plan": "プラン: {{tier}}",
+      "planTitle": "プラン",
+      "statusTitle": "ステータス",
+      "storageUsed": "リレー使用量 {{used}}",
+      "storageUsedOfLimit": "リレー使用量 {{used}} / {{limit}}",
+      "syncNow": "今すぐ同期"
+    },
+    "dangerZone": "危険な操作",
+    "dataLocation": {
+      "descTauri": "この端末の ReadAware アプリケーションデータフォルダに保存されています。",
+      "descWeb": "このブラウザに保存されています。デスクトップアプリでは、あなたが管理するローカルフォルダにデータを保存します。",
+      "title": "データの保存場所"
+    },
+    "deleteAll": {
+      "button": "すべてのデータを削除",
+      "cancel": "キャンセル",
+      "confirmLabel": "確認のため {{phrase}} と入力してください",
+      "deleting": "削除中…",
+      "description": "この端末上のすべて——書籍、注釈、読書履歴、設定、同期資格情報——を消去します。同期済みアカウントの他の端末上のコピーには影響しません。",
+      "dialogBody": "この端末上のすべての書籍、注釈、メモリー、会話、設定を消去します。元に戻せません。他の端末に同期済みのデータはその端末に残ります。",
+      "dialogTitle": "すべてのデータを削除しますか？",
+      "failed": "削除に失敗しました。データは削除されていない可能性があります——もう一度お試しください。",
+      "title": "すべてのデータを削除"
+    },
+    "description": "ReadAwareはローカルファースト：データはこの端末に保存されます。同期は暗号化された中継であり、信頼できる情報源ではありません。",
+    "desktopBadge": "デスクトップ",
+    "e2e": {
+      "active": "オン——パスフレーズで保護されています。",
+      "description": "同期されるデータは端末上で暗号化されます。パスフレーズと端末をここで管理します。",
+      "title": "エンドツーエンド暗号化"
+    },
+    "export": "エクスポート",
+    "exportError": "データをエクスポートできませんでした。",
+    "exportSuccess": "すべてを{{file}}にエクスポートしました。",
+    "fullBackup": {
+      "description": "本、ハイライト、メモ、コレクション、読書の進捗、すべての設定を、1つの持ち運び可能なファイルにまとめます。",
+      "title": "完全バックアップ"
+    },
+    "import": "インポート",
+    "importError": "このファイルをインポートできませんでした。",
+    "indicator": {
+      "errorDismiss": "同期エラーをしばらく非表示にする",
+      "label": "同期の状態"
+    },
+    "merge": {
+      "annotations_other": "{{count}}件の注釈",
+      "books_other": "{{count}}冊の本",
+      "collections_other": "{{count}}件のコレクション",
+      "settings_other": "{{count}}件の設定",
+      "summary": "{{books}}、{{annotations}}、{{collections}}、{{settings}}を統合しました。再読み込みしています…"
+    },
+    "noticeDone": "完了",
+    "noticeError": "エラー",
+    "progress": {
+      "blobs": "ファイルを転送中… {{done}}/{{total}}",
+      "bookDown": "「{{title}}」をダウンロード中",
+      "bookDownParts": "「{{title}}」をダウンロード中（{{done}}/{{total}}）",
+      "bookUp": "「{{title}}」をアップロード中",
+      "bookUpParts": "「{{title}}」をアップロード中（{{done}}/{{total}}）",
+      "lastCycle": "前回の同期：受信 {{pulled}} 件 · 送信 {{pushed}} 件 · ファイル {{blobs}} 件",
+      "pending": "送信待ち：変更 {{events}} 件、ファイル {{blobs}} 件",
+      "pendingNone": "送信待ちはありません",
+      "pulling": "変更を受信中… {{count}} 件マージ済み",
+      "pulling_other": "",
+      "pushing": "変更を送信中… {{count}} 件送信済み",
+      "pushing_other": ""
+    },
+    "reauth": {
+      "action": "再サインイン",
+      "dismiss": "サインインの通知を閉じる",
+      "notice": "同期のサインインが無効です"
+    },
+    "reveal": "表示",
+    "storage": "ストレージ",
+    "sync": "同期",
+    "syncStatus": {
+      "error": "同期エラー",
+      "idle": "同期済み",
+      "lastSync": "最終同期 {{time}}",
+      "never": "まだ同期していません",
+      "signedOut": "サインインが無効になりました——再サインインすると同期を再開します",
+      "syncing": "同期中…"
+    },
+    "tier": {
+      "free": "無料",
+      "max": "Max",
+      "pro": "Pro",
+      "staff": "スタッフ",
+      "sync": "Sync"
+    },
+    "title": "データと同期",
+    "working": "処理中…"
+  },
+  "dialog": {
+    "close": "設定を閉じる",
+    "sectionsLabel": "設定セクション",
+    "title": "設定"
+  },
+  "font": {
+    "custom": "カスタム",
+    "customAria": "この端末にインストールされたフォントから選択",
+    "downloadFailed": "フォントのダウンロードに失敗しました。ネットワークをご確認ください。",
+    "downloading": "フォントをダウンロード中 · {{percent}}%",
+    "label": "フォント",
+    "placeholderCurated": "厳選フォントを選択",
+    "placeholderCustom": "インストール済みフォントを選択",
+    "retry": "再試行"
+  },
+  "general": {
+    "crashReports": {
+      "description": "安定性の問題を修正するためにクラッシュ診断情報を共有します。既定ではオフです。",
+      "title": "匿名のクラッシュレポートを送信"
+    },
+    "description": "アプリ全体の動作 — 起動時に開く画面、言語、デスクトップ連携。",
+    "desktopIntegration": {
+      "autoUpdate": {
+        "description": "新しいバージョンがあるとき、メイン画面に控えめな通知を表示します。",
+        "title": "アップデートを自動確認"
+      },
+      "description": "ここに保存され、デスクトップアプリで適用されます。ブラウザのプレビューでは効果がありません。",
+      "fileAssociations": {
+        "description": "EPUB、MOBI、AZW3、FB2、CBZ、CBR、TXT、HTML、PDFファイルをReadAwareで開きます。",
+        "title": "ファイルの関連付け"
+      },
+      "launchAtStartup": {
+        "description": "サインイン時にReadAwareを自動的に開きます。",
+        "title": "起動時に自動で開く"
+      },
+      "title": "デスクトップ連携",
+      "whatsNewDialog": {
+        "description": "アップデートのあと、変更内容への案内を一度だけダイアログで表示します。",
+        "title": "アップデート後にお知らせを表示"
+      }
+    },
+    "language": "言語",
+    "languagePrivacy": "言語とプライバシー",
+    "onLaunch": "起動時",
+    "startView": "開始画面",
+    "startViewOptions": {
+      "resume": "前回の本を再開",
+      "shelf": "ライブラリの本棚"
+    },
+    "title": "一般"
+  },
+  "menus": {
+    "description": "ヘッダーバーと選択メニューをカスタマイズ:項目を「表示」とオーバーフローの間でドラッグし、並べ替えます。",
+    "dragHint": "ドラッグで並べ替え・移動。ウィジェット項目はインライン固定です。",
     "items": {
-      "library": "ライブラリ",
+      "addNote": "ノート追加",
       "agent": "エージェント",
-      "search": "検索",
-      "import": "書籍を追加",
-      "viewControl": "本棚ビュー",
-      "stats": "読書統計",
-      "settings": "設定",
-      "toc": "目次",
-      "notes": "ノート",
       "appearance": "外観",
+      "askAI": "AI に聞く",
       "chat": "チャット",
       "copy": "コピー",
       "highlight": "ハイライト",
+      "import": "書籍を追加",
+      "library": "ライブラリ",
+      "notes": "ノート",
+      "search": "検索",
+      "settings": "設定",
+      "stats": "読書統計",
+      "toc": "目次",
       "underline": "下線",
-      "addNote": "ノート追加",
-      "askAI": "AI に聞く"
-    }
+      "viewControl": "本棚ビュー"
+    },
+    "more": "その他",
+    "overflow": "オーバーフローメニュー",
+    "reset": "デフォルトに戻す",
+    "shown": "表示",
+    "surface": {
+      "primaryNav": "メインナビゲーション",
+      "readerHeader": "リーダーヘッダー",
+      "selection": "選択メニュー",
+      "shelfHeader": "本棚ヘッダー"
+    },
+    "title": "カスタマイズ"
+  },
+  "pendingBadge": {
+    "comingSoon": "近日公開"
+  },
+  "reading": {
+    "description": "本がページ上でどう表示されるか。変更はリーダーに即座に反映されます。",
+    "fontSize": "文字サイズ",
+    "fontWeight": "字の太さ",
+    "layout": "レイアウト",
+    "lineSpacing": "行間",
+    "pageColor": {
+      "description": "本の紙の色。「自動」はアプリのテーマに従い、その他は固定です。",
+      "title": "ページの色"
+    },
+    "pageMargins": "余白",
+    "paragraphSpacing": "段落間隔",
+    "previewLabel": "読書プレビュー",
+    "previewSource": "三島由紀夫 · 『仮面の告白』",
+    "previewText": "永いあひだ、私は自分が生れたときの光景を見たことがあると言ひ張つてゐた。",
+    "previewTextSecondary": "私には凡てがわかった。一刻も早く逃げなければならぬ。",
+    "readingMode": "読書モード",
+    "textAlign": "行揃え",
+    "title": "読書",
+    "typography": "タイポグラフィ"
+  },
+  "sections": {
+    "about": "アプリについて",
+    "ai": "AI",
+    "appearance": "テーマ",
+    "dataSync": "データと同期",
+    "general": "一般",
+    "menus": "カスタマイズ",
+    "plugins": "プラグイン",
+    "reading": "読書",
+    "shortcuts": "ショートカット"
+  },
+  "shortcuts": {
+    "actions": {
+      "close": "ダイアログまたはオーバーレイを閉じる",
+      "new-conversation": "新しい会話",
+      "next-chapter": "次の章",
+      "next-page": "次のページ",
+      "prev-chapter": "前の章",
+      "prev-page": "前のページ",
+      "primary-nav": "メインナビゲーションを切り替え",
+      "search": "検索を開く",
+      "selection-add-note": "メモを追加",
+      "selection-ask-ai": "AIに質問",
+      "selection-copy": "コピー",
+      "selection-highlight": "ハイライト",
+      "selection-look-up": "調べる",
+      "selection-underline": "下線",
+      "settings": "設定を開く",
+      "toggle-controls": "リーダーの操作を切り替え"
+    },
+    "categories": {
+      "Global": "全体",
+      "Overlays": "オーバーレイ",
+      "Plugins": "プラグイン",
+      "Reading": "読書",
+      "Selection": "選択"
+    },
+    "categoryDescriptions": {
+      "plugins": "プラグインが提供するコマンドにキーを割り当てます。",
+      "selection": "リーダーでテキストを選択しているときに有効です。"
+    },
+    "conflict": "すでに「{{label}}」で使用されています",
+    "description": "ショートカットをクリックして再設定できます。記録中にEscを押すとキャンセルします。",
+    "notSet": "未設定",
+    "rebind": "{{label}}を再設定",
+    "recording": "ショートカットを押してください…",
+    "reset": "{{label}}をリセット",
+    "resetAll": "すべて既定値にリセット",
+    "title": "ショートカット"
   }
 }

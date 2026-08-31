@@ -2,11 +2,48 @@
   "actions": {
     "backToLibrary": "Volver a la biblioteca",
     "dismiss": "Cerrar",
-    "openSettings": "Abrir ajustes"
+    "goAgent": {
+      "keywords": "",
+      "title": ""
+    },
+    "goShelf": {
+      "keywords": "",
+      "title": ""
+    },
+    "goStats": {
+      "keywords": "",
+      "title": ""
+    },
+    "import": {
+      "keywords": "",
+      "title": ""
+    },
+    "openSettings": "Abrir ajustes",
+    "select": {
+      "keywords": "",
+      "title": ""
+    }
+  },
+  "collection": {
+    "keywords": "",
+    "subtitle": ""
   },
   "errorBoundary": {
-    "title": "Esta vista ha tenido un problema",
     "body": "El error ha quedado registrado. El resto de ReadAware sigue funcionando; puedes volver a intentarlo.",
-    "retry": "Reintentar"
+    "retry": "Reintentar",
+    "title": "Esta vista ha tenido un problema"
+  },
+  "group": {
+    "keywords": "",
+    "none": ""
+  },
+  "layout": {
+    "keywords": ""
+  },
+  "settings": {
+    "updateAvailableToast": ""
+  },
+  "sort": {
+    "keywords": ""
   }
 }

@@ -1,132 +1,134 @@
 {
-  "chat": {
-    "messageLabel": "メッセージ",
-    "placeholder": "この本について質問…",
-    "placeholderWithPassage": "この一節について質問…",
-    "send": "送信",
-    "stopGenerating": "生成を停止",
-    "loadingConversation": "会話を読み込み中",
-    "thinking": "考え中…",
-    "thought": "思考の過程",
-    "tools": {
-      "search_memory": "記憶を呼び出しています",
-      "remember": "記憶を保存しています",
-      "search_conversation": "過去の会話を検索しています",
-      "get_conversation_insights": "本のスレッドを確認しています",
-      "list_books": "本棚を確認しています",
-      "get_book_overview": "本の情報を調べています",
-      "get_annotations": "ハイライトを読んでいます",
-      "get_toc": "目次を読んでいます",
-      "read_chapter": "章を読んでいます",
-      "search_book_text": "本文を検索しています",
-      "list_collections": "コレクションを確認しています",
-      "get_reading_stats": "読書状況を確認しています",
-      "update_book": "本の情報を更新しています",
-      "manage_collection": "コレクションを整理しています",
-      "delete_book": "本を削除しています",
-      "delete_collection": "コレクションを削除しています",
-      "create_annotation": "注釈を作成しています",
-      "edit_annotation": "注釈を更新しています",
-      "delete_annotation": "注釈を削除しています",
-      "open_book": "本を開いています",
-      "get_recent_turns": "最近の会話を確認しています",
-      "get_settings": "設定を確認しています",
-      "update_settings": "設定を更新しています",
-      "input": "入力",
-      "output": "出力",
-      "running": "実行中…",
-      "fallback": "処理中",
-      "failed": "失敗"
+  "agent": {
+    "annotations": {
+      "title": "ハイライトとメモ"
     },
-    "interaction": {
-      "customAnswer": "別の回答",
-      "customAnswerLabel": "あなたの回答",
-      "customAnswerPlaceholder": "別の回答を入力…",
-      "submit": "続ける",
-      "skip": "スキップ",
-      "answered": "回答済み",
-      "skipped": "スキップしました",
-      "permission": {
-        "approved": "許可しました",
-        "declined": "許可しませんでした",
-        "decline": "残す",
-        "deleteBook": {
-          "question": "本棚から『{{subject}}』を削除しますか？",
-          "description": "インポートした元ファイルとローカルの読書データが完全に削除されます。この操作は取り消せません。",
-          "approve": "本を削除"
-        },
-        "deleteCollection": {
-          "question": "コレクション「{{subject}}」を削除しますか？",
-          "description": "コレクションは削除されますが、本はコレクション未設定のまま本棚に残ります。",
-          "approve": "コレクションを削除"
-        },
-        "deleteAnnotation": {
-          "question": "この注釈を削除しますか？",
-          "description": "「{{subject}}」は読書コンテキストから完全に削除されます。",
-          "approve": "注釈を削除"
-        }
-      }
-    },
-    "references": {
-      "showAll": "すべて表示（{{count}}）",
-      "showFewer": "折りたたむ",
-      "missingBook": "本棚にはもうありません",
-      "openBook": "『{{title}}』を開く",
-      "saveWord": "単語帳に追加",
-      "removeWord": "単語帳から削除"
-    },
-    "message": {
-      "copy": "メッセージをコピー",
-      "copied": "コピーしました",
-      "regenerate": "回答を再生成",
-      "retry": "再試行",
-      "failed": "生成に失敗しました"
-    },
-    "removePassage": "一節を削除",
     "empty": {
-      "title": "この本について質問",
-      "description": "一節を選んで「AIに質問」を選ぶか、そのまま入力を始めてください。この会話は本とともに保存されます。"
+      "description": "読書中のハイライトやメモがここに表示されます。",
+      "title": "まだコンテキストがありません"
     },
-    "error": {
-      "generic": "返信の取得中に問題が発生しました。",
-      "notConfigured": "AI が未設定です。API キーを追加すると会話を始められます。"
+    "threads": {
+      "delete": "スレッドを削除",
+      "new": "新しい会話",
+      "title": "スレッド",
+      "untitled": "新しい会話"
+    },
+    "unknownBook": "不明な本",
+    "vocabulary": {
+      "contextLabel": "文脈での意味",
+      "empty": "まだ保存された単語はありません。読書中に単語を調べ、ブックマークをタップして保存できます。",
+      "etymologyLabel": "語源",
+      "remove": "削除",
+      "title": "単語帳"
     }
-  },
-  "note": {
-    "addTitle": "メモを追加",
-    "editTitle": "メモを編集",
-    "close": "閉じる",
-    "bodyLabel": "あなたのメモ",
-    "placeholder": "この一節についてどう思いますか？",
-    "delete": "削除",
-    "cancel": "キャンセル",
-    "save": "保存",
-    "update": "更新"
   },
   "annotation": {
     "delete": "削除"
   },
-  "agent": {
-    "threads": {
-      "title": "スレッド",
-      "new": "新しい会話",
-      "untitled": "新しい会話",
-      "delete": "スレッドを削除"
-    },
-    "unknownBook": "不明な本",
+  "chat": {
     "empty": {
-      "title": "まだコンテキストがありません",
-      "description": "読書中のハイライトやメモがここに表示されます。"
+      "description": "一節を選んで「AIに質問」を選ぶか、そのまま入力を始めてください。この会話は本とともに保存されます。",
+      "title": "この本について質問"
     },
-    "annotations": {
-      "title": "ハイライトとメモ"
+    "error": {
+      "generic": "返信の取得中に問題が発生しました。",
+      "notConfigured": "AI が未設定です。API キーを追加すると会話を始められます。"
     },
-    "vocabulary": {
-      "title": "単語帳",
-      "empty": "まだ保存された単語はありません。読書中に単語を調べ、ブックマークをタップして保存できます。",
-      "remove": "削除",
-      "contextLabel": "文脈での意味",
-      "etymologyLabel": "語源"
+    "interaction": {
+      "answered": "回答済み",
+      "customAnswer": "別の回答",
+      "customAnswerLabel": "あなたの回答",
+      "customAnswerPlaceholder": "別の回答を入力…",
+      "permission": {
+        "approved": "許可しました",
+        "decline": "残す",
+        "declined": "許可しませんでした",
+        "deleteAnnotation": {
+          "approve": "注釈を削除",
+          "description": "「{{subject}}」は読書コンテキストから完全に削除されます。",
+          "question": "この注釈を削除しますか？"
+        },
+        "deleteBook": {
+          "approve": "本を削除",
+          "description": "インポートした元ファイルとローカルの読書データが完全に削除されます。この操作は取り消せません。",
+          "question": "本棚から『{{subject}}』を削除しますか？"
+        },
+        "deleteCollection": {
+          "approve": "コレクションを削除",
+          "description": "コレクションは削除されますが、本はコレクション未設定のまま本棚に残ります。",
+          "question": "コレクション「{{subject}}」を削除しますか？"
+        }
+      },
+      "skip": "スキップ",
+      "skipped": "スキップしました",
+      "submit": "続ける"
+    },
+    "loadingConversation": "会話を読み込み中",
+    "message": {
+      "copied": "コピーしました",
+      "copy": "メッセージをコピー",
+      "failed": "生成に失敗しました",
+      "regenerate": "回答を再生成",
+      "retry": "再試行"
+    },
+    "messageLabel": "メッセージ",
+    "placeholder": "この本について質問…",
+    "placeholderWithPassage": "この一節について質問…",
+    "references": {
+      "locked": "",
+      "missingBook": "本棚にはもうありません",
+      "openBook": "『{{title}}』を開く",
+      "removeWord": "単語帳から削除",
+      "saveWord": "単語帳に追加",
+      "showAll": "すべて表示（{{count}}）",
+      "showAll_other": "",
+      "showFewer": "折りたたむ"
+    },
+    "removePassage": "一節を削除",
+    "send": "送信",
+    "stopGenerating": "生成を停止",
+    "thinking": "考え中…",
+    "thought": "思考の過程",
+    "tools": {
+      "create_annotation": "注釈を作成しています",
+      "delete_annotation": "注釈を削除しています",
+      "delete_book": "本を削除しています",
+      "delete_collection": "コレクションを削除しています",
+      "edit_annotation": "注釈を更新しています",
+      "failed": "失敗",
+      "fallback": "処理中",
+      "get_annotations": "ハイライトを読んでいます",
+      "get_book_overview": "本の情報を調べています",
+      "get_conversation_insights": "本のスレッドを確認しています",
+      "get_reading_stats": "読書状況を確認しています",
+      "get_recent_turns": "最近の会話を確認しています",
+      "get_settings": "設定を確認しています",
+      "get_toc": "目次を読んでいます",
+      "input": "入力",
+      "list_books": "本棚を確認しています",
+      "list_collections": "コレクションを確認しています",
+      "manage_collection": "コレクションを整理しています",
+      "open_book": "本を開いています",
+      "output": "出力",
+      "read_chapter": "章を読んでいます",
+      "remember": "記憶を保存しています",
+      "running": "実行中…",
+      "search_book_text": "本文を検索しています",
+      "search_conversation": "過去の会話を検索しています",
+      "search_memory": "記憶を呼び出しています",
+      "update_book": "本の情報を更新しています",
+      "update_settings": "設定を更新しています"
     }
+  },
+  "note": {
+    "addTitle": "メモを追加",
+    "bodyLabel": "あなたのメモ",
+    "cancel": "キャンセル",
+    "close": "閉じる",
+    "delete": "削除",
+    "editTitle": "メモを編集",
+    "placeholder": "この一節についてどう思いますか？",
+    "save": "保存",
+    "update": "更新"
   }
 }

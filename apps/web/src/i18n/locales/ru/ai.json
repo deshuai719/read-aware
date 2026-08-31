@@ -1,132 +1,137 @@
 {
-  "chat": {
-    "messageLabel": "Сообщение",
-    "placeholder": "Спросите об этой книге…",
-    "placeholderWithPassage": "Спросите об этом отрывке…",
-    "send": "Отправить",
-    "stopGenerating": "Остановить генерацию",
-    "loadingConversation": "Загрузка беседы",
-    "thinking": "Думаю…",
-    "thought": "Ход размышлений",
-    "tools": {
-      "search_memory": "Вспоминаю",
-      "remember": "Сохраняю в память",
-      "search_conversation": "Ищу в прошлых беседах",
-      "get_conversation_insights": "Просматриваю обсуждение книги",
-      "list_books": "Просматриваю полку",
-      "get_book_overview": "Смотрю сведения о книге",
-      "get_annotations": "Читаю ваши выделения",
-      "get_toc": "Читаю оглавление",
-      "read_chapter": "Читаю главу",
-      "search_book_text": "Ищу в тексте",
-      "list_collections": "Просматриваю коллекции",
-      "get_reading_stats": "Просматриваю статистику чтения",
-      "update_book": "Обновляю книгу",
-      "manage_collection": "Организую коллекции",
-      "delete_book": "Удаляю книгу",
-      "delete_collection": "Удаляю коллекцию",
-      "create_annotation": "Создаю аннотацию",
-      "edit_annotation": "Обновляю аннотацию",
-      "delete_annotation": "Удаляю аннотацию",
-      "open_book": "Открываю книгу",
-      "get_recent_turns": "Просматриваю последние реплики",
-      "get_settings": "Проверяю настройки",
-      "update_settings": "Обновляю настройки",
-      "input": "Входные данные",
-      "output": "Результат",
-      "running": "Выполняется…",
-      "fallback": "Работаю",
-      "failed": "не удалось"
+  "agent": {
+    "annotations": {
+      "title": "Выделения и заметки"
     },
-    "interaction": {
-      "customAnswer": "Другой ответ",
-      "customAnswerLabel": "Ваш ответ",
-      "customAnswerPlaceholder": "Введите другой ответ…",
-      "submit": "Продолжить",
-      "skip": "Пропустить",
-      "answered": "Ответ получен",
-      "skipped": "Пропущено",
-      "permission": {
-        "approved": "Разрешено",
-        "declined": "Не разрешено",
-        "decline": "Оставить",
-        "deleteBook": {
-          "question": "Удалить «{{subject}}» с полки?",
-          "description": "Импортированный исходный файл и локальные данные чтения будут удалены навсегда. Это действие нельзя отменить.",
-          "approve": "Удалить книгу"
-        },
-        "deleteCollection": {
-          "question": "Удалить коллекцию «{{subject}}»?",
-          "description": "Коллекция будет удалена. Книги останутся на полке без коллекции.",
-          "approve": "Удалить коллекцию"
-        },
-        "deleteAnnotation": {
-          "question": "Удалить эту аннотацию?",
-          "description": "«{{subject}}» будет навсегда удалено из контекста чтения.",
-          "approve": "Удалить аннотацию"
-        }
-      }
-    },
-    "references": {
-      "showAll": "Показать все {{count}}",
-      "showFewer": "Свернуть",
-      "missingBook": "Больше нет на полке",
-      "openBook": "Открыть «{{title}}»",
-      "saveWord": "В словарь",
-      "removeWord": "Убрать из словаря"
-    },
-    "message": {
-      "copy": "Скопировать сообщение",
-      "copied": "Скопировано",
-      "regenerate": "Сгенерировать заново",
-      "retry": "Повторить",
-      "failed": "Не удалось сгенерировать ответ"
-    },
-    "removePassage": "Убрать отрывок",
     "empty": {
-      "title": "Спросите об этой книге",
-      "description": "Выделите отрывок и выберите «Спросить ИИ» или просто начните печатать. Эта беседа сохраняется вместе с книгой."
+      "description": "Здесь появятся выделения и заметки из вашего чтения.",
+      "title": "Пока нет контекста"
     },
-    "error": {
-      "generic": "Что-то пошло не так при получении ответа.",
-      "notConfigured": "ИИ ещё не настроен — добавьте API-ключ, чтобы начать беседу."
+    "threads": {
+      "delete": "Удалить тред",
+      "new": "Новый диалог",
+      "title": "Треды",
+      "untitled": "Новая беседа"
+    },
+    "unknownBook": "Неизвестная книга",
+    "vocabulary": {
+      "contextLabel": "В контексте",
+      "empty": "Пока нет сохранённых слов. Найдите слово во время чтения и нажмите закладку, чтобы сохранить.",
+      "etymologyLabel": "Происхождение",
+      "remove": "Удалить",
+      "title": "Словарь"
     }
-  },
-  "note": {
-    "addTitle": "Добавить заметку",
-    "editTitle": "Редактировать заметку",
-    "close": "Закрыть",
-    "bodyLabel": "Ваша заметка",
-    "placeholder": "Что вы думаете об этом отрывке?",
-    "delete": "Удалить",
-    "cancel": "Отмена",
-    "save": "Сохранить",
-    "update": "Обновить"
   },
   "annotation": {
     "delete": "Удалить"
   },
-  "agent": {
-    "threads": {
-      "title": "Треды",
-      "new": "Новый диалог",
-      "untitled": "Новая беседа",
-      "delete": "Удалить тред"
-    },
-    "unknownBook": "Неизвестная книга",
+  "chat": {
     "empty": {
-      "title": "Пока нет контекста",
-      "description": "Здесь появятся выделения и заметки из вашего чтения."
+      "description": "Выделите отрывок и выберите «Спросить ИИ» или просто начните печатать. Эта беседа сохраняется вместе с книгой.",
+      "title": "Спросите об этой книге"
     },
-    "annotations": {
-      "title": "Выделения и заметки"
+    "error": {
+      "generic": "Что-то пошло не так при получении ответа.",
+      "notConfigured": "ИИ ещё не настроен — добавьте API-ключ, чтобы начать беседу."
     },
-    "vocabulary": {
-      "title": "Словарь",
-      "empty": "Пока нет сохранённых слов. Найдите слово во время чтения и нажмите закладку, чтобы сохранить.",
-      "remove": "Удалить",
-      "contextLabel": "В контексте",
-      "etymologyLabel": "Происхождение"
+    "interaction": {
+      "answered": "Ответ получен",
+      "customAnswer": "Другой ответ",
+      "customAnswerLabel": "Ваш ответ",
+      "customAnswerPlaceholder": "Введите другой ответ…",
+      "permission": {
+        "approved": "Разрешено",
+        "decline": "Оставить",
+        "declined": "Не разрешено",
+        "deleteAnnotation": {
+          "approve": "Удалить аннотацию",
+          "description": "«{{subject}}» будет навсегда удалено из контекста чтения.",
+          "question": "Удалить эту аннотацию?"
+        },
+        "deleteBook": {
+          "approve": "Удалить книгу",
+          "description": "Импортированный исходный файл и локальные данные чтения будут удалены навсегда. Это действие нельзя отменить.",
+          "question": "Удалить «{{subject}}» с полки?"
+        },
+        "deleteCollection": {
+          "approve": "Удалить коллекцию",
+          "description": "Коллекция будет удалена. Книги останутся на полке без коллекции.",
+          "question": "Удалить коллекцию «{{subject}}»?"
+        }
+      },
+      "skip": "Пропустить",
+      "skipped": "Пропущено",
+      "submit": "Продолжить"
+    },
+    "loadingConversation": "Загрузка беседы",
+    "message": {
+      "copied": "Скопировано",
+      "copy": "Скопировать сообщение",
+      "failed": "Не удалось сгенерировать ответ",
+      "regenerate": "Сгенерировать заново",
+      "retry": "Повторить"
+    },
+    "messageLabel": "Сообщение",
+    "placeholder": "Спросите об этой книге…",
+    "placeholderWithPassage": "Спросите об этом отрывке…",
+    "references": {
+      "locked": "",
+      "missingBook": "Больше нет на полке",
+      "openBook": "Открыть «{{title}}»",
+      "removeWord": "Убрать из словаря",
+      "saveWord": "В словарь",
+      "showAll": "Показать все {{count}}",
+      "showAll_one": "",
+      "showAll_few": "",
+      "showAll_many": "",
+      "showAll_other": "",
+      "showFewer": "Свернуть"
+    },
+    "removePassage": "Убрать отрывок",
+    "send": "Отправить",
+    "stopGenerating": "Остановить генерацию",
+    "thinking": "Думаю…",
+    "thought": "Ход размышлений",
+    "tools": {
+      "create_annotation": "Создаю аннотацию",
+      "delete_annotation": "Удаляю аннотацию",
+      "delete_book": "Удаляю книгу",
+      "delete_collection": "Удаляю коллекцию",
+      "edit_annotation": "Обновляю аннотацию",
+      "failed": "не удалось",
+      "fallback": "Работаю",
+      "get_annotations": "Читаю ваши выделения",
+      "get_book_overview": "Смотрю сведения о книге",
+      "get_conversation_insights": "Просматриваю обсуждение книги",
+      "get_reading_stats": "Просматриваю статистику чтения",
+      "get_recent_turns": "Просматриваю последние реплики",
+      "get_settings": "Проверяю настройки",
+      "get_toc": "Читаю оглавление",
+      "input": "Входные данные",
+      "list_books": "Просматриваю полку",
+      "list_collections": "Просматриваю коллекции",
+      "manage_collection": "Организую коллекции",
+      "open_book": "Открываю книгу",
+      "output": "Результат",
+      "read_chapter": "Читаю главу",
+      "remember": "Сохраняю в память",
+      "running": "Выполняется…",
+      "search_book_text": "Ищу в тексте",
+      "search_conversation": "Ищу в прошлых беседах",
+      "search_memory": "Вспоминаю",
+      "update_book": "Обновляю книгу",
+      "update_settings": "Обновляю настройки"
     }
+  },
+  "note": {
+    "addTitle": "Добавить заметку",
+    "bodyLabel": "Ваша заметка",
+    "cancel": "Отмена",
+    "close": "Закрыть",
+    "delete": "Удалить",
+    "editTitle": "Редактировать заметку",
+    "placeholder": "Что вы думаете об этом отрывке?",
+    "save": "Сохранить",
+    "update": "Обновить"
   }
 }

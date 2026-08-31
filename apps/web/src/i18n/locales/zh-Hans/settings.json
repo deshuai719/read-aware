@@ -1,580 +1,588 @@
 {
-  "dialog": {
-    "title": "设置",
-    "sectionsLabel": "设置分区",
-    "close": "关闭设置"
-  },
-  "sections": {
-    "general": "通用",
-    "appearance": "主题",
-    "reading": "阅读",
-    "ai": "AI",
-    "shortcuts": "快捷键",
-    "dataSync": "数据与同步",
-    "about": "关于",
-    "plugins": "插件",
-    "menus": "自定义"
-  },
-  "general": {
-    "title": "通用",
-    "description": "全局行为——启动时打开的内容、语言以及桌面集成。",
-    "onLaunch": "启动时",
-    "startView": "起始视图",
-    "startViewOptions": {
-      "shelf": "书架",
-      "resume": "继续上次阅读"
-    },
-    "desktopIntegration": {
-      "title": "桌面集成",
-      "description": "保存在此处，由桌面应用生效。在浏览器预览中无效。",
-      "launchAtStartup": {
-        "title": "开机启动",
-        "description": "登录时自动打开 ReadAware。"
-      },
-      "fileAssociations": {
-        "title": "文件关联",
-        "description": "用 ReadAware 打开 EPUB、MOBI、AZW3、FB2、CBZ、CBR、TXT、HTML 和 PDF 文件。"
-      },
-      "autoUpdate": {
-        "title": "自动检查更新",
-        "description": "发现新版本时，在主界面安静地显示提示。"
-      },
-      "whatsNewDialog": {
-        "title": "更新后显示“新内容”提示",
-        "description": "应用更新后，弹一次小弹窗提示去哪里查看更新内容。"
-      }
-    },
-    "languagePrivacy": "语言与隐私",
-    "language": "语言",
-    "crashReports": {
-      "title": "发送匿名崩溃报告",
-      "description": "分享崩溃诊断信息，帮助修复稳定性问题。默认关闭。"
-    }
-  },
-  "appearance": {
-    "title": "外观",
-    "description": "应用本身的外观——与阅读界面中的书页颜色无关。",
-    "theme": {
-      "title": "主题",
-      "description": "“跟随系统”会采用操作系统的浅色或深色设置。"
-    },
-    "themeOptions": {
-      "system": "跟随系统",
-      "light": "浅色",
-      "dark": "深色"
-    },
-    "contentType": {
-      "title": "内容排版",
-      "description": "聊天回复、笔记与插件视图的排版。界面控件保持自己的字号。",
-      "follow": {
-        "title": "跟随阅读设置",
-        "description": "沿用你为书籍选择的字体与行距，按对话的尺度缩小。"
-      },
-      "appDefaultFont": "应用默认",
-      "fontSize": "字号",
-      "lineSpacing": "行距",
-      "previewLabel": "内容排版预览",
-      "previewQuestion": "这一章到底在论证什么？",
-      "previewAnswer": "改革始于即兴——一连串没人批准过的地方试验，因为管用才被留了下来。"
-    },
-    "motion": "动效",
-    "reduceMotion": {
-      "title": "减弱动效",
-      "description": "关闭应用中的过渡与动画效果。"
-    }
-  },
-  "reading": {
-    "title": "阅读",
-    "description": "书籍在页面上的呈现方式。更改会实时应用到阅读器。",
-    "previewLabel": "阅读预览",
-    "previewText": "那一天我二十一岁，在我一生的黄金时代。我有好多奢望。",
-    "previewTextSecondary": "我想爱，想吃，还想在一瞬间变成天上半明半暗的云……我觉得自己会永远生猛下去，什么也锤不了我。",
-    "previewSource": "王小波 · 《黄金时代》",
-    "typography": "排版",
-    "fontSize": "字号",
-    "fontWeight": "字重",
-    "lineSpacing": "行距",
-    "paragraphSpacing": "段间距",
-    "textAlign": "对齐方式",
-    "layout": "布局",
-    "readingMode": "阅读模式",
-    "pageColor": {
-      "title": "页面颜色",
-      "description": "书页的纸张颜色。“自动”跟随应用主题，其余为固定颜色。"
-    },
-    "pageMargins": "页边距"
-  },
-  "shortcuts": {
-    "title": "快捷键",
-    "description": "点击某个快捷键即可重新绑定；录制时按 Esc 取消。",
-    "categories": {
-      "Global": "全局",
-      "Reading": "阅读",
-      "Selection": "选中文本",
-      "Overlays": "浮层",
-      "Plugins": "插件"
-    },
-    "categoryDescriptions": {
-      "selection": "在阅读器中选中文本时可用。",
-      "plugins": "为插件提供的命令分配快捷键。"
-    },
-    "actions": {
-      "search": "打开搜索",
-      "settings": "打开设置",
-      "new-conversation": "创建新对话",
-      "primary-nav": "切换主导航页面",
-      "next-page": "下一页",
-      "prev-page": "上一页",
-      "next-chapter": "下一章",
-      "prev-chapter": "上一章",
-      "toggle-controls": "切换阅读器控件",
-      "selection-copy": "复制",
-      "selection-highlight": "高亮",
-      "selection-underline": "下划线",
-      "selection-add-note": "添加笔记",
-      "selection-look-up": "查词",
-      "selection-ask-ai": "询问 AI",
-      "close": "关闭对话框或浮层"
-    },
-    "recording": "请按下快捷键…",
-    "conflict": "已被“{{label}}”占用",
-    "rebind": "重新绑定 {{label}}",
-    "reset": "重置 {{label}}",
-    "resetAll": "全部重置为默认",
-    "notSet": "未设置"
-  },
-  "ai": {
-    "title": "AI",
-    "description": "自带模型密钥，然后选择助手可以做什么、能看到什么。",
-    "connection": "连接",
-    "features": {
-      "title": "功能",
-      "description": "阅读辅助功能，随各项能力上线逐一开启。"
-    },
-    "featureList": {
-      "explainSelection": {
-        "label": "解释选中内容",
-        "description": "用通俗的语言解读高亮的段落。"
-      },
-      "defineTerm": {
-        "label": "释义术语",
-        "description": "为选中的词或短语提供内嵌释义。"
-      },
-      "translate": {
-        "label": "翻译",
-        "description": "将选中内容翻译为你的阅读语言。"
-      },
-      "summarizeChapter": {
-        "label": "总结章节",
-        "description": "将当前章节浓缩为要点。"
-      },
-      "askConversation": {
-        "label": "对话式问答",
-        "description": "结合书籍内容和你的笔记提出追问。"
-      }
-    },
-    "chat": "对话",
-    "followStreaming": {
-      "title": "跟随流式回答滚动",
-      "description": "回答生成时自动滚动到最新内容；关闭时视图停留在回答开头。"
-    },
-    "memory": "记忆",
-    "buildMemory": {
-      "title": "构建长期记忆",
-      "description": "让 ReadAware 随时间从你的阅读和笔记中学习，形成持久的个人画像。"
-    },
-    "storedMemory": {
-      "title": "已存储的记忆",
-      "description": "查看或清除 ReadAware 记住的所有关于你的信息。"
-    },
-    "clearMemory": "清除记忆",
-    "privacy": {
-      "title": "隐私",
-      "description": "控制 AI 功能运行时哪些内容会离开你的设备。"
-    },
-    "sendHighlightedText": {
-      "title": "发送高亮文本",
-      "description": "在请求中包含你选中的段落。"
-    },
-    "sendSurroundingContext": {
-      "title": "发送周围上下文",
-      "description": "包含附近的段落，让回答更贴合原文。"
-    },
-    "localOnly": {
-      "title": "仅本地模式",
-      "description": "绝不调用远程模型。在本地模型可用之前，AI 功能保持关闭。"
-    }
-  },
-  "aiConfig": {
-    "provider": "AI 提供方",
-    "readaware": {
-      "description": "内置模型,无需自己的 API key——用量按方案以 credits 逐月计量。",
-      "notConnected": "请先在「数据与同步」里连接账号,订阅使用该账号登录。",
-      "requiresPaid": "内置 AI 需要 Pro 或 Max 方案;免费方案请使用自己的 key。",
-      "credits": "本月已用 {{used}} / {{total}} credits",
-      "creditsUnlimited": "本月已用 {{used}} credits(不限量)"
-    },
-    "customBaseUrl": {
-      "label": "自定义 Base URL",
-      "helper": "输入你的 OpenAI 兼容 API 端点的 Base URL。"
-    },
-    "customApi": {
-      "label": "API 格式",
-      "helper": "选择你的提供方实现的端点格式。",
-      "chatCompletions": "Chat Completions（/chat/completions）",
-      "responses": "Responses（/responses）"
-    },
-    "customSupportsThinking": "模型支持思考",
-    "customMaxOutputTokens": {
-      "label": "最大输出 token 数",
-      "placeholder": "使用提供方默认值",
-      "helper": "可选。留空时不设置上限，由提供方决定。",
-      "error": "请输入正整数。"
-    },
-    "apiKey": {
-      "label": "API 密钥",
-      "placeholder": "输入你的 {{provider}} API 密钥",
-      "helper": "你的 API 密钥经过加密，仅存储在这台设备上，不会发送到 ReadAware 的服务器。"
-    },
-    "show": "显示",
-    "hide": "隐藏",
-    "model": "主模型",
-    "modelDefault": "默认",
-    "modelHelper": "默认同时用于 Smart 和 Fast 任务。",
-    "advancedSettings": "高级设置",
-    "separateFastModel": "为 Fast 任务使用单独模型",
-    "getKey": {
-      "openai": "从 <link>OpenAI 控制台</link> 获取你的 API 密钥",
-      "anthropic": "从 <link>Anthropic 控制台</link> 获取你的 API 密钥",
-      "openrouter": "从 <link>OpenRouter</link> 获取你的 API 密钥",
-      "generic": "从 {{provider}} 控制台获取 API 密钥：<link>前往</link>。"
-    },
-    "test": "测试连接",
-    "testing": "测试中…",
-    "clear": "清除",
-    "testSuccessMessage": "测试成功！响应：“{{response}}”",
-    "testEmptyMessage": "测试失败：AI 提供方返回了空响应。",
-    "testUnknownError": "测试过程中发生未知错误。",
-    "byok": {
-      "title": "关于 BYOK（自带密钥）",
-      "body": "ReadAware 使用你的密钥调用所选提供方。密钥经过加密，仅存储在这台设备上；产生的 API 使用费用仍由你承担。"
-    },
-    "smartModel": "Smart 模型",
-    "fastModel": "Fast 模型",
-    "smartModelHelper": "聊天、引导访谈、跨书综合——更慢、更聪明的档位。",
-    "fastModelHelper": "查词典、记忆提炼、摘要——更便宜、更快的档位。",
-    "modelPlaceholder": "例如 gpt-5.5",
-    "fastModelCustomPlaceholder": "留空则与 Smart 模型相同",
-    "thinking": "思考力度",
-    "thinkingHelper": "Smart 和 Fast 任务共用。档位越高，回答前思考越久；不支持思考的模型会忽略此设置。",
-    "smartThinking": "Smart 模型思考力度",
-    "fastThinking": "Fast 模型思考力度",
-    "smartThinkingHelper": "聊天轮次的推理力度——档位越高，回答前思考越久。不支持思考的模型会忽略此设置。",
-    "fastThinkingHelper": "后台任务的推理力度——档位越低，速度越快、费用越少。",
-    "thinkingLevels": {
-      "off": "关闭",
-      "minimal": "最低",
-      "low": "低",
-      "medium": "中",
-      "high": "高",
-      "xhigh": "极高",
-      "max": "最高"
-    },
-    "modelPicker": {
-      "search": "搜索模型…",
-      "recommended": "推荐",
-      "useCustom": "把“{{id}}”用作模型 ID",
-      "empty": "没有匹配的模型"
-    },
-    "openRouter": {
-      "sort": {
-        "label": "上游排序",
-        "default": "OpenRouter 默认（负载均衡）",
-        "price": "价格优先",
-        "throughput": "吞吐优先",
-        "latency": "延迟优先",
-        "helper": "OpenRouter 在承载该模型的多家上游之间如何选择。"
-      },
-      "order": {
-        "label": "优先上游",
-        "helper": "按顺序尝试的上游 slug，逗号分隔（如 coreweave, deepinfra）。留空表示不指定。"
-      },
-      "allowFallbacks": "优先上游不可用时回退到其他上游"
-    }
-  },
-  "font": {
-    "label": "字体",
-    "custom": "自定义",
-    "customAria": "从本设备已安装的字体中选择",
-    "placeholderCurated": "选择一款精选字体",
-    "placeholderCustom": "选择一款已安装的字体",
-    "downloading": "正在下载字体 · {{percent}}%",
-    "downloadFailed": "字体下载失败——请检查网络。",
-    "retry": "重试"
-  },
-  "pendingBadge": {
-    "comingSoon": "即将推出"
-  },
-  "dataSync": {
-    "title": "数据与同步",
-    "description": "ReadAware 采用本地优先：你的数据保存在本设备上。同步只是加密中继，而非事实来源。",
-    "noticeDone": "完成",
-    "noticeError": "错误",
-    "exportSuccess": "已全部导出至 {{file}}。",
-    "exportError": "无法导出你的数据。",
-    "importError": "无法导入此文件。",
-    "merge": {
-      "books_other": "{{count}} 本书",
-      "annotations_other": "{{count}} 条批注",
-      "collections_other": "{{count}} 个收藏集",
-      "settings_other": "{{count}} 项设置",
-      "summary": "已合并 {{books}}、{{annotations}}、{{collections}} 和 {{settings}}。正在重新加载…"
-    },
-    "sync": "同步",
-    "account": {
-      "title": "账户",
-      "description": "连接账户，以在多台设备间同步你的加密事件日志。"
-    },
-    "connectAccount": "连接账户",
-    "e2e": {
-      "title": "端到端加密",
-      "description": "同步的数据在设备本地加密。在此管理你的口令和设备。",
-      "active": "已开启——由你的口令保护。"
-    },
-    "storage": "存储",
-    "dataLocation": {
-      "title": "数据位置",
-      "descTauri": "保存在本设备的 ReadAware 应用数据文件夹中。",
-      "descWeb": "保存在此浏览器中。桌面应用会将数据保存在你可控的本地文件夹里。"
-    },
-    "desktopBadge": "桌面版",
-    "reveal": "在文件夹中显示",
-    "backup": {
-      "title": "备份与导出",
-      "description": "将本设备上的所有内容保存为单个文件——迁移到其他设备或用作备份。导入会将备份合并回你当前的数据。"
-    },
-    "fullBackup": {
-      "title": "完整备份",
-      "description": "书籍、高亮、笔记、收藏集、阅读进度以及每一项偏好设置，全部整合到一个便携文件中。"
-    },
-    "import": "导入",
-    "export": "导出",
-    "working": "处理中…",
-    "dangerZone": "危险区",
-    "syncStatus": {
-      "idle": "已同步",
-      "syncing": "同步中…",
-      "error": "同步出错",
-      "lastSync": "上次同步 {{time}}",
-      "never": "尚未同步",
-      "signedOut": "登录已失效——重新登录后继续同步"
-    },
-    "reauth": {
-      "notice": "同步登录已失效",
-      "action": "重新登录",
-      "dismiss": "关闭登录提示"
-    },
-    "connect": {
-      "emailLabel": "邮箱",
-      "emailPlaceholder": "you@example.com",
-      "send": "发送登录链接",
-      "sending": "发送中…",
-      "sent": "去邮箱查收，然后把登录链接或令牌粘贴到下面。",
-      "tokenLabel": "登录链接或令牌",
-      "passphraseLabel": "加密口令",
-      "passphraseHint": "数据离开设备前用它加密。第一台设备设定口令，其余设备必须输入同一个。口令无法找回——忘记即无法解读云端数据。",
-      "passphraseTooShort": "至少 8 个字符。",
-      "connect": "连接",
-      "connecting": "连接中…",
-      "wrongPassphrase": "口令与该账号不匹配。",
-      "failed": "连接失败，请检查链接后重试。",
-      "connected": "同步已开启。",
-      "google": "使用 Google 登录",
-      "github": "使用 GitHub 登录",
-      "orEmail": "或使用邮箱",
-      "oauthStarted": "在浏览器里完成登录，然后把页面显示的令牌粘贴到下面。",
-      "back": "返回",
-      "tokenContinue": "继续",
-      "verifying": "验证中…",
-      "tokenInvalid": "登录链接或令牌无效——可能已过期或已被使用，请重新申请。",
-      "tokenRetry": "暂时无法验证该令牌。请检查网络后重试，令牌已保留在下方。",
-      "signedInAs": "即将连接的账号",
-      "freshAccount": "该账号尚未设定加密口令，将由本设备设定。请确认这是你本人的账号：连接后，本设备的书库会同步到该账号。"
-    },
-    "connected": {
-      "statusTitle": "状态",
-      "planTitle": "套餐",
-      "syncNow": "立即同步",
-      "disconnect": "断开",
-      "disconnectTitle": "断开同步？",
-      "disconnectBody": "本设备保留全部数据并停止同步。可随时用同一口令重新连接。",
-      "cancel": "取消",
-      "storageUsed": "云端已用 {{used}}",
-      "storageUsedOfLimit": "云端已用 {{used}} / {{limit}}",
-      "plan": "方案:{{tier}}"
-    },
-    "tier": {
-      "free": "免费",
-      "sync": "Sync",
-      "pro": "Pro",
-      "max": "Max",
-      "staff": "内部"
-    },
-    "billing": {
-      "upgrade": "升级方案",
-      "manage": "管理订阅",
-      "failed": "打不开支付页面,请重试。"
-    },
-    "progress": {
-      "pulling": "正在接收更改… 已合并 {{count}} 条",
-      "pushing": "正在发送更改… 已发送 {{count}} 条",
-      "blobs": "正在传输文件… {{done}}/{{total}}",
-      "pending": "待发送：{{events}} 条更改、{{blobs}} 个文件",
-      "pendingNone": "没有待发送的内容",
-      "lastCycle": "上次同步：接收 {{pulled}} 条 · 发送 {{pushed}} 条 · 文件 {{blobs}} 个",
-      "bookUp": "正在上传《{{title}}》",
-      "bookDown": "正在下载《{{title}}》",
-      "bookUpParts": "正在上传《{{title}}》（{{done}}/{{total}}）",
-      "bookDownParts": "正在下载《{{title}}》（{{done}}/{{total}}）"
-    },
-    "indicator": {
-      "label": "同步状态",
-      "errorDismiss": "暂时忽略同步错误"
-    },
-    "deleteAll": {
-      "title": "删除全部数据",
-      "description": "抹掉此设备上的一切——书籍、标注、阅读记录、设置与同步凭据。已同步账号在其他设备上的副本不受影响。",
-      "button": "删除全部数据",
-      "dialogTitle": "删除全部数据？",
-      "dialogBody": "这将抹掉此设备上的所有书籍、标注、记忆、对话与设置，且无法撤销。已同步到其他设备的数据仍保留在那些设备上。",
-      "confirmLabel": "输入 {{phrase}} 以确认",
-      "cancel": "取消",
-      "deleting": "正在删除…",
-      "failed": "删除失败，数据可能未被移除——请重试。"
-    },
-    "books": {
-      "title": "书籍文件",
-      "pending": "等待上传",
-      "failed": "上传失败，稍后重试",
-      "rejectedQuota": "云端容量不足，未上传",
-      "rejected": "被云端拒绝",
-      "rejectedWith": "被拒绝：{{reason}}",
-      "awaitingOtherDevice": "等待持有文件的设备上传",
-      "quotaFull": "云端容量已满——腾出空间或升级方案之前，之后的书只保留在本设备。"
-    }
-  },
   "about": {
-    "title": "关于",
-    "description": "版本、构建，以及驱动阅读体验的引擎。",
-    "version": "版本",
     "build": "构建",
     "buildAndroid": "Android 版（Tauri）",
-    "buildIos": "iOS 版（Tauri）",
     "buildDesktop": "桌面版（Tauri）",
+    "buildIos": "iOS 版（Tauri）",
     "buildWeb": "Web 预览",
-    "updates": {
-      "title": "更新",
-      "description": "检查并安装最新版本。"
-    },
     "channel": {
-      "title": "更新通道",
+      "beta": "测试版",
       "description": "稳定版只接收正式发布;测试版还会接收预发布版本——更早用上新功能,也更可能遇到毛边。",
       "stable": "稳定版",
-      "beta": "测试版"
+      "title": "更新通道"
     },
-    "checkUpdates": "检查更新",
     "checkingUpdates": "正在检查…",
-    "installUpdate": "安装更新",
-    "versionUnknown": "未知",
-    "updateStatus": {
-      "upToDate": "已是最新版本",
-      "available": "版本 {{version}} 可用",
-      "downloading": "正在下载…",
-      "downloadingProgress": "正在下载 {{progress}}%",
-      "installing": "正在安装…",
-      "permissionRequired": "请在 Android 设置中允许安装",
-      "installerOpen": "已打开系统安装器",
-      "failed": "更新失败"
+    "checkUpdates": "检查更新",
+    "contact": {
+      "description": "有疑问、Bug 或反馈，欢迎直接联系。",
+      "title": "联系"
+    },
+    "description": "版本、构建，以及驱动阅读体验的引擎。",
+    "diagnostics": {
+      "cancel": "取消",
+      "description": "ReadAware 绝不会自行上传任何内容。诊断包只包含应用日志和存储自检结果——不含书籍内容、笔记或对话——发送前你可以完整查看。",
+      "dialogTitle": "发送诊断报告",
+      "done": "完成",
+      "exportError": "诊断包生成或保存失败。",
+      "exportRow": {
+        "button": "导出",
+        "description": "保存为 JSON 文件,便于附在邮件或 issue 里。",
+        "title": "导出诊断包"
+      },
+      "exportSuccess": "诊断包已保存。",
+      "logsRow": {
+        "button": "在文件夹中显示",
+        "description": "诊断包所依据的滚动日志文件。",
+        "title": "日志文件"
+      },
+      "noticeDone": "完成",
+      "noticeError": "出错了",
+      "previewBody": "以下就是将要发送的全部内容——除此之外不会有任何数据离开你的设备。",
+      "reportError": "报告发送失败。你可以改为导出诊断包并通过邮件发送。",
+      "reportRow": {
+        "button": "发送报告…",
+        "description": "先查看诊断包内容,再发送给开发者。",
+        "title": "报告问题"
+      },
+      "send": "发送",
+      "sentBody": "已发送,谢谢。若就此问题联系我们,请附上这个回执编号:",
+      "title": "诊断"
     },
     "engine": {
-      "title": "阅读引擎",
-      "description": "所有格式 —— EPUB、MOBI、AZW3、FB2、CBZ、CBR、TXT、HTML、PDF —— 都在同一个阅读器里打开，共用同一套选区、批注与进度模型。"
+      "description": "所有格式 —— EPUB、MOBI、AZW3、FB2、CBZ、CBR、TXT、HTML、PDF —— 都在同一个阅读器里打开，共用同一套选区、批注与进度模型。",
+      "title": "阅读引擎"
     },
     "foliate": {
       "description": "ReadAware 所基于的开源阅读引擎。"
     },
-    "vendored": "已内置",
     "help": "帮助",
+    "installUpdate": "安装更新",
+    "title": "关于",
+    "updates": {
+      "description": "检查并安装最新版本。",
+      "title": "更新"
+    },
+    "updateStatus": {
+      "available": "版本 {{version}} 可用",
+      "downloading": "正在下载…",
+      "downloadingProgress": "正在下载 {{progress}}%",
+      "failed": "更新失败",
+      "installerOpen": "已打开系统安装器",
+      "installing": "正在安装…",
+      "permissionRequired": "请在 Android 设置中允许安装",
+      "upToDate": "已是最新版本"
+    },
+    "vendored": "已内置",
+    "version": "版本",
+    "versionUnknown": "未知",
     "website": {
-      "title": "官网",
-      "description": "产品动态、下载与文档。"
-    },
-    "contact": {
-      "title": "联系",
-      "description": "有疑问、Bug 或反馈，欢迎直接联系。"
-    },
-    "diagnostics": {
-      "title": "诊断",
-      "description": "ReadAware 绝不会自行上传任何内容。诊断包只包含应用日志和存储自检结果——不含书籍内容、笔记或对话——发送前你可以完整查看。",
-      "exportRow": {
-        "title": "导出诊断包",
-        "description": "保存为 JSON 文件,便于附在邮件或 issue 里。",
-        "button": "导出"
-      },
-      "reportRow": {
-        "title": "报告问题",
-        "description": "先查看诊断包内容,再发送给开发者。",
-        "button": "发送报告…"
-      },
-      "logsRow": {
-        "title": "日志文件",
-        "description": "诊断包所依据的滚动日志文件。",
-        "button": "在文件夹中显示"
-      },
-      "dialogTitle": "发送诊断报告",
-      "previewBody": "以下就是将要发送的全部内容——除此之外不会有任何数据离开你的设备。",
-      "send": "发送",
-      "cancel": "取消",
-      "done": "完成",
-      "sentBody": "已发送,谢谢。若就此问题联系我们,请附上这个回执编号:",
-      "noticeDone": "完成",
-      "noticeError": "出错了",
-      "exportSuccess": "诊断包已保存。",
-      "exportError": "诊断包生成或保存失败。",
-      "reportError": "报告发送失败。你可以改为导出诊断包并通过邮件发送。"
+      "description": "产品动态、下载与文档。",
+      "title": "官网"
     }
   },
-  "menus": {
-    "title": "自定义",
-    "description": "自定义顶栏与选区菜单:在「显示」与「更多菜单」之间拖动条目并调整顺序。",
-    "more": "更多",
-    "shown": "显示",
-    "overflow": "更多菜单",
-    "reset": "恢复默认",
-    "dragHint": "拖动可排序或在区域间移动。挂件类条目固定内联显示。",
-    "surface": {
-      "primaryNav": "主导航",
-      "shelfHeader": "书架顶栏",
-      "readerHeader": "阅读器顶栏",
-      "selection": "选区菜单"
+  "ai": {
+    "buildMemory": {
+      "description": "让 ReadAware 随时间从你的阅读和笔记中学习，形成持久的个人画像。",
+      "title": "构建长期记忆"
     },
+    "chat": "对话",
+    "clearMemory": "清除记忆",
+    "connection": "连接",
+    "description": "自带模型密钥，然后选择助手可以做什么、能看到什么。",
+    "featureList": {
+      "askConversation": {
+        "description": "结合书籍内容和你的笔记提出追问。",
+        "label": "对话式问答"
+      },
+      "defineTerm": {
+        "description": "为选中的词或短语提供内嵌释义。",
+        "label": "释义术语"
+      },
+      "explainSelection": {
+        "description": "用通俗的语言解读高亮的段落。",
+        "label": "解释选中内容"
+      },
+      "summarizeChapter": {
+        "description": "将当前章节浓缩为要点。",
+        "label": "总结章节"
+      },
+      "translate": {
+        "description": "将选中内容翻译为你的阅读语言。",
+        "label": "翻译"
+      }
+    },
+    "features": {
+      "description": "阅读辅助功能，随各项能力上线逐一开启。",
+      "title": "功能"
+    },
+    "followStreaming": {
+      "description": "回答生成时自动滚动到最新内容；关闭时视图停留在回答开头。",
+      "title": "跟随流式回答滚动"
+    },
+    "localOnly": {
+      "description": "绝不调用远程模型。在本地模型可用之前，AI 功能保持关闭。",
+      "title": "仅本地模式"
+    },
+    "memory": "记忆",
+    "privacy": {
+      "description": "控制 AI 功能运行时哪些内容会离开你的设备。",
+      "title": "隐私"
+    },
+    "sendHighlightedText": {
+      "description": "在请求中包含你选中的段落。",
+      "title": "发送高亮文本"
+    },
+    "sendSurroundingContext": {
+      "description": "包含附近的段落，让回答更贴合原文。",
+      "title": "发送周围上下文"
+    },
+    "storedMemory": {
+      "description": "查看或清除 ReadAware 记住的所有关于你的信息。",
+      "title": "已存储的记忆"
+    },
+    "title": "AI"
+  },
+  "aiConfig": {
+    "advancedSettings": "高级设置",
+    "apiKey": {
+      "helper": "你的 API 密钥经过加密，仅存储在这台设备上，不会发送到 ReadAware 的服务器。",
+      "label": "API 密钥",
+      "placeholder": "输入你的 {{provider}} API 密钥"
+    },
+    "byok": {
+      "body": "ReadAware 使用你的密钥调用所选提供方。密钥经过加密，仅存储在这台设备上；产生的 API 使用费用仍由你承担。",
+      "title": "关于 BYOK（自带密钥）"
+    },
+    "clear": "清除",
+    "customApi": {
+      "chatCompletions": "Chat Completions（/chat/completions）",
+      "helper": "选择你的提供方实现的端点格式。",
+      "label": "API 格式",
+      "responses": "Responses（/responses）"
+    },
+    "customBaseUrl": {
+      "helper": "输入你的 OpenAI 兼容 API 端点的 Base URL。",
+      "label": "自定义 Base URL"
+    },
+    "customMaxOutputTokens": {
+      "error": "请输入正整数。",
+      "helper": "可选。留空时不设置上限，由提供方决定。",
+      "label": "最大输出 token 数",
+      "placeholder": "使用提供方默认值"
+    },
+    "customSupportsThinking": "模型支持思考",
+    "fastModel": "Fast 模型",
+    "fastModelCustomPlaceholder": "留空则与 Smart 模型相同",
+    "fastModelHelper": "查词典、记忆提炼、摘要——更便宜、更快的档位。",
+    "fastThinking": "Fast 模型思考力度",
+    "fastThinkingHelper": "后台任务的推理力度——档位越低，速度越快、费用越少。",
+    "getKey": {
+      "anthropic": "从 <link>Anthropic 控制台</link> 获取你的 API 密钥",
+      "generic": "从 {{provider}} 控制台获取 API 密钥：<link>前往</link>。",
+      "openai": "从 <link>OpenAI 控制台</link> 获取你的 API 密钥",
+      "openrouter": "从 <link>OpenRouter</link> 获取你的 API 密钥"
+    },
+    "hide": "隐藏",
+    "model": "主模型",
+    "modelDefault": "默认",
+    "modelHelper": "默认同时用于 Smart 和 Fast 任务。",
+    "modelPicker": {
+      "empty": "没有匹配的模型",
+      "recommended": "推荐",
+      "search": "搜索模型…",
+      "useCustom": "把“{{id}}”用作模型 ID"
+    },
+    "modelPlaceholder": "例如 gpt-5.5",
+    "openRouter": {
+      "allowFallbacks": "优先上游不可用时回退到其他上游",
+      "order": {
+        "helper": "按顺序尝试的上游 slug，逗号分隔（如 coreweave, deepinfra）。留空表示不指定。",
+        "label": "优先上游"
+      },
+      "sort": {
+        "default": "OpenRouter 默认（负载均衡）",
+        "helper": "OpenRouter 在承载该模型的多家上游之间如何选择。",
+        "label": "上游排序",
+        "latency": "延迟优先",
+        "price": "价格优先",
+        "throughput": "吞吐优先"
+      }
+    },
+    "provider": "AI 提供方",
+    "readaware": {
+      "credits": "本月已用 {{used}} / {{total}} credits",
+      "creditsUnlimited": "本月已用 {{used}} credits(不限量)",
+      "description": "内置模型,无需自己的 API key——用量按方案以 credits 逐月计量。",
+      "notConnected": "请先在「数据与同步」里连接账号,订阅使用该账号登录。",
+      "requiresPaid": "内置 AI 需要 Pro 或 Max 方案;免费方案请使用自己的 key。"
+    },
+    "separateFastModel": "为 Fast 任务使用单独模型",
+    "show": "显示",
+    "smartModel": "Smart 模型",
+    "smartModelHelper": "聊天、引导访谈、跨书综合——更慢、更聪明的档位。",
+    "smartThinking": "Smart 模型思考力度",
+    "smartThinkingHelper": "聊天轮次的推理力度——档位越高，回答前思考越久。不支持思考的模型会忽略此设置。",
+    "test": "测试连接",
+    "testEmptyMessage": "测试失败：AI 提供方返回了空响应。",
+    "testing": "测试中…",
+    "testSuccessMessage": "测试成功！响应：“{{response}}”",
+    "testUnknownError": "测试过程中发生未知错误。",
+    "thinking": "思考力度",
+    "thinkingHelper": "Smart 和 Fast 任务共用。档位越高，回答前思考越久；不支持思考的模型会忽略此设置。",
+    "thinkingLevels": {
+      "high": "高",
+      "low": "低",
+      "max": "最高",
+      "medium": "中",
+      "minimal": "最低",
+      "off": "关闭",
+      "xhigh": "极高"
+    }
+  },
+  "appearance": {
+    "contentType": {
+      "appDefaultFont": "应用默认",
+      "description": "聊天回复、笔记与插件视图的排版。界面控件保持自己的字号。",
+      "follow": {
+        "description": "沿用你为书籍选择的字体与行距，按对话的尺度缩小。",
+        "title": "跟随阅读设置"
+      },
+      "fontSize": "字号",
+      "lineSpacing": "行距",
+      "previewAnswer": "改革始于即兴——一连串没人批准过的地方试验，因为管用才被留了下来。",
+      "previewLabel": "内容排版预览",
+      "previewQuestion": "这一章到底在论证什么？",
+      "title": "内容排版"
+    },
+    "description": "应用本身的外观——与阅读界面中的书页颜色无关。",
+    "motion": "动效",
+    "reduceMotion": {
+      "description": "关闭应用中的过渡与动画效果。",
+      "title": "减弱动效"
+    },
+    "theme": {
+      "description": "“跟随系统”会采用操作系统的浅色或深色设置。",
+      "title": "主题"
+    },
+    "themeOptions": {
+      "dark": "深色",
+      "light": "浅色",
+      "system": "跟随系统"
+    },
+    "title": "外观"
+  },
+  "dataSync": {
+    "account": {
+      "description": "连接账户，以在多台设备间同步你的加密事件日志。",
+      "title": "账户"
+    },
+    "backup": {
+      "description": "将本设备上的所有内容保存为单个文件——迁移到其他设备或用作备份。导入会将备份合并回你当前的数据。",
+      "title": "备份与导出"
+    },
+    "billing": {
+      "failed": "打不开支付页面,请重试。",
+      "manage": "管理订阅",
+      "upgrade": "升级方案"
+    },
+    "books": {
+      "awaitingOtherDevice": "等待持有文件的设备上传",
+      "failed": "上传失败，稍后重试",
+      "pending": "等待上传",
+      "quotaFull": "云端容量已满——腾出空间或升级方案之前，之后的书只保留在本设备。",
+      "rejected": "被云端拒绝",
+      "rejectedQuota": "云端容量不足，未上传",
+      "rejectedWith": "被拒绝：{{reason}}",
+      "title": "书籍文件"
+    },
+    "connect": {
+      "back": "返回",
+      "connect": "连接",
+      "connected": "同步已开启。",
+      "connecting": "连接中…",
+      "emailLabel": "邮箱",
+      "emailPlaceholder": "you@example.com",
+      "failed": "连接失败，请检查链接后重试。",
+      "freshAccount": "该账号尚未设定加密口令，将由本设备设定。请确认这是你本人的账号：连接后，本设备的书库会同步到该账号。",
+      "github": "使用 GitHub 登录",
+      "google": "使用 Google 登录",
+      "invalidCredentials": "",
+      "oauthStarted": "在浏览器里完成登录，然后把页面显示的令牌粘贴到下面。",
+      "orEmail": "或使用邮箱",
+      "passphraseHint": "数据离开设备前用它加密。第一台设备设定口令，其余设备必须输入同一个。口令无法找回——忘记即无法解读云端数据。",
+      "passphraseLabel": "加密口令",
+      "passphraseTooShort": "至少 8 个字符。",
+      "passwordLabel": "",
+      "passwordLogin": "",
+      "send": "发送登录链接",
+      "sending": "发送中…",
+      "sent": "去邮箱查收，然后把登录链接或令牌粘贴到下面。",
+      "serverUrlLabel": "",
+      "serverUrlPlaceholder": "",
+      "signedInAs": "即将连接的账号",
+      "tokenContinue": "继续",
+      "tokenInvalid": "登录链接或令牌无效——可能已过期或已被使用，请重新申请。",
+      "tokenLabel": "登录链接或令牌",
+      "tokenRetry": "暂时无法验证该令牌。请检查网络后重试，令牌已保留在下方。",
+      "usernameLabel": "",
+      "verifying": "验证中…",
+      "wrongPassphrase": "口令与该账号不匹配。"
+    },
+    "connectAccount": "连接账户",
+    "connected": {
+      "cancel": "取消",
+      "disconnect": "断开",
+      "disconnectBody": "本设备保留全部数据并停止同步。可随时用同一口令重新连接。",
+      "disconnectTitle": "断开同步？",
+      "plan": "方案:{{tier}}",
+      "planTitle": "套餐",
+      "statusTitle": "状态",
+      "storageUsed": "云端已用 {{used}}",
+      "storageUsedOfLimit": "云端已用 {{used}} / {{limit}}",
+      "syncNow": "立即同步"
+    },
+    "dangerZone": "危险区",
+    "dataLocation": {
+      "descTauri": "保存在本设备的 ReadAware 应用数据文件夹中。",
+      "descWeb": "保存在此浏览器中。桌面应用会将数据保存在你可控的本地文件夹里。",
+      "title": "数据位置"
+    },
+    "deleteAll": {
+      "button": "删除全部数据",
+      "cancel": "取消",
+      "confirmLabel": "输入 {{phrase}} 以确认",
+      "deleting": "正在删除…",
+      "description": "抹掉此设备上的一切——书籍、标注、阅读记录、设置与同步凭据。已同步账号在其他设备上的副本不受影响。",
+      "dialogBody": "这将抹掉此设备上的所有书籍、标注、记忆、对话与设置，且无法撤销。已同步到其他设备的数据仍保留在那些设备上。",
+      "dialogTitle": "删除全部数据？",
+      "failed": "删除失败，数据可能未被移除——请重试。",
+      "title": "删除全部数据"
+    },
+    "description": "ReadAware 采用本地优先：你的数据保存在本设备上。同步只是加密中继，而非事实来源。",
+    "desktopBadge": "桌面版",
+    "e2e": {
+      "active": "已开启——由你的口令保护。",
+      "description": "同步的数据在设备本地加密。在此管理你的口令和设备。",
+      "title": "端到端加密"
+    },
+    "export": "导出",
+    "exportError": "无法导出你的数据。",
+    "exportSuccess": "已全部导出至 {{file}}。",
+    "fullBackup": {
+      "description": "书籍、高亮、笔记、收藏集、阅读进度以及每一项偏好设置，全部整合到一个便携文件中。",
+      "title": "完整备份"
+    },
+    "import": "导入",
+    "importError": "无法导入此文件。",
+    "indicator": {
+      "errorDismiss": "暂时忽略同步错误",
+      "label": "同步状态"
+    },
+    "merge": {
+      "annotations_other": "{{count}} 条批注",
+      "books_other": "{{count}} 本书",
+      "collections_other": "{{count}} 个收藏集",
+      "settings_other": "{{count}} 项设置",
+      "summary": "已合并 {{books}}、{{annotations}}、{{collections}} 和 {{settings}}。正在重新加载…"
+    },
+    "noticeDone": "完成",
+    "noticeError": "错误",
+    "progress": {
+      "blobs": "正在传输文件… {{done}}/{{total}}",
+      "bookDown": "正在下载《{{title}}》",
+      "bookDownParts": "正在下载《{{title}}》（{{done}}/{{total}}）",
+      "bookUp": "正在上传《{{title}}》",
+      "bookUpParts": "正在上传《{{title}}》（{{done}}/{{total}}）",
+      "lastCycle": "上次同步：接收 {{pulled}} 条 · 发送 {{pushed}} 条 · 文件 {{blobs}} 个",
+      "pending": "待发送：{{events}} 条更改、{{blobs}} 个文件",
+      "pendingNone": "没有待发送的内容",
+      "pulling": "正在接收更改… 已合并 {{count}} 条",
+      "pulling_other": "",
+      "pushing": "正在发送更改… 已发送 {{count}} 条",
+      "pushing_other": ""
+    },
+    "reauth": {
+      "action": "重新登录",
+      "dismiss": "关闭登录提示",
+      "notice": "同步登录已失效"
+    },
+    "reveal": "在文件夹中显示",
+    "storage": "存储",
+    "sync": "同步",
+    "syncStatus": {
+      "error": "同步出错",
+      "idle": "已同步",
+      "lastSync": "上次同步 {{time}}",
+      "never": "尚未同步",
+      "signedOut": "登录已失效——重新登录后继续同步",
+      "syncing": "同步中…"
+    },
+    "tier": {
+      "free": "免费",
+      "max": "Max",
+      "pro": "Pro",
+      "staff": "内部",
+      "sync": "Sync"
+    },
+    "title": "数据与同步",
+    "working": "处理中…"
+  },
+  "dialog": {
+    "close": "关闭设置",
+    "sectionsLabel": "设置分区",
+    "title": "设置"
+  },
+  "font": {
+    "custom": "自定义",
+    "customAria": "从本设备已安装的字体中选择",
+    "downloadFailed": "字体下载失败——请检查网络。",
+    "downloading": "正在下载字体 · {{percent}}%",
+    "label": "字体",
+    "placeholderCurated": "选择一款精选字体",
+    "placeholderCustom": "选择一款已安装的字体",
+    "retry": "重试"
+  },
+  "general": {
+    "crashReports": {
+      "description": "分享崩溃诊断信息，帮助修复稳定性问题。默认关闭。",
+      "title": "发送匿名崩溃报告"
+    },
+    "description": "全局行为——启动时打开的内容、语言以及桌面集成。",
+    "desktopIntegration": {
+      "autoUpdate": {
+        "description": "发现新版本时，在主界面安静地显示提示。",
+        "title": "自动检查更新"
+      },
+      "description": "保存在此处，由桌面应用生效。在浏览器预览中无效。",
+      "fileAssociations": {
+        "description": "用 ReadAware 打开 EPUB、MOBI、AZW3、FB2、CBZ、CBR、TXT、HTML 和 PDF 文件。",
+        "title": "文件关联"
+      },
+      "launchAtStartup": {
+        "description": "登录时自动打开 ReadAware。",
+        "title": "开机启动"
+      },
+      "title": "桌面集成",
+      "whatsNewDialog": {
+        "description": "应用更新后，弹一次小弹窗提示去哪里查看更新内容。",
+        "title": "更新后显示“新内容”提示"
+      }
+    },
+    "language": "语言",
+    "languagePrivacy": "语言与隐私",
+    "onLaunch": "启动时",
+    "startView": "起始视图",
+    "startViewOptions": {
+      "resume": "继续上次阅读",
+      "shelf": "书架"
+    },
+    "title": "通用"
+  },
+  "menus": {
+    "description": "自定义顶栏与选区菜单:在「显示」与「更多菜单」之间拖动条目并调整顺序。",
+    "dragHint": "拖动可排序或在区域间移动。挂件类条目固定内联显示。",
     "items": {
-      "library": "书架",
+      "addNote": "添加笔记",
       "agent": "智能助理",
-      "search": "搜索",
-      "import": "导入书籍",
-      "viewControl": "书架视图",
-      "stats": "阅读统计",
-      "settings": "设置",
-      "toc": "目录",
-      "notes": "笔记",
       "appearance": "外观",
+      "askAI": "问 AI",
       "chat": "聊天",
       "copy": "复制",
       "highlight": "高亮",
+      "import": "导入书籍",
+      "library": "书架",
+      "notes": "笔记",
+      "search": "搜索",
+      "settings": "设置",
+      "stats": "阅读统计",
+      "toc": "目录",
       "underline": "下划线",
-      "addNote": "添加笔记",
-      "askAI": "问 AI"
-    }
+      "viewControl": "书架视图"
+    },
+    "more": "更多",
+    "overflow": "更多菜单",
+    "reset": "恢复默认",
+    "shown": "显示",
+    "surface": {
+      "primaryNav": "主导航",
+      "readerHeader": "阅读器顶栏",
+      "selection": "选区菜单",
+      "shelfHeader": "书架顶栏"
+    },
+    "title": "自定义"
+  },
+  "pendingBadge": {
+    "comingSoon": "即将推出"
+  },
+  "reading": {
+    "description": "书籍在页面上的呈现方式。更改会实时应用到阅读器。",
+    "fontSize": "字号",
+    "fontWeight": "字重",
+    "layout": "布局",
+    "lineSpacing": "行距",
+    "pageColor": {
+      "description": "书页的纸张颜色。“自动”跟随应用主题，其余为固定颜色。",
+      "title": "页面颜色"
+    },
+    "pageMargins": "页边距",
+    "paragraphSpacing": "段间距",
+    "previewLabel": "阅读预览",
+    "previewSource": "王小波 · 《黄金时代》",
+    "previewText": "那一天我二十一岁，在我一生的黄金时代。我有好多奢望。",
+    "previewTextSecondary": "我想爱，想吃，还想在一瞬间变成天上半明半暗的云……我觉得自己会永远生猛下去，什么也锤不了我。",
+    "readingMode": "阅读模式",
+    "textAlign": "对齐方式",
+    "title": "阅读",
+    "typography": "排版"
+  },
+  "sections": {
+    "about": "关于",
+    "ai": "AI",
+    "appearance": "主题",
+    "dataSync": "数据与同步",
+    "general": "通用",
+    "menus": "自定义",
+    "plugins": "插件",
+    "reading": "阅读",
+    "shortcuts": "快捷键"
+  },
+  "shortcuts": {
+    "actions": {
+      "close": "关闭对话框或浮层",
+      "new-conversation": "创建新对话",
+      "next-chapter": "下一章",
+      "next-page": "下一页",
+      "prev-chapter": "上一章",
+      "prev-page": "上一页",
+      "primary-nav": "切换主导航页面",
+      "search": "打开搜索",
+      "selection-add-note": "添加笔记",
+      "selection-ask-ai": "询问 AI",
+      "selection-copy": "复制",
+      "selection-highlight": "高亮",
+      "selection-look-up": "查词",
+      "selection-underline": "下划线",
+      "settings": "打开设置",
+      "toggle-controls": "切换阅读器控件"
+    },
+    "categories": {
+      "Global": "全局",
+      "Overlays": "浮层",
+      "Plugins": "插件",
+      "Reading": "阅读",
+      "Selection": "选中文本"
+    },
+    "categoryDescriptions": {
+      "plugins": "为插件提供的命令分配快捷键。",
+      "selection": "在阅读器中选中文本时可用。"
+    },
+    "conflict": "已被“{{label}}”占用",
+    "description": "点击某个快捷键即可重新绑定；录制时按 Esc 取消。",
+    "notSet": "未设置",
+    "rebind": "重新绑定 {{label}}",
+    "recording": "请按下快捷键…",
+    "reset": "重置 {{label}}",
+    "resetAll": "全部重置为默认",
+    "title": "快捷键"
   }
 }

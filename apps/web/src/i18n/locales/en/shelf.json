@@ -1,161 +1,175 @@
 {
   "actions": {
-    "import": "Import",
-    "create": "Create",
     "cancel": "Cancel",
-    "remove": "Remove",
-    "delete": "Delete",
     "close": "Close",
-    "done": "Done"
-  },
-  "books_one": "{{count}} book",
-  "books_other": "{{count}} books",
-  "workspace": {
-    "errorTitle": "Library error",
-    "importTitle": "Import",
-    "emptyTitle": "Import your first book",
-    "emptyCollection": "No books in this collection.",
-    "nothingToShow": "Nothing to show."
-  },
-  "importNotice": {
-    "duplicate_one": "“{{title}}” is already in your library.",
-    "duplicate_other": "Skipped {{count}} books already in your library.",
-    "combined": "{{skipped}} Imported {{count}} new."
-  },
-  "importDialog": {
-    "title": "Import books",
-    "filterName": "Books"
-  },
-  "dropImport": {
-    "hint": "Drop books here to import"
+    "create": "Create",
+    "delete": "Delete",
+    "done": "Done",
+    "import": "Import",
+    "remove": "Remove"
   },
   "book": {
     "cover": "{{title}} cover",
-    "star": "Star {{title}}",
-    "unstar": "Unstar {{title}}",
     "info": "Info about {{title}}",
-    "remove": "Remove {{title}}",
     "menu": {
-      "star": "Star",
-      "unstar": "Unstar",
+      "addToCollection": "Add to collection…",
       "info": "Book info",
+      "label": "Book actions",
+      "markFinished": "Mark as finished",
+      "markUnfinished": "Mark as unread",
+      "open": "Open",
       "remove": "Remove",
-      "label": "Book actions"
-    }
+      "star": "Star",
+      "unstar": "Unstar"
+    },
+    "remove": "Remove {{title}}",
+    "star": "Star {{title}}",
+    "unstar": "Unstar {{title}}"
   },
-  "status": {
-    "finished": "Finished",
-    "notStarted": "Not started"
+  "books_one": "{{count}} book",
+  "books_other": "{{count}} books",
+  "collection": {
+    "deleteAction": "Delete collection",
+    "deleteBody": "Delete <strong>{{name}}</strong>? The books stay in your library — they’re just ungrouped.",
+    "deleteTitle": "Delete collection?",
+    "deleteTooltip": "Delete collection",
+    "lockAction": "Manage folder lock",
+    "lockChange": "Change password",
+    "lockClear": "Remove password",
+    "lockCurrentPasswordLabel": "Current password",
+    "lockedEmpty": "This folder is locked — enter its password to see its books.",
+    "lockedTooltip": "Locked folder — enter its password to open",
+    "lockManageTitle": "Folder lock",
+    "lockNewPasswordHint": "At least 4 characters. The same password unlocks this folder on every device.",
+    "lockNewPasswordLabel": "New password",
+    "lockPasswordLabel": "Password",
+    "lockSet": "Set password",
+    "lockTooltip": "Folder lock",
+    "lockUnlock": "Unlock",
+    "lockUnlockTitle": "Unlock folder",
+    "lockVerifying": "Verifying…",
+    "lockWrongPassword": "Wrong password.",
+    "menu": {
+      "delete": "Delete collection",
+      "label": "Collection actions",
+      "manageLock": "Manage password",
+      "open": "Open",
+      "rename": "Rename",
+      "unlock": "Unlock"
+    },
+    "nameLabel": "Collection name",
+    "rename": "Rename",
+    "renameAction": "Rename collection"
+  },
+  "collectionDialog": {
+    "newLabel": "New collection",
+    "newPlaceholder": "e.g. To read",
+    "passwordLabel": "Folder password (optional)",
+    "passwordPlaceholder": "Optional — locks this folder on every device",
+    "removeFromCollection": "Remove from collection",
+    "title_one": "Add {{count}} book to…",
+    "title_other": "Add {{count}} books to…"
   },
   "details": {
-    "title": "Book details",
-    "fieldTitle": "Title",
+    "annotations": "Notes & highlights",
+    "edit": "Edit",
     "fieldAuthor": "Author",
     "fieldFormat": "Format",
     "fieldReading": "Reading time",
-    "edit": "Edit",
-    "save": "Save",
-    "progress": "Progress",
+    "fieldTitle": "Title",
     "highlights": "Highlights",
     "notes": "Notes",
-    "annotations": "Notes & highlights"
-  },
-  "removeBook": {
-    "title": "Remove book?",
-    "body": "Remove <strong>{{title}}</strong> from your library and delete its stored file from this device?"
-  },
-  "removeBooks": {
-    "title_one": "Remove {{count}} book?",
-    "title_other": "Remove {{count}} books?",
-    "body_one": "Remove this book from your library and delete its stored file from this device? This can’t be undone.",
-    "body_other": "Remove these {{count}} books from your library and delete their stored files from this device? This can’t be undone."
-  },
-  "collectionDialog": {
-    "title_one": "Add {{count}} book to…",
-    "title_other": "Add {{count}} books to…",
-    "newLabel": "New collection",
-    "newPlaceholder": "e.g. To read",
-    "removeFromCollection": "Remove from collection",
-    "passwordLabel": "Folder password (optional)",
-    "passwordPlaceholder": "Optional — locks this folder on every device"
-  },
-  "collection": {
-    "nameLabel": "Collection name",
-    "rename": "Rename",
-    "renameAction": "Rename collection",
-    "deleteTooltip": "Delete collection",
-    "deleteAction": "Delete collection",
-    "lockedTooltip": "Locked folder — enter its password to open",
-    "lockTooltip": "Folder lock",
-    "lockAction": "Manage folder lock",
-    "lockUnlockTitle": "Unlock folder",
-    "lockManageTitle": "Folder lock",
-    "lockPasswordLabel": "Password",
-    "lockUnlock": "Unlock",
-    "lockVerifying": "Verifying…",
-    "lockWrongPassword": "Wrong password.",
-    "lockNewPasswordLabel": "New password",
-    "lockNewPasswordHint": "At least 4 characters. The same password unlocks this folder on every device.",
-    "lockChange": "Change password",
-    "lockSet": "Set password",
-    "lockCurrentPasswordLabel": "Current password",
-    "lockClear": "Remove password",
-    "deleteTitle": "Delete collection?",
-    "deleteBody": "Delete <strong>{{name}}</strong>? The books stay in your library — they’re just ungrouped.",
-    "lockedEmpty": "This folder is locked — enter its password to see its books."
-  },
-  "dropZone": {
-    "ungroupTitle": "Ungroup",
-    "ungroupHint": "Drop books here to move them out of collections",
-    "ungroupActive": "Release to ungroup"
+    "progress": "Progress",
+    "save": "Save",
+    "title": "Book details"
   },
   "dropFeedback": {
     "added": "Added to {{name}}",
     "ungrouped": "Moved out of collections"
   },
-  "manage": {
-    "trigger": "Shelf management",
-    "layout": "Layout",
-    "groupBy": "Group by",
-    "sortBy": "Sort by",
-    "management": "Management",
-    "selectBooks": "Select books"
+  "dropImport": {
+    "hint": "Drop books here to import"
+  },
+  "dropZone": {
+    "ungroupActive": "Release to ungroup",
+    "ungroupHint": "Drop books here to move them out of collections",
+    "ungroupTitle": "Ungroup"
+  },
+  "errors": {
+    "generic": "Something went wrong while updating your library.",
+    "unsupportedFormat": "Unsupported file type: {{name}}. Supported formats: EPUB, MOBI, AZW3, FB2, CBZ, CBR, TXT, HTML, PDF."
+  },
+  "group": {
+    "author": "Author",
+    "format": "Format",
+    "none": "None",
+    "status": "Reading status"
+  },
+  "groupSection": {
+    "finished": "Finished",
+    "reading": "Currently Reading",
+    "unknownAuthor": "Unknown author",
+    "unread": "Up Next"
+  },
+  "importDialog": {
+    "filterName": "Books",
+    "title": "Import books"
+  },
+  "importNotice": {
+    "combined": "{{skipped}} Imported {{count}} new.",
+    "combined_one": "importNotice.combined",
+    "combined_other": "importNotice.combined",
+    "duplicate_one": "“{{title}}” is already in your library.",
+    "duplicate_other": "Skipped {{count}} books already in your library."
   },
   "layout": {
     "grid": "Grid",
     "list": "List"
   },
-  "group": {
-    "none": "None",
-    "status": "Reading status",
-    "author": "Author",
-    "format": "Format"
+  "manage": {
+    "groupBy": "Group by",
+    "layout": "Layout",
+    "management": "Management",
+    "selectBooks": "Select books",
+    "sortBy": "Sort by",
+    "trigger": "Shelf management"
+  },
+  "removeBook": {
+    "body": "Remove <strong>{{title}}</strong> from your library and delete its stored file from this device?",
+    "title": "Remove book?"
+  },
+  "removeBooks": {
+    "body_one": "Remove this book from your library and delete its stored file from this device? This can’t be undone.",
+    "body_other": "Remove these {{count}} books from your library and delete their stored files from this device? This can’t be undone.",
+    "title_one": "Remove {{count}} book?",
+    "title_other": "Remove {{count}} books?"
   },
   "sort": {
-    "recent": "Recently opened",
     "added": "Recently added",
-    "title": "Title",
     "author": "Author",
-    "progress": "Progress"
+    "progress": "Progress",
+    "recent": "Recently opened",
+    "title": "Title"
   },
-  "groupSection": {
-    "reading": "Currently Reading",
-    "unread": "Up Next",
+  "status": {
     "finished": "Finished",
-    "unknownAuthor": "Unknown author"
+    "notStarted": "Not started"
   },
   "toolbar": {
-    "selected_one": "{{count}} selected",
-    "selected_other": "{{count}} selected",
-    "clear": "Clear",
-    "selectAll": "Select all",
-    "addToCollection": "Add to collection",
     "addSelected": "Add selected to collection",
+    "addToCollection": "Add to collection",
+    "clear": "Clear",
+    "removeSelected": "Remove selected",
     "removeTooltip": "Remove",
-    "removeSelected": "Remove selected"
+    "selectAll": "Select all",
+    "selected_one": "{{count}} selected",
+    "selected_other": "{{count}} selected"
   },
-  "errors": {
-    "generic": "Something went wrong while updating your library.",
-    "unsupportedFormat": "Unsupported file type: {{name}}. Supported formats: EPUB, MOBI, AZW3, FB2, CBZ, CBR, TXT, HTML, PDF."
+  "workspace": {
+    "emptyCollection": "No books in this collection.",
+    "emptyTitle": "Import your first book",
+    "errorTitle": "Library error",
+    "importTitle": "Import",
+    "nothingToShow": "Nothing to show."
   }
 }

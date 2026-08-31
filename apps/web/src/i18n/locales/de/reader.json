@@ -1,179 +1,200 @@
 {
-  "shelf": "Regal",
-  "backToShelf": "Zurück zum Regal",
-  "contents": "Inhalt",
-  "tableOfContents": "Inhaltsverzeichnis",
-  "chat": "Chat",
   "aiChat": "KI-Chat",
-  "resizeContents": "Inhaltsbereich anpassen",
-  "resizeChat": "Chatbereich anpassen",
-  "noToc": "Diese Datei stellt kein navigierbares Inhaltsverzeichnis bereit.",
-  "progress": "{{page}} / {{total}} · {{percent}}",
-  "readingPosition": "Leseposition",
-  "notes": "Notizen",
-  "emptyNotes": "Noch keine Markierungen oder Notizen. Wähle Text im Reader aus, um ihn zu markieren.",
-  "previousPage": "Vorherige Seite",
-  "nextPage": "Nächste Seite",
-  "go": "Los",
-  "readerLabel": "Buchreader",
-  "opening": "{{name}} wird geöffnet",
-  "book": "Buch",
-  "loadError": "Diese Datei konnte nicht geladen werden.",
-  "tryAgain": "Erneut versuchen",
-  "backToLibrary": "Zurück zur Bibliothek",
-  "readingAppearance": "Lesedarstellung",
   "applyTo": "Anwenden auf",
-  "scopeHintBook": "Änderungen betreffen nur dieses Buch.",
-  "scopeHintGlobal": "Änderungen betreffen jedes Buch, das deinen globalen Einstellungen folgt.",
-  "pageColor": "Seitenfarbe",
-  "fontSize": "Schriftgröße",
-  "fontWeight": "Schriftstärke",
-  "lineSpacing": "Zeilenabstand",
-  "paragraphSpacing": "Absatzabstand",
-  "textAlign": "Textausrichtung",
-  "readingMode": "Lesemodus",
-  "fixedLayoutHint": "Feste Seitenlayouts (PDF, Comics) bringen ihre eigene Typografie mit — Schrift und Abstände lassen sich hier nicht ändern.",
+  "backToLibrary": "Zurück zur Bibliothek",
+  "backToShelf": "Zurück zum Regal",
+  "book": "Buch",
+  "chat": "Chat",
+  "closeNote": "Notiz schließen",
+  "colors": {
+    "blue": "Blau",
+    "green": "Grün",
+    "pink": "Rosa",
+    "yellow": "Gelb"
+  },
+  "completion": {
+    "backToBook": "Zurück zum Buch",
+    "hours": "{{count}} Std.",
+    "hours_one": "",
+    "hours_other": "",
+    "hoursMinutes": "{{hours}} Std. {{minutes}} Min.",
+    "lookBack": "Auf dieses Buch zurückblicken",
+    "lookBackPrompt": "Ich habe {{title}} gerade beendet. Blicke mit mir zurück — geh durch, was ich markiert habe, und sag mir, was meine Aufmerksamkeit gefesselt hat und welche Fäden sich durch diese Stellen ziehen. Bleib bei dem, was tatsächlich in meinen Markierungen steht; keine Inhaltsangabe.",
+    "markedFinished": "Gelesen",
+    "markFinished": "Als gelesen markieren",
+    "marksTitle": "Deine Markierungen ({{count}})",
+    "marksTitle_one": "",
+    "marksTitle_other": "",
+    "minutes": "{{count}} Min.",
+    "minutes_one": "",
+    "minutes_other": "",
+    "summary": "{{time}} gelesen, über {{days}} Tage verteilt.",
+    "summaryDetail": "durchschnittlich {{perDay}} pro Tag · längste Serie {{streak}} Tage"
+  },
+  "contents": "Inhalt",
+  "contextMenu": {
+    "openContents": "Inhalt öffnen",
+    "openNotes": "Notizen öffnen",
+    "openSearch": "Suche öffnen"
+  },
+  "dictionary": {
+    "addToVocab": "Zum Vokabular hinzufügen",
+    "contextLabel": "In dieser Passage",
+    "copied": "Kopiert",
+    "copy": "Kopieren",
+    "empty": "Keine Definition für diesen Begriff gefunden.",
+    "error": "Konnte nicht nachgeschlagen werden. Prüfe deinen KI-Anbieter in den Einstellungen und versuche es erneut.",
+    "etymologyLabel": "Herkunft",
+    "explainInLabel": "Erklären auf",
+    "footer": "KI-generiert – Definitionen können ungenau sein.",
+    "glossesLabel": "Wörter & Wendungen",
+    "inVocab": "Im Vokabular",
+    "languageAuto": "App-Sprache verwenden",
+    "loading": "Wird nachgeschlagen…",
+    "noteLabel": "Hinweis",
+    "regenerate": "Neu generieren",
+    "retry": "Erneut versuchen",
+    "title": "Wörterbuch",
+    "translationLabel": "Übersetzung",
+    "unconfigured": "Verbinde in den Einstellungen einen KI-Anbieter, um Definitionen zu aktivieren."
+  },
+  "dismissNote": "Notiz verwerfen",
+  "emptyNotes": "Noch keine Markierungen oder Notizen. Wähle Text im Reader aus, um ihn zu markieren.",
+  "fileMissing": {
+    "no-sync": "Die Datei dieses Buches ist nicht auf diesem Gerät und Sync ist aus. Importiere die Originaldatei, um es hier zu lesen.",
+    "not-on-relay": "Die Datei dieses Buches wurde vom Import-Gerät nie fertig hochgeladen. Öffne ReadAware dort, damit sie hochlädt, oder importiere die Originaldatei hier.",
+    "reimport": "Datei importieren",
+    "unauthenticated": "Melde dich erneut bei deinem Sync-Konto an, um die Datei dieses Buches herunterzuladen.",
+    "undecodable": "Die heruntergeladene Datei konnte mit der Sync-Passphrase dieses Geräts nicht entschlüsselt werden.",
+    "unreachable": "Die Datei dieses Buches liegt in deiner Cloud-Bibliothek, aber der Sync-Server ist gerade nicht erreichbar."
+  },
   "fixedLayoutColor": "Seitendarstellung",
   "fixedLayoutColorHint": "Eine dunkle Seitenfarbe zeichnet die Seiten in zwei Tönen neu; ihre Farbe geht dabei verloren.",
   "fixedLayoutColorOption": {
-    "theme": "Seitenfarbe folgen",
-    "original": "Original"
+    "original": "Original",
+    "theme": "Seitenfarbe folgen"
   },
-  "scope": {
-    "global": "Alle Bücher",
-    "book": "Dieses Buch"
-  },
-  "menu": {
-    "copied": "Kopiert",
-    "copySelection": "Auswahl kopieren",
-    "copy": "Kopieren",
-    "highlight": "Markieren",
-    "underline": "Unterstreichen",
-    "addNote": "Notiz hinzufügen",
-    "askAi": "KI dazu fragen",
-    "remove": "Entfernen"
-  },
-  "recolor": "In {{color}} umfärben",
-  "colors": {
-    "yellow": "Gelb",
-    "green": "Grün",
-    "blue": "Blau",
-    "pink": "Rosa"
-  },
-  "footnote": {
-    "footnote": "Fußnote",
-    "endnote": "Endnote",
-    "reference": "Referenz",
-    "definition": "Definition",
-    "note": "Notiz"
-  },
-  "imageViewer": {
-    "label": "Bildansicht",
-    "close": "Bildansicht schließen",
-    "zoomIn": "Vergrößern",
-    "zoomOut": "Verkleinern",
-    "rotate": "Drehen",
-    "copy": "Bild kopieren",
-    "copied": "Kopiert"
-  },
-  "dismissNote": "Notiz verwerfen",
-  "closeNote": "Notiz schließen",
-  "dictionary": {
-    "title": "Wörterbuch",
-    "loading": "Wird nachgeschlagen…",
-    "error": "Konnte nicht nachgeschlagen werden. Prüfe deinen KI-Anbieter in den Einstellungen und versuche es erneut.",
-    "retry": "Erneut versuchen",
-    "unconfigured": "Verbinde in den Einstellungen einen KI-Anbieter, um Definitionen zu aktivieren.",
-    "empty": "Keine Definition für diesen Begriff gefunden.",
-    "contextLabel": "In dieser Passage",
-    "etymologyLabel": "Herkunft",
-    "translationLabel": "Übersetzung",
-    "glossesLabel": "Wörter & Wendungen",
-    "noteLabel": "Hinweis",
-    "explainInLabel": "Erklären auf",
-    "languageAuto": "App-Sprache verwenden",
-    "footer": "KI-generiert – Definitionen können ungenau sein.",
-    "regenerate": "Neu generieren",
-    "copy": "Kopieren",
-    "copied": "Kopiert",
-    "addToVocab": "Zum Vokabular hinzufügen",
-    "inVocab": "Im Vokabular"
-  },
+  "fixedLayoutHint": "Feste Seitenlayouts (PDF, Comics) bringen ihre eigene Typografie mit — Schrift und Abstände lassen sich hier nicht ändern.",
+  "fontSize": "Schriftgröße",
   "fontSizeOption": {
-    "xx-small": "XXS",
-    "x-small": "XS",
-    "small": "Klein",
-    "medium": "Mittel",
     "large": "Groß",
+    "medium": "Mittel",
+    "small": "Klein",
     "x-large": "XL",
+    "x-small": "XS",
     "xx-large": "XXL",
+    "xx-small": "XXS",
     "xxx-large": "XXXL"
   },
+  "fontWeight": "Schriftstärke",
   "fontWeightOption": {
+    "bold": "Fett",
     "light": "Leicht",
-    "regular": "Normal",
     "medium": "Mittel",
-    "bold": "Fett"
+    "regular": "Normal"
   },
+  "footnote": {
+    "definition": "Definition",
+    "endnote": "Endnote",
+    "footnote": "Fußnote",
+    "note": "Notiz",
+    "reference": "Referenz"
+  },
+  "go": "Los",
+  "imageViewer": {
+    "close": "Bildansicht schließen",
+    "copied": "Kopiert",
+    "copy": "Bild kopieren",
+    "label": "Bildansicht",
+    "rotate": "Drehen",
+    "zoomIn": "Vergrößern",
+    "zoomOut": "Verkleinern"
+  },
+  "lineSpacing": "Zeilenabstand",
   "lineSpacingOption": {
-    "compact": "Kompakt",
     "comfortable": "Angenehm",
+    "compact": "Kompakt",
     "relaxed": "Locker"
   },
-  "paragraphSpacingOption": {
-    "tight": "Eng",
-    "normal": "Normal",
-    "loose": "Weit"
+  "loadError": "Diese Datei konnte nicht geladen werden.",
+  "menu": {
+    "addNote": "Notiz hinzufügen",
+    "askAi": "KI dazu fragen",
+    "copied": "Kopiert",
+    "copy": "Kopieren",
+    "copySelection": "Auswahl kopieren",
+    "highlight": "Markieren",
+    "remove": "Entfernen",
+    "underline": "Unterstreichen"
   },
-  "textAlignOption": {
-    "book": "Wie im Buch",
-    "start": "Linksbündig",
-    "justify": "Blocksatz"
+  "nextPage": "Nächste Seite",
+  "notes": "Notizen",
+  "noToc": "Diese Datei stellt kein navigierbares Inhaltsverzeichnis bereit.",
+  "opening": "{{name}} wird geöffnet",
+  "pageColor": "Seitenfarbe",
+  "pageColorOption": {
+    "auto": "Auto",
+    "dark": "Dunkel",
+    "light": "Hell",
+    "warm": "Warm"
   },
   "pageMargins": "Seitenränder",
   "pageMarginsOption": {
-    "narrow": "Schmal",
     "medium": "Mittel",
+    "narrow": "Schmal",
     "wide": "Breit"
   },
-  "readingModeOption": {
-    "scroll": "Scrollen",
-    "paginated-single": "Einzelseite",
-    "paginated-double": "Zwei Seiten"
+  "paragraphSpacing": "Absatzabstand",
+  "paragraphSpacingOption": {
+    "loose": "Weit",
+    "normal": "Normal",
+    "tight": "Eng"
   },
-  "pageColorOption": {
-    "auto": "Auto",
-    "light": "Hell",
-    "warm": "Warm",
-    "dark": "Dunkel"
-  },
-  "completion": {
-    "markFinished": "Als gelesen markieren",
-    "markedFinished": "Gelesen",
-    "minutes": "{{count}} Min.",
-    "hours": "{{count}} Std.",
-    "hoursMinutes": "{{hours}} Std. {{minutes}} Min.",
-    "marksTitle": "Deine Markierungen ({{count}})",
-    "summary": "{{time}} gelesen, über {{days}} Tage verteilt.",
-    "summaryDetail": "durchschnittlich {{perDay}} pro Tag · längste Serie {{streak}} Tage",
-    "backToBook": "Zurück zum Buch",
-    "lookBack": "Auf dieses Buch zurückblicken",
-    "lookBackPrompt": "Ich habe {{title}} gerade beendet. Blicke mit mir zurück — geh durch, was ich markiert habe, und sag mir, was meine Aufmerksamkeit gefesselt hat und welche Fäden sich durch diese Stellen ziehen. Bleib bei dem, was tatsächlich in meinen Markierungen steht; keine Inhaltsangabe."
-  },
+  "previousPage": "Vorherige Seite",
+  "progress": "{{page}} / {{total}} · {{percent}}",
   "readAloud": {
     "start": "Vorlesen",
     "stop": "Vorlesen stoppen"
+  },
+  "readerLabel": "Buchreader",
+  "readingAppearance": "Lesedarstellung",
+  "readingMode": "Lesemodus",
+  "readingModeOption": {
+    "paginated-double": "Zwei Seiten",
+    "paginated-single": "Einzelseite",
+    "scroll": "Scrollen"
+  },
+  "readingPosition": "Leseposition",
+  "recolor": "In {{color}} umfärben",
+  "resizeChat": "Chatbereich anpassen",
+  "resizeContents": "Inhaltsbereich anpassen",
+  "resizeSearch": "Suchfenster-Größe ändern",
+  "scope": {
+    "book": "Dieses Buch",
+    "global": "Alle Bücher"
+  },
+  "scopeHintBook": "Änderungen betreffen nur dieses Buch.",
+  "scopeHintGlobal": "Änderungen betreffen jedes Buch, das deinen globalen Einstellungen folgt.",
+  "search": {
+    "label": "Im Buch suchen",
+    "noResults": "Keine Treffer",
+    "placeholder": "Im Buch suchen…",
+    "running": "Suche läuft",
+    "truncated_one": "Es werden nur die ersten {{count}} Ergebnisse angezeigt",
+    "truncated_other": "Es werden nur die ersten {{count}} Ergebnisse angezeigt",
+    "truncated": "Es werden nur die ersten {{count}} Ergebnisse angezeigt"
+  },
+  "shelf": "Regal",
+  "tableOfContents": "Inhaltsverzeichnis",
+  "textAlign": "Textausrichtung",
+  "textAlignOption": {
+    "book": "Wie im Buch",
+    "justify": "Blocksatz",
+    "start": "Linksbündig"
   },
   "textUnitMode": {
     "progress": "Position im Kapitel",
     "sessionTime": "Zeit dieser Sitzung"
   },
-  "fileMissing": {
-    "no-sync": "Die Datei dieses Buches ist nicht auf diesem Gerät und Sync ist aus. Importiere die Originaldatei, um es hier zu lesen.",
-    "not-on-relay": "Die Datei dieses Buches wurde vom Import-Gerät nie fertig hochgeladen. Öffne ReadAware dort, damit sie hochlädt, oder importiere die Originaldatei hier.",
-    "unauthenticated": "Melde dich erneut bei deinem Sync-Konto an, um die Datei dieses Buches herunterzuladen.",
-    "unreachable": "Die Datei dieses Buches liegt in deiner Cloud-Bibliothek, aber der Sync-Server ist gerade nicht erreichbar.",
-    "undecodable": "Die heruntergeladene Datei konnte mit der Sync-Passphrase dieses Geräts nicht entschlüsselt werden.",
-    "reimport": "Datei importieren"
-  }
+  "tryAgain": "Erneut versuchen"
 }

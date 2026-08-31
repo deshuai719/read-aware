@@ -2,11 +2,48 @@
   "actions": {
     "backToLibrary": "Back to library",
     "dismiss": "Dismiss",
-    "openSettings": "Open settings"
+    "goAgent": {
+      "keywords": "actions.goAgent.keywords",
+      "title": "actions.goAgent.title"
+    },
+    "goShelf": {
+      "keywords": "actions.goShelf.keywords",
+      "title": "actions.goShelf.title"
+    },
+    "goStats": {
+      "keywords": "actions.goStats.keywords",
+      "title": "actions.goStats.title"
+    },
+    "import": {
+      "keywords": "actions.import.keywords",
+      "title": "actions.import.title"
+    },
+    "openSettings": "Open settings",
+    "select": {
+      "keywords": "actions.select.keywords",
+      "title": "actions.select.title"
+    }
+  },
+  "collection": {
+    "keywords": "collection.keywords",
+    "subtitle": "collection.subtitle"
   },
   "errorBoundary": {
-    "title": "This view ran into a problem",
     "body": "The error has been logged. The rest of ReadAware keeps working — you can try again.",
-    "retry": "Try again"
+    "retry": "Try again",
+    "title": "This view ran into a problem"
+  },
+  "group": {
+    "keywords": "group.keywords",
+    "none": "group.none"
+  },
+  "layout": {
+    "keywords": "layout.keywords"
+  },
+  "settings": {
+    "updateAvailableToast": "settings.updateAvailableToast"
+  },
+  "sort": {
+    "keywords": "sort.keywords"
   }
 }

@@ -1,179 +1,204 @@
 {
-  "shelf": "Estantería",
-  "backToShelf": "Volver a la estantería",
-  "contents": "Contenido",
-  "tableOfContents": "Índice",
-  "chat": "Chat",
   "aiChat": "Chat con IA",
-  "resizeContents": "Redimensionar el panel de contenido",
-  "resizeChat": "Redimensionar el panel de chat",
-  "noToc": "Este archivo no incluye un índice navegable.",
-  "progress": "{{page}} / {{total}} · {{percent}}",
-  "readingPosition": "Posición de lectura",
-  "notes": "Notas",
-  "emptyNotes": "Aún no hay resaltados ni notas. Selecciona texto en el lector para marcarlo.",
-  "previousPage": "Página anterior",
-  "nextPage": "Página siguiente",
-  "go": "Ir",
-  "readerLabel": "Lector de libros",
-  "opening": "Abriendo {{name}}",
-  "book": "libro",
-  "loadError": "No se puede cargar este archivo.",
-  "tryAgain": "Reintentar",
-  "backToLibrary": "Volver a la biblioteca",
-  "readingAppearance": "Apariencia de lectura",
   "applyTo": "Aplicar a",
-  "scopeHintBook": "Los cambios afectan solo a este libro.",
-  "scopeHintGlobal": "Los cambios afectan a todos los libros que siguen tus ajustes globales.",
-  "pageColor": "Color de página",
-  "fontSize": "Tamaño de letra",
-  "fontWeight": "Grosor de letra",
-  "lineSpacing": "Interlineado",
-  "paragraphSpacing": "Espacio entre párrafos",
-  "textAlign": "Alineación",
-  "readingMode": "Modo de lectura",
-  "fixedLayoutHint": "Los libros de diseño fijo (PDF, cómics) traen su propia tipografía: aquí no se pueden cambiar la fuente ni los espaciados.",
+  "backToLibrary": "Volver a la biblioteca",
+  "backToShelf": "Volver a la estantería",
+  "book": "libro",
+  "chat": "Chat",
+  "closeNote": "Cerrar nota",
+  "colors": {
+    "blue": "azul",
+    "green": "verde",
+    "pink": "rosa",
+    "yellow": "amarillo"
+  },
+  "completion": {
+    "backToBook": "Volver al libro",
+    "hours": "{{count}} h",
+    "hours_one": "",
+    "hours_many": "",
+    "hours_other": "",
+    "hoursMinutes": "{{hours}} h {{minutes}} min",
+    "lookBack": "Mirar atrás sobre este libro",
+    "lookBackPrompt": "Acabo de terminar {{title}}. Mira atrás conmigo: repasa lo que marqué y dime qué llamó mi atención y qué hilos recorren esos pasajes. Cíñete a lo que hay en mis marcas; sin resumen del argumento.",
+    "markedFinished": "Terminado",
+    "markFinished": "Marcar como terminado",
+    "marksTitle": "Tus marcas ({{count}})",
+    "marksTitle_one": "",
+    "marksTitle_many": "",
+    "marksTitle_other": "",
+    "minutes": "{{count}} min",
+    "minutes_one": "",
+    "minutes_many": "",
+    "minutes_other": "",
+    "summary": "{{time}} de lectura, a lo largo de {{days}} días.",
+    "summaryDetail": "{{perDay}} al día de media · racha más larga {{streak}} días"
+  },
+  "contents": "Contenido",
+  "contextMenu": {
+    "openContents": "Abrir índice",
+    "openNotes": "Abrir notas",
+    "openSearch": "Abrir búsqueda"
+  },
+  "dictionary": {
+    "addToVocab": "Añadir al vocabulario",
+    "contextLabel": "En este pasaje",
+    "copied": "Copiado",
+    "copy": "Copiar",
+    "empty": "No se encontró ninguna definición para este término.",
+    "error": "No se pudo buscar. Revisa tu proveedor de IA en Ajustes e inténtalo de nuevo.",
+    "etymologyLabel": "Origen",
+    "explainInLabel": "Explicar en",
+    "footer": "Generado por IA: las definiciones pueden ser imperfectas.",
+    "glossesLabel": "Palabras y expresiones",
+    "inVocab": "En el vocabulario",
+    "languageAuto": "Seguir el idioma de la app",
+    "loading": "Buscando…",
+    "noteLabel": "Nota",
+    "regenerate": "Regenerar",
+    "retry": "Reintentar",
+    "title": "Diccionario",
+    "translationLabel": "Traducción",
+    "unconfigured": "Conecta un proveedor de IA en Ajustes para activar las definiciones."
+  },
+  "dismissNote": "Descartar nota",
+  "emptyNotes": "Aún no hay resaltados ni notas. Selecciona texto en el lector para marcarlo.",
+  "fileMissing": {
+    "no-sync": "El archivo de este libro no está en este dispositivo y la sincronización está desactivada. Importa el archivo original para leerlo aquí.",
+    "not-on-relay": "El archivo de este libro nunca terminó de subirse desde el dispositivo donde se importó. Abre ReadAware allí para que se suba, o importa el archivo original aquí.",
+    "reimport": "Importar el archivo",
+    "unauthenticated": "Vuelve a iniciar sesión en tu cuenta de sincronización para descargar el archivo de este libro.",
+    "undecodable": "El archivo descargado no se pudo descifrar con la frase de sincronización de este dispositivo.",
+    "unreachable": "El archivo de este libro está en tu biblioteca en la nube, pero ahora mismo no se puede contactar con el servidor de sincronización."
+  },
   "fixedLayoutColor": "Representación de página",
   "fixedLayoutColorHint": "Un color de página oscuro redibuja las páginas en dos tonos y descarta su color.",
   "fixedLayoutColorOption": {
-    "theme": "Seguir el color de página",
-    "original": "Original"
+    "original": "Original",
+    "theme": "Seguir el color de página"
   },
-  "scope": {
-    "global": "Todos los libros",
-    "book": "Este libro"
-  },
-  "menu": {
-    "copied": "Copiado",
-    "copySelection": "Copiar selección",
-    "copy": "Copiar",
-    "highlight": "Resaltar",
-    "underline": "Subrayar",
-    "addNote": "Añadir una nota",
-    "askAi": "Preguntar a la IA sobre esto",
-    "remove": "Quitar"
-  },
-  "recolor": "Cambiar a color {{color}}",
-  "colors": {
-    "yellow": "amarillo",
-    "green": "verde",
-    "blue": "azul",
-    "pink": "rosa"
-  },
-  "footnote": {
-    "footnote": "Nota al pie",
-    "endnote": "Nota final",
-    "reference": "Referencia",
-    "definition": "Definición",
-    "note": "Nota"
-  },
-  "imageViewer": {
-    "label": "Visor de imagen",
-    "close": "Cerrar el visor de imagen",
-    "zoomIn": "Acercar",
-    "zoomOut": "Alejar",
-    "rotate": "Girar",
-    "copy": "Copiar imagen",
-    "copied": "Copiado"
-  },
-  "dismissNote": "Descartar nota",
-  "closeNote": "Cerrar nota",
-  "dictionary": {
-    "title": "Diccionario",
-    "loading": "Buscando…",
-    "error": "No se pudo buscar. Revisa tu proveedor de IA en Ajustes e inténtalo de nuevo.",
-    "retry": "Reintentar",
-    "unconfigured": "Conecta un proveedor de IA en Ajustes para activar las definiciones.",
-    "empty": "No se encontró ninguna definición para este término.",
-    "contextLabel": "En este pasaje",
-    "etymologyLabel": "Origen",
-    "translationLabel": "Traducción",
-    "glossesLabel": "Palabras y expresiones",
-    "noteLabel": "Nota",
-    "explainInLabel": "Explicar en",
-    "languageAuto": "Seguir el idioma de la app",
-    "footer": "Generado por IA: las definiciones pueden ser imperfectas.",
-    "regenerate": "Regenerar",
-    "copy": "Copiar",
-    "copied": "Copiado",
-    "addToVocab": "Añadir al vocabulario",
-    "inVocab": "En el vocabulario"
-  },
+  "fixedLayoutHint": "Los libros de diseño fijo (PDF, cómics) traen su propia tipografía: aquí no se pueden cambiar la fuente ni los espaciados.",
+  "fontSize": "Tamaño de letra",
   "fontSizeOption": {
-    "xx-small": "XXS",
-    "x-small": "XS",
-    "small": "Pequeña",
-    "medium": "Mediana",
     "large": "Grande",
+    "medium": "Mediana",
+    "small": "Pequeña",
     "x-large": "XL",
+    "x-small": "XS",
     "xx-large": "XXL",
+    "xx-small": "XXS",
     "xxx-large": "XXXL"
   },
+  "fontWeight": "Grosor de letra",
   "fontWeightOption": {
+    "bold": "Negrita",
     "light": "Fina",
-    "regular": "Normal",
     "medium": "Media",
-    "bold": "Negrita"
+    "regular": "Normal"
   },
+  "footnote": {
+    "definition": "Definición",
+    "endnote": "Nota final",
+    "footnote": "Nota al pie",
+    "note": "Nota",
+    "reference": "Referencia"
+  },
+  "go": "Ir",
+  "imageViewer": {
+    "close": "Cerrar el visor de imagen",
+    "copied": "Copiado",
+    "copy": "Copiar imagen",
+    "label": "Visor de imagen",
+    "rotate": "Girar",
+    "zoomIn": "Acercar",
+    "zoomOut": "Alejar"
+  },
+  "lineSpacing": "Interlineado",
   "lineSpacingOption": {
-    "compact": "Compacto",
     "comfortable": "Cómodo",
+    "compact": "Compacto",
     "relaxed": "Holgado"
   },
-  "paragraphSpacingOption": {
-    "tight": "Ajustado",
-    "normal": "Normal",
-    "loose": "Amplio"
+  "loadError": "No se puede cargar este archivo.",
+  "menu": {
+    "addNote": "Añadir una nota",
+    "askAi": "Preguntar a la IA sobre esto",
+    "copied": "Copiado",
+    "copy": "Copiar",
+    "copySelection": "Copiar selección",
+    "highlight": "Resaltar",
+    "remove": "Quitar",
+    "underline": "Subrayar"
   },
-  "textAlignOption": {
-    "book": "Como se publicó",
-    "start": "Izquierda",
-    "justify": "Justificado"
+  "nextPage": "Página siguiente",
+  "notes": "Notas",
+  "noToc": "Este archivo no incluye un índice navegable.",
+  "opening": "Abriendo {{name}}",
+  "pageColor": "Color de página",
+  "pageColorOption": {
+    "auto": "Automático",
+    "dark": "Oscuro",
+    "light": "Claro",
+    "warm": "Cálido"
   },
   "pageMargins": "Márgenes de página",
   "pageMarginsOption": {
-    "narrow": "Estrechos",
     "medium": "Medios",
+    "narrow": "Estrechos",
     "wide": "Anchos"
   },
-  "readingModeOption": {
-    "scroll": "Desplazamiento",
-    "paginated-single": "Una página",
-    "paginated-double": "Dos páginas"
+  "paragraphSpacing": "Espacio entre párrafos",
+  "paragraphSpacingOption": {
+    "loose": "Amplio",
+    "normal": "Normal",
+    "tight": "Ajustado"
   },
-  "pageColorOption": {
-    "auto": "Automático",
-    "light": "Claro",
-    "warm": "Cálido",
-    "dark": "Oscuro"
-  },
-  "completion": {
-    "markFinished": "Marcar como terminado",
-    "markedFinished": "Terminado",
-    "minutes": "{{count}} min",
-    "hours": "{{count}} h",
-    "hoursMinutes": "{{hours}} h {{minutes}} min",
-    "marksTitle": "Tus marcas ({{count}})",
-    "summary": "{{time}} de lectura, a lo largo de {{days}} días.",
-    "summaryDetail": "{{perDay}} al día de media · racha más larga {{streak}} días",
-    "backToBook": "Volver al libro",
-    "lookBack": "Mirar atrás sobre este libro",
-    "lookBackPrompt": "Acabo de terminar {{title}}. Mira atrás conmigo: repasa lo que marqué y dime qué llamó mi atención y qué hilos recorren esos pasajes. Cíñete a lo que hay en mis marcas; sin resumen del argumento."
-  },
+  "previousPage": "Página anterior",
+  "progress": "{{page}} / {{total}} · {{percent}}",
   "readAloud": {
     "start": "Leer en voz alta",
     "stop": "Detener lectura"
+  },
+  "readerLabel": "Lector de libros",
+  "readingAppearance": "Apariencia de lectura",
+  "readingMode": "Modo de lectura",
+  "readingModeOption": {
+    "paginated-double": "Dos páginas",
+    "paginated-single": "Una página",
+    "scroll": "Desplazamiento"
+  },
+  "readingPosition": "Posición de lectura",
+  "recolor": "Cambiar a color {{color}}",
+  "resizeChat": "Redimensionar el panel de chat",
+  "resizeContents": "Redimensionar el panel de contenido",
+  "resizeSearch": "Cambiar tamaño del panel de búsqueda",
+  "scope": {
+    "book": "Este libro",
+    "global": "Todos los libros"
+  },
+  "scopeHintBook": "Los cambios afectan solo a este libro.",
+  "scopeHintGlobal": "Los cambios afectan a todos los libros que siguen tus ajustes globales.",
+  "search": {
+    "label": "Buscar en el libro",
+    "noResults": "No se encontraron coincidencias",
+    "placeholder": "Buscar en el libro…",
+    "running": "Buscando",
+    "truncated_one": "Solo se muestran los primeros {{count}} resultados",
+    "truncated_many": "",
+    "truncated_other": "Solo se muestran los primeros {{count}} resultados",
+    "truncated": "Solo se muestran los primeros {{count}} resultados"
+  },
+  "shelf": "Estantería",
+  "tableOfContents": "Índice",
+  "textAlign": "Alineación",
+  "textAlignOption": {
+    "book": "Como se publicó",
+    "justify": "Justificado",
+    "start": "Izquierda"
   },
   "textUnitMode": {
     "progress": "Posición en el capítulo",
     "sessionTime": "Tiempo de la sesión"
   },
-  "fileMissing": {
-    "no-sync": "El archivo de este libro no está en este dispositivo y la sincronización está desactivada. Importa el archivo original para leerlo aquí.",
-    "not-on-relay": "El archivo de este libro nunca terminó de subirse desde el dispositivo donde se importó. Abre ReadAware allí para que se suba, o importa el archivo original aquí.",
-    "unauthenticated": "Vuelve a iniciar sesión en tu cuenta de sincronización para descargar el archivo de este libro.",
-    "unreachable": "El archivo de este libro está en tu biblioteca en la nube, pero ahora mismo no se puede contactar con el servidor de sincronización.",
-    "undecodable": "El archivo descargado no se pudo descifrar con la frase de sincronización de este dispositivo.",
-    "reimport": "Importar el archivo"
-  }
+  "tryAgain": "Reintentar"
 }

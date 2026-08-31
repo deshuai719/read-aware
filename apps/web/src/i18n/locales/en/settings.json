@@ -1,590 +1,594 @@
 {
-  "dialog": {
-    "title": "Settings",
-    "sectionsLabel": "Settings sections",
-    "close": "Close settings"
-  },
-  "sections": {
-    "general": "General",
-    "appearance": "Theme",
-    "reading": "Reading",
-    "ai": "AI",
-    "shortcuts": "Shortcuts",
-    "dataSync": "Data & Sync",
-    "about": "About",
-    "plugins": "Plugins",
-    "menus": "Customize"
-  },
-  "general": {
-    "title": "General",
-    "description": "App-wide behavior — what opens on launch, language, and desktop integration.",
-    "onLaunch": "On launch",
-    "startView": "Start view",
-    "startViewOptions": {
-      "shelf": "Library shelf",
-      "resume": "Resume last book"
+  "about": {
+    "build": "Build",
+    "buildAndroid": "Android (Tauri)",
+    "buildDesktop": "Desktop (Tauri)",
+    "buildIos": "iOS (Tauri)",
+    "buildWeb": "Web preview",
+    "channel": {
+      "beta": "Beta",
+      "description": "Stable gets finished releases. Beta also gets pre-releases — earlier features, rougher edges.",
+      "stable": "Stable",
+      "title": "Update channel"
     },
-    "desktopIntegration": {
-      "title": "Desktop integration",
-      "description": "Stored here and applied by the desktop app. No effect in the browser preview.",
-      "launchAtStartup": {
-        "title": "Launch at startup",
-        "description": "Open ReadAware automatically when you sign in."
-      },
-      "fileAssociations": {
-        "title": "File associations",
-        "description": "Open EPUB, MOBI, AZW3, FB2, CBZ, CBR, TXT, HTML and PDF files with ReadAware."
-      },
-      "autoUpdate": {
-        "title": "Automatically check for updates",
-        "description": "Show a quiet notice in the main window when a new version is available."
-      },
-      "whatsNewDialog": {
-        "title": "Show the \"what's new\" notice after updates",
-        "description": "After an update, show a small dialog once summarizing where to find what changed."
-      }
+    "checkingUpdates": "Checking...",
+    "checkUpdates": "Check for updates",
+    "contact": {
+      "description": "Questions, bugs, or feedback — reach out directly.",
+      "title": "Contact"
     },
-    "languagePrivacy": "Language & privacy",
-    "language": "Language",
-    "crashReports": {
-      "title": "Send anonymous crash reports",
-      "description": "Share crash diagnostics to help fix stability issues. Off by default."
+    "description": "Version, build, and the engine that powers reading.",
+    "diagnostics": {
+      "cancel": "Cancel",
+      "description": "ReadAware never sends anything on its own. A diagnostics bundle contains app logs and a storage self-check — no book content, notes, or conversations — and you can inspect everything before it leaves this device.",
+      "dialogTitle": "Send diagnostics report",
+      "done": "Done",
+      "exportError": "The bundle could not be assembled or saved.",
+      "exportRow": {
+        "button": "Export",
+        "description": "Save the bundle as a JSON file to attach to an email or issue.",
+        "title": "Export diagnostics"
+      },
+      "exportSuccess": "Diagnostics bundle saved.",
+      "logsRow": {
+        "button": "Reveal",
+        "description": "The rotating log files the bundle is built from.",
+        "title": "Log files"
+      },
+      "noticeDone": "Done",
+      "noticeError": "Something went wrong",
+      "previewBody": "This is exactly what will be sent — nothing else leaves your device.",
+      "reportError": "The report could not be sent. You can export the bundle and email it instead.",
+      "reportRow": {
+        "button": "Send report…",
+        "description": "Review the bundle, then send it to the developers.",
+        "title": "Report a problem"
+      },
+      "send": "Send",
+      "sentBody": "Sent — thank you. Quote this receipt id if you contact us about the problem:",
+      "title": "Diagnostics"
+    },
+    "engine": {
+      "description": "Every format — EPUB, MOBI, AZW3, FB2, CBZ, CBR, TXT, HTML, PDF — opens in one reader, with the same selection, annotation and progress model.",
+      "title": "Reading engine"
+    },
+    "foliate": {
+      "description": "The open-source reading engine ReadAware is built on."
+    },
+    "help": "Help",
+    "installUpdate": "Install update",
+    "title": "About",
+    "updates": {
+      "description": "Check for and install the latest release.",
+      "title": "Updates"
+    },
+    "updateStatus": {
+      "available": "Version {{version}} available",
+      "downloading": "Downloading...",
+      "downloadingProgress": "Downloading {{progress}}%",
+      "failed": "Update failed",
+      "installerOpen": "System installer opened",
+      "installing": "Installing...",
+      "permissionRequired": "Allow installation in Android settings",
+      "upToDate": "Up to date"
+    },
+    "vendored": "Vendored",
+    "version": "Version",
+    "versionUnknown": "Unknown",
+    "website": {
+      "description": "Product news, downloads, and docs.",
+      "title": "Website"
     }
-  },
-  "appearance": {
-    "title": "Appearance",
-    "description": "How the app itself looks — independent of the book page color in Reading.",
-    "theme": {
-      "title": "Theme",
-      "description": "System follows your operating system's light or dark setting."
-    },
-    "themeOptions": {
-      "system": "System",
-      "light": "Light",
-      "dark": "Dark"
-    },
-    "contentType": {
-      "title": "Content typography",
-      "description": "How chat replies, notes, and plugin views are set. App controls keep their own size.",
-      "follow": {
-        "title": "Follow the reading settings",
-        "description": "Use the font and line spacing you picked for books, scaled down for conversation."
-      },
-      "appDefaultFont": "App default",
-      "fontSize": "Size",
-      "lineSpacing": "Line spacing",
-      "previewLabel": "Content typography preview",
-      "previewQuestion": "What is this chapter arguing?",
-      "previewAnswer": "That the reform began as improvisation — a series of local experiments nobody had authorised, kept alive because they worked."
-    },
-    "motion": "Motion",
-    "reduceMotion": {
-      "title": "Reduce motion",
-      "description": "Turn off transitions and animation flourishes across the app."
-    }
-  },
-  "reading": {
-    "title": "Reading",
-    "description": "How books render on the page. Changes apply live to the reader.",
-    "previewLabel": "Reading preview",
-    "previewText": "History, Stephen said, is a nightmare from which I am trying to awake.",
-    "previewTextSecondary": "Think you're escaping and run into yourself. Longest way round is the shortest way home.",
-    "previewSource": "James Joyce · Ulysses",
-    "typography": "Typography",
-    "fontSize": "Font Size",
-    "fontWeight": "Font Weight",
-    "lineSpacing": "Line Spacing",
-    "paragraphSpacing": "Paragraph Spacing",
-    "textAlign": "Text Alignment",
-    "layout": "Layout",
-    "readingMode": "Reading Mode",
-    "pageColor": {
-      "title": "Page Color",
-      "description": "The book's paper. Auto follows the app theme; the others are fixed."
-    },
-    "pageMargins": "Page margins"
-  },
-  "shortcuts": {
-    "title": "Shortcuts",
-    "description": "Click a shortcut to rebind it; press Esc while recording to cancel.",
-    "categories": {
-      "Global": "Global",
-      "Reading": "Reading",
-      "Selection": "Selection",
-      "Overlays": "Overlays",
-      "Plugins": "Plugins"
-    },
-    "categoryDescriptions": {
-      "selection": "Active while text is selected in the reader.",
-      "plugins": "Assign keys to commands contributed by plugins."
-    },
-    "actions": {
-      "search": "Open search",
-      "settings": "Open settings",
-      "new-conversation": "New conversation",
-      "primary-nav": "Switch primary destination",
-      "next-page": "Next page",
-      "prev-page": "Previous page",
-      "next-chapter": "Next chapter",
-      "prev-chapter": "Previous chapter",
-      "toggle-controls": "Toggle reader controls",
-      "selection-copy": "Copy",
-      "selection-highlight": "Highlight",
-      "selection-underline": "Underline",
-      "selection-add-note": "Add note",
-      "selection-look-up": "Look up",
-      "selection-ask-ai": "Ask AI",
-      "close": "Close dialog or overlay"
-    },
-    "recording": "Press a shortcut…",
-    "conflict": "Already used by “{{label}}”",
-    "rebind": "Rebind {{label}}",
-    "reset": "Reset {{label}}",
-    "resetAll": "Reset all to defaults",
-    "notSet": "Not set"
   },
   "ai": {
-    "title": "AI",
-    "description": "Bring your own model key, then choose what the assistant can do and what it may see.",
-    "connection": "Connection",
-    "features": {
-      "title": "Features",
-      "description": "Reader assistance, switched on per capability as each one ships."
-    },
-    "featureList": {
-      "explainSelection": {
-        "label": "Explain selection",
-        "description": "Unpack a highlighted passage in plain language."
-      },
-      "defineTerm": {
-        "label": "Define term",
-        "description": "Inline definitions for a selected word or phrase."
-      },
-      "translate": {
-        "label": "Translate",
-        "description": "Translate a selection into your reading language."
-      },
-      "summarizeChapter": {
-        "label": "Summarize chapter",
-        "description": "Condense the current chapter into key points."
-      },
-      "askConversation": {
-        "label": "Conversational Q&A",
-        "description": "Ask follow-up questions grounded in the book and your notes."
-      }
+    "buildMemory": {
+      "description": "Let ReadAware learn a durable profile from your reading and notes over time.",
+      "title": "Build long-term memory"
     },
     "chat": "Chat",
-    "followStreaming": {
-      "title": "Follow streaming replies",
-      "description": "Scroll along as the reply streams in. Off keeps the view anchored where the reply begins."
-    },
-    "memory": "Memory",
-    "buildMemory": {
-      "title": "Build long-term memory",
-      "description": "Let ReadAware learn a durable profile from your reading and notes over time."
-    },
-    "storedMemory": {
-      "title": "Stored memory",
-      "description": "Review or erase everything ReadAware has remembered about you."
-    },
     "clearMemory": "Clear memory",
-    "privacy": {
-      "title": "Privacy",
-      "description": "Control what leaves your device when an AI feature runs."
+    "connection": "Connection",
+    "description": "Bring your own model key, then choose what the assistant can do and what it may see.",
+    "featureList": {
+      "askConversation": {
+        "description": "Ask follow-up questions grounded in the book and your notes.",
+        "label": "Conversational Q&A"
+      },
+      "defineTerm": {
+        "description": "Inline definitions for a selected word or phrase.",
+        "label": "Define term"
+      },
+      "explainSelection": {
+        "description": "Unpack a highlighted passage in plain language.",
+        "label": "Explain selection"
+      },
+      "summarizeChapter": {
+        "description": "Condense the current chapter into key points.",
+        "label": "Summarize chapter"
+      },
+      "translate": {
+        "description": "Translate a selection into your reading language.",
+        "label": "Translate"
+      }
     },
-    "sendHighlightedText": {
-      "title": "Send highlighted text",
-      "description": "Include the passage you selected in the request."
+    "features": {
+      "description": "Reader assistance, switched on per capability as each one ships.",
+      "title": "Features"
     },
-    "sendSurroundingContext": {
-      "title": "Send surrounding context",
-      "description": "Include nearby paragraphs so answers stay grounded in the text."
+    "followStreaming": {
+      "description": "Scroll along as the reply streams in. Off keeps the view anchored where the reply begins.",
+      "title": "Follow streaming replies"
     },
     "localOnly": {
-      "title": "Local-only mode",
-      "description": "Never call a remote model. AI features stay off until a local model is available."
-    }
+      "description": "Never call a remote model. AI features stay off until a local model is available.",
+      "title": "Local-only mode"
+    },
+    "memory": "Memory",
+    "privacy": {
+      "description": "Control what leaves your device when an AI feature runs.",
+      "title": "Privacy"
+    },
+    "sendHighlightedText": {
+      "description": "Include the passage you selected in the request.",
+      "title": "Send highlighted text"
+    },
+    "sendSurroundingContext": {
+      "description": "Include nearby paragraphs so answers stay grounded in the text.",
+      "title": "Send surrounding context"
+    },
+    "storedMemory": {
+      "description": "Review or erase everything ReadAware has remembered about you.",
+      "title": "Stored memory"
+    },
+    "title": "AI"
   },
   "aiConfig": {
-    "provider": "AI Provider",
-    "readaware": {
-      "description": "Built-in models, no API key of your own — usage is metered monthly in credits against your plan.",
-      "notConnected": "Connect your account in Data & Sync first — the subscription signs in with it.",
-      "requiresPaid": "Bundled AI needs a Pro or Max plan; the Free plan uses your own key.",
-      "credits": "{{used}} / {{total}} credits used this month",
-      "creditsUnlimited": "{{used}} credits used this month (unmetered)"
+    "advancedSettings": "Advanced settings",
+    "apiKey": {
+      "helper": "Your API key is encrypted and stored only on this device. It is never sent to ReadAware's servers.",
+      "label": "API Key",
+      "placeholder": "Enter your {{provider}} API key"
     },
-    "customBaseUrl": {
-      "label": "Custom Base URL",
-      "helper": "Enter the base URL for your OpenAI-compatible API endpoint."
+    "byok": {
+      "body": "ReadAware uses your key to call the selected provider. The key is encrypted and stored only on this device; provider usage charges still apply.",
+      "title": "About BYOK (Bring Your Own Key)"
     },
+    "clear": "Clear",
     "customApi": {
-      "label": "API format",
-      "helper": "Choose the endpoint format implemented by your provider.",
       "chatCompletions": "Chat Completions (/chat/completions)",
+      "helper": "Choose the endpoint format implemented by your provider.",
+      "label": "API format",
       "responses": "Responses (/responses)"
     },
-    "customSupportsThinking": "Model supports thinking",
+    "customBaseUrl": {
+      "helper": "Enter the base URL for your OpenAI-compatible API endpoint.",
+      "label": "Custom Base URL"
+    },
     "customMaxOutputTokens": {
-      "label": "Maximum output tokens",
-      "placeholder": "Provider default",
+      "error": "Enter a positive whole number.",
       "helper": "Optional. Leave empty to let the provider choose its own limit.",
-      "error": "Enter a positive whole number."
+      "label": "Maximum output tokens",
+      "placeholder": "Provider default"
     },
-    "apiKey": {
-      "label": "API Key",
-      "placeholder": "Enter your {{provider}} API key",
-      "helper": "Your API key is encrypted and stored only on this device. It is never sent to ReadAware's servers."
+    "customSupportsThinking": "Model supports thinking",
+    "fastModel": "Fast model",
+    "fastModelCustomPlaceholder": "Leave empty to match the smart model",
+    "fastModelHelper": "Dictionary, memory, and summaries — the cheaper, faster tier.",
+    "fastThinking": "Fast model thinking",
+    "fastThinkingHelper": "Reasoning effort for background work — lower levels are faster and cost less.",
+    "getKey": {
+      "anthropic": "Get your API key from <link>Anthropic Console</link>",
+      "generic": "Get your {{provider}} API key from <link>the provider console</link>.",
+      "openai": "Get your API key from <link>OpenAI Dashboard</link>",
+      "openrouter": "Get your API key from <link>OpenRouter</link>"
     },
-    "show": "Show",
     "hide": "Hide",
     "model": "Primary model",
     "modelDefault": "Default",
     "modelHelper": "Used for both Smart and Fast tasks by default.",
-    "advancedSettings": "Advanced settings",
-    "separateFastModel": "Use a separate Fast model",
-    "getKey": {
-      "openai": "Get your API key from <link>OpenAI Dashboard</link>",
-      "anthropic": "Get your API key from <link>Anthropic Console</link>",
-      "openrouter": "Get your API key from <link>OpenRouter</link>",
-      "generic": "Get your {{provider}} API key from <link>the provider console</link>."
+    "modelPicker": {
+      "empty": "No matching models",
+      "recommended": "Recommended",
+      "search": "Search models…",
+      "useCustom": "Use “{{id}}” as the model ID"
     },
-    "test": "Test Connection",
-    "testing": "Testing...",
-    "clear": "Clear",
-    "testSuccessMessage": "Test successful! Response: \"{{response}}\"",
-    "testEmptyMessage": "Test failed: Empty response from AI provider.",
-    "testUnknownError": "Unknown error during test.",
-    "byok": {
-      "title": "About BYOK (Bring Your Own Key)",
-      "body": "ReadAware uses your key to call the selected provider. The key is encrypted and stored only on this device; provider usage charges still apply."
-    },
-    "smartModel": "Smart model",
-    "fastModel": "Fast model",
-    "smartModelHelper": "Chat, onboarding, and cross-book synthesis — the slower, more capable tier.",
-    "fastModelHelper": "Dictionary, memory, and summaries — the cheaper, faster tier.",
     "modelPlaceholder": "e.g. gpt-5.5",
-    "fastModelCustomPlaceholder": "Leave empty to match the smart model",
+    "openRouter": {
+      "allowFallbacks": "Fall back to other upstreams when preferred ones are unavailable",
+      "order": {
+        "helper": "Comma-separated provider slugs tried in order (e.g. coreweave, deepinfra). Leave empty for no preference.",
+        "label": "Preferred upstreams"
+      },
+      "sort": {
+        "default": "OpenRouter default (load balanced)",
+        "helper": "How OpenRouter picks among the upstream providers serving your model.",
+        "label": "Upstream sorting",
+        "latency": "Lowest latency first",
+        "price": "Lowest price first",
+        "throughput": "Highest throughput first"
+      }
+    },
+    "provider": "AI Provider",
+    "readaware": {
+      "credits": "{{used}} / {{total}} credits used this month",
+      "creditsUnlimited": "{{used}} credits used this month (unmetered)",
+      "description": "Built-in models, no API key of your own — usage is metered monthly in credits against your plan.",
+      "notConnected": "Connect your account in Data & Sync first — the subscription signs in with it.",
+      "requiresPaid": "Bundled AI needs a Pro or Max plan; the Free plan uses your own key."
+    },
+    "separateFastModel": "Use a separate Fast model",
+    "show": "Show",
+    "smartModel": "Smart model",
+    "smartModelHelper": "Chat, onboarding, and cross-book synthesis — the slower, more capable tier.",
+    "smartThinking": "Smart model thinking",
+    "smartThinkingHelper": "Reasoning effort for chat turns — higher levels think longer before answering. Models without thinking support ignore this.",
+    "test": "Test Connection",
+    "testEmptyMessage": "Test failed: Empty response from AI provider.",
+    "testing": "Testing...",
+    "testSuccessMessage": "Test successful! Response: \"{{response}}\"",
+    "testUnknownError": "Unknown error during test.",
     "thinking": "Thinking effort",
     "thinkingHelper": "Used by both Smart and Fast tasks. Higher levels think longer before answering; models without thinking support ignore this.",
-    "smartThinking": "Smart model thinking",
-    "fastThinking": "Fast model thinking",
-    "smartThinkingHelper": "Reasoning effort for chat turns — higher levels think longer before answering. Models without thinking support ignore this.",
-    "fastThinkingHelper": "Reasoning effort for background work — lower levels are faster and cost less.",
     "thinkingLevels": {
-      "off": "Off",
-      "minimal": "Minimal",
-      "low": "Low",
-      "medium": "Medium",
       "high": "High",
-      "xhigh": "Extra high",
-      "max": "Maximum"
-    },
-    "modelPicker": {
-      "search": "Search models…",
-      "recommended": "Recommended",
-      "useCustom": "Use “{{id}}” as the model ID",
-      "empty": "No matching models"
-    },
-    "openRouter": {
-      "sort": {
-        "label": "Upstream sorting",
-        "default": "OpenRouter default (load balanced)",
-        "price": "Lowest price first",
-        "throughput": "Highest throughput first",
-        "latency": "Lowest latency first",
-        "helper": "How OpenRouter picks among the upstream providers serving your model."
-      },
-      "order": {
-        "label": "Preferred upstreams",
-        "helper": "Comma-separated provider slugs tried in order (e.g. coreweave, deepinfra). Leave empty for no preference."
-      },
-      "allowFallbacks": "Fall back to other upstreams when preferred ones are unavailable"
+      "low": "Low",
+      "max": "Maximum",
+      "medium": "Medium",
+      "minimal": "Minimal",
+      "off": "Off",
+      "xhigh": "Extra high"
     }
   },
-  "font": {
-    "label": "Font",
-    "custom": "Custom",
-    "customAria": "Pick from fonts installed on this device",
-    "placeholderCurated": "Choose a curated font",
-    "placeholderCustom": "Choose an installed font",
-    "downloading": "Downloading font · {{percent}}%",
-    "downloadFailed": "Font download failed — check your network.",
-    "retry": "Retry"
-  },
-  "pendingBadge": {
-    "comingSoon": "Coming soon"
+  "appearance": {
+    "contentType": {
+      "appDefaultFont": "App default",
+      "description": "How chat replies, notes, and plugin views are set. App controls keep their own size.",
+      "follow": {
+        "description": "Use the font and line spacing you picked for books, scaled down for conversation.",
+        "title": "Follow the reading settings"
+      },
+      "fontSize": "Size",
+      "lineSpacing": "Line spacing",
+      "previewAnswer": "That the reform began as improvisation — a series of local experiments nobody had authorised, kept alive because they worked.",
+      "previewLabel": "Content typography preview",
+      "previewQuestion": "What is this chapter arguing?",
+      "title": "Content typography"
+    },
+    "description": "How the app itself looks — independent of the book page color in Reading.",
+    "motion": "Motion",
+    "reduceMotion": {
+      "description": "Turn off transitions and animation flourishes across the app.",
+      "title": "Reduce motion"
+    },
+    "theme": {
+      "description": "System follows your operating system's light or dark setting.",
+      "title": "Theme"
+    },
+    "themeOptions": {
+      "dark": "Dark",
+      "light": "Light",
+      "system": "System"
+    },
+    "title": "Appearance"
   },
   "dataSync": {
-    "title": "Data & Sync",
+    "account": {
+      "description": "Connect an account to sync your encrypted event log across devices.",
+      "title": "Account"
+    },
+    "backup": {
+      "description": "Save everything on this device to a single file — move it to another device or keep it as a backup. Importing merges a backup back into your current data.",
+      "title": "Backup & export"
+    },
+    "billing": {
+      "failed": "Couldn't open the billing page. Try again.",
+      "manage": "Manage subscription",
+      "upgrade": "Upgrade plan"
+    },
+    "books": {
+      "awaitingOtherDevice": "Waiting for the device that holds the file",
+      "failed": "Upload failed — will retry",
+      "pending": "Waiting to upload",
+      "quotaFull": "Cloud storage is full — further books stay on this device until space frees up or the plan grows.",
+      "rejected": "Refused by the relay",
+      "rejectedQuota": "Over the plan's storage — not uploaded",
+      "rejectedWith": "Refused: {{reason}}",
+      "title": "Book files"
+    },
+    "connect": {
+      "back": "Back",
+      "connect": "Connect",
+      "connected": "Sync is on.",
+      "connecting": "Connecting…",
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@example.com",
+      "failed": "Could not connect. Check the link and try again.",
+      "freshAccount": "This account has no encryption passphrase yet — this device will set it. Make sure this is your account: once you connect, this device's library syncs to it.",
+      "github": "Continue with GitHub",
+      "google": "Continue with Google",
+      "invalidCredentials": "Wrong username or password.",
+      "oauthStarted": "Finish signing in in the browser, then paste the token it shows below.",
+      "orEmail": "or use email",
+      "passphraseHint": "Encrypts your data before it leaves this device. The first device sets it; every other device must enter the same one. It cannot be recovered — if you forget it, synced data is unreadable.",
+      "passphraseLabel": "Encryption passphrase",
+      "passphraseTooShort": "Use at least 8 characters.",
+      "passwordLabel": "Password",
+      "passwordLogin": "Connect",
+      "send": "Send sign-in link",
+      "sending": "Sending…",
+      "sent": "Check your inbox — then paste the sign-in link or token below.",
+      "serverUrlLabel": "Server address",
+      "serverUrlPlaceholder": "https://relay.example.com",
+      "signedInAs": "Signing in as",
+      "tokenContinue": "Continue",
+      "tokenInvalid": "That sign-in link or token didn't work — it may have expired or already have been used. Request a new one.",
+      "tokenLabel": "Sign-in link or token",
+      "tokenRetry": "We couldn't verify this token right now. Check your connection and try again — the token has been kept below.",
+      "usernameLabel": "Username",
+      "verifying": "Verifying…",
+      "wrongPassphrase": "That passphrase doesn't match this account."
+    },
+    "connectAccount": "Connect account",
+    "connected": {
+      "cancel": "Cancel",
+      "disconnect": "Disconnect",
+      "disconnectBody": "This device keeps all its data and stops syncing. Reconnect anytime with the same passphrase.",
+      "disconnectTitle": "Disconnect sync?",
+      "plan": "Plan: {{tier}}",
+      "planTitle": "Plan",
+      "statusTitle": "Status",
+      "storageUsed": "{{used}} stored on the relay",
+      "storageUsedOfLimit": "{{used}} of {{limit}} stored on the relay",
+      "syncNow": "Sync now"
+    },
+    "dangerZone": "Danger zone",
+    "dataLocation": {
+      "descTauri": "Stored in the ReadAware application data folder on this device.",
+      "descWeb": "Stored in this browser. The desktop app keeps data in a local folder you control.",
+      "title": "Data location"
+    },
+    "deleteAll": {
+      "button": "Delete all data",
+      "cancel": "Cancel",
+      "confirmLabel": "Type {{phrase}} to confirm",
+      "deleting": "Deleting…",
+      "description": "Erase everything on this device — books, annotations, reading history, settings, and sync credentials. A synced account's copy on other devices is not touched.",
+      "dialogBody": "This erases every book, annotation, memory, conversation, and setting on this device, and cannot be undone. Data already synced to other devices stays on those devices.",
+      "dialogTitle": "Delete all data?",
+      "failed": "Couldn't delete all data. Nothing may have been removed — try again.",
+      "title": "Delete all data"
+    },
     "description": "ReadAware is local-first: your data lives on this device. Sync is an encrypted relay, not a source of truth.",
-    "noticeDone": "Done",
-    "noticeError": "Error",
-    "exportSuccess": "Everything exported to {{file}}.",
+    "desktopBadge": "Desktop",
+    "e2e": {
+      "active": "On — protected by your passphrase.",
+      "description": "Synced data is encrypted on-device. Manage your passphrase and devices here.",
+      "title": "End-to-end encryption"
+    },
+    "export": "Export",
     "exportError": "Could not export your data.",
+    "exportSuccess": "Everything exported to {{file}}.",
+    "fullBackup": {
+      "description": "Books, highlights, notes, collections, reading progress, and every preference, in one portable file.",
+      "title": "Full backup"
+    },
+    "import": "Import",
     "importError": "Could not import this file.",
+    "indicator": {
+      "errorDismiss": "Silence the sync error for now",
+      "label": "Sync status"
+    },
     "merge": {
-      "books_one": "{{count}} book",
-      "books_other": "{{count}} books",
       "annotations_one": "{{count}} annotation",
       "annotations_other": "{{count}} annotations",
+      "books_one": "{{count}} book",
+      "books_other": "{{count}} books",
       "collections_one": "{{count}} collection",
       "collections_other": "{{count}} collections",
       "settings_one": "{{count}} setting",
       "settings_other": "{{count}} settings",
       "summary": "Merged {{books}}, {{annotations}}, {{collections}}, and {{settings}}. Reloading…"
     },
-    "sync": "Sync",
-    "account": {
-      "title": "Account",
-      "description": "Connect an account to sync your encrypted event log across devices."
-    },
-    "connectAccount": "Connect account",
-    "e2e": {
-      "title": "End-to-end encryption",
-      "description": "Synced data is encrypted on-device. Manage your passphrase and devices here.",
-      "active": "On — protected by your passphrase."
-    },
-    "storage": "Storage",
-    "dataLocation": {
-      "title": "Data location",
-      "descTauri": "Stored in the ReadAware application data folder on this device.",
-      "descWeb": "Stored in this browser. The desktop app keeps data in a local folder you control."
-    },
-    "desktopBadge": "Desktop",
-    "reveal": "Reveal",
-    "backup": {
-      "title": "Backup & export",
-      "description": "Save everything on this device to a single file — move it to another device or keep it as a backup. Importing merges a backup back into your current data."
-    },
-    "fullBackup": {
-      "title": "Full backup",
-      "description": "Books, highlights, notes, collections, reading progress, and every preference, in one portable file."
-    },
-    "import": "Import",
-    "export": "Export",
-    "working": "Working…",
-    "dangerZone": "Danger zone",
-    "syncStatus": {
-      "idle": "Synced",
-      "syncing": "Syncing…",
-      "error": "Sync error",
-      "lastSync": "Last synced {{time}}",
-      "never": "Not synced yet",
-      "signedOut": "Signed out — sign in again to resume syncing"
+    "noticeDone": "Done",
+    "noticeError": "Error",
+    "progress": {
+      "blobs": "Transferring files… {{done}}/{{total}}",
+      "bookDown": "Downloading “{{title}}”",
+      "bookDownParts": "Downloading “{{title}}” ({{done}}/{{total}})",
+      "bookUp": "Uploading “{{title}}”",
+      "bookUpParts": "Uploading “{{title}}” ({{done}}/{{total}})",
+      "lastCycle": "Last cycle: {{pulled}} received · {{pushed}} sent · {{blobs}} files",
+      "pending": "Waiting to send: {{events}} changes, {{blobs}} files",
+      "pendingNone": "Nothing waiting to send",
+      "pulling": "Receiving changes… {{count}} merged",
+      "pulling_one": "dataSync.progress.pulling",
+      "pulling_other": "dataSync.progress.pulling",
+      "pushing": "Sending changes… {{count}} sent",
+      "pushing_one": "dataSync.progress.pushing",
+      "pushing_other": "dataSync.progress.pushing"
     },
     "reauth": {
-      "notice": "Sync sign-in expired",
       "action": "Sign in again",
-      "dismiss": "Dismiss sign-in reminder"
+      "dismiss": "Dismiss sign-in reminder",
+      "notice": "Sync sign-in expired"
     },
-    "connect": {
-      "serverUrlLabel": "Server address",
-      "serverUrlPlaceholder": "https://relay.example.com",
-      "usernameLabel": "Username",
-      "passwordLabel": "Password",
-      "passwordLogin": "Connect",
-      "invalidCredentials": "Wrong username or password.",
-      "emailLabel": "Email",
-      "emailPlaceholder": "you@example.com",
-      "send": "Send sign-in link",
-      "sending": "Sending…",
-      "sent": "Check your inbox — then paste the sign-in link or token below.",
-      "tokenLabel": "Sign-in link or token",
-      "passphraseLabel": "Encryption passphrase",
-      "passphraseHint": "Encrypts your data before it leaves this device. The first device sets it; every other device must enter the same one. It cannot be recovered — if you forget it, synced data is unreadable.",
-      "passphraseTooShort": "Use at least 8 characters.",
-      "connect": "Connect",
-      "connecting": "Connecting…",
-      "wrongPassphrase": "That passphrase doesn't match this account.",
-      "failed": "Could not connect. Check the link and try again.",
-      "connected": "Sync is on.",
-      "google": "Continue with Google",
-      "github": "Continue with GitHub",
-      "orEmail": "or use email",
-      "oauthStarted": "Finish signing in in the browser, then paste the token it shows below.",
-      "back": "Back",
-      "tokenContinue": "Continue",
-      "verifying": "Verifying…",
-      "tokenInvalid": "That sign-in link or token didn't work — it may have expired or already have been used. Request a new one.",
-      "tokenRetry": "We couldn't verify this token right now. Check your connection and try again — the token has been kept below.",
-      "signedInAs": "Signing in as",
-      "freshAccount": "This account has no encryption passphrase yet — this device will set it. Make sure this is your account: once you connect, this device's library syncs to it."
-    },
-    "connected": {
-      "statusTitle": "Status",
-      "planTitle": "Plan",
-      "syncNow": "Sync now",
-      "disconnect": "Disconnect",
-      "disconnectTitle": "Disconnect sync?",
-      "disconnectBody": "This device keeps all its data and stops syncing. Reconnect anytime with the same passphrase.",
-      "cancel": "Cancel",
-      "storageUsed": "{{used}} stored on the relay",
-      "storageUsedOfLimit": "{{used}} of {{limit}} stored on the relay",
-      "plan": "Plan: {{tier}}"
+    "reveal": "Reveal",
+    "storage": "Storage",
+    "sync": "Sync",
+    "syncStatus": {
+      "error": "Sync error",
+      "idle": "Synced",
+      "lastSync": "Last synced {{time}}",
+      "never": "Not synced yet",
+      "signedOut": "Signed out — sign in again to resume syncing",
+      "syncing": "Syncing…"
     },
     "tier": {
       "free": "Free",
-      "sync": "Sync",
-      "pro": "Pro",
       "max": "Max",
-      "staff": "Staff"
+      "pro": "Pro",
+      "staff": "Staff",
+      "sync": "Sync"
     },
-    "billing": {
-      "upgrade": "Upgrade plan",
-      "manage": "Manage subscription",
-      "failed": "Couldn't open the billing page. Try again."
-    },
-    "progress": {
-      "pulling": "Receiving changes… {{count}} merged",
-      "pushing": "Sending changes… {{count}} sent",
-      "blobs": "Transferring files… {{done}}/{{total}}",
-      "pending": "Waiting to send: {{events}} changes, {{blobs}} files",
-      "pendingNone": "Nothing waiting to send",
-      "lastCycle": "Last cycle: {{pulled}} received · {{pushed}} sent · {{blobs}} files",
-      "bookUp": "Uploading “{{title}}”",
-      "bookDown": "Downloading “{{title}}”",
-      "bookUpParts": "Uploading “{{title}}” ({{done}}/{{total}})",
-      "bookDownParts": "Downloading “{{title}}” ({{done}}/{{total}})"
-    },
-    "indicator": {
-      "label": "Sync status",
-      "errorDismiss": "Silence the sync error for now"
-    },
-    "deleteAll": {
-      "title": "Delete all data",
-      "description": "Erase everything on this device — books, annotations, reading history, settings, and sync credentials. A synced account's copy on other devices is not touched.",
-      "button": "Delete all data",
-      "dialogTitle": "Delete all data?",
-      "dialogBody": "This erases every book, annotation, memory, conversation, and setting on this device, and cannot be undone. Data already synced to other devices stays on those devices.",
-      "confirmLabel": "Type {{phrase}} to confirm",
-      "cancel": "Cancel",
-      "deleting": "Deleting…",
-      "failed": "Couldn't delete all data. Nothing may have been removed — try again."
-    },
-    "books": {
-      "title": "Book files",
-      "pending": "Waiting to upload",
-      "failed": "Upload failed — will retry",
-      "rejectedQuota": "Over the plan's storage — not uploaded",
-      "rejected": "Refused by the relay",
-      "rejectedWith": "Refused: {{reason}}",
-      "awaitingOtherDevice": "Waiting for the device that holds the file",
-      "quotaFull": "Cloud storage is full — further books stay on this device until space frees up or the plan grows."
-    }
+    "title": "Data & Sync",
+    "working": "Working…"
   },
-  "about": {
-    "title": "About",
-    "description": "Version, build, and the engine that powers reading.",
-    "version": "Version",
-    "build": "Build",
-    "buildAndroid": "Android (Tauri)",
-    "buildIos": "iOS (Tauri)",
-    "buildDesktop": "Desktop (Tauri)",
-    "buildWeb": "Web preview",
-    "updates": {
-      "title": "Updates",
-      "description": "Check for and install the latest release."
+  "dialog": {
+    "close": "Close settings",
+    "sectionsLabel": "Settings sections",
+    "title": "Settings"
+  },
+  "font": {
+    "custom": "Custom",
+    "customAria": "Pick from fonts installed on this device",
+    "downloadFailed": "Font download failed — check your network.",
+    "downloading": "Downloading font · {{percent}}%",
+    "label": "Font",
+    "placeholderCurated": "Choose a curated font",
+    "placeholderCustom": "Choose an installed font",
+    "retry": "Retry"
+  },
+  "general": {
+    "crashReports": {
+      "description": "Share crash diagnostics to help fix stability issues. Off by default.",
+      "title": "Send anonymous crash reports"
     },
-    "channel": {
-      "title": "Update channel",
-      "description": "Stable gets finished releases. Beta also gets pre-releases — earlier features, rougher edges.",
-      "stable": "Stable",
-      "beta": "Beta"
-    },
-    "checkUpdates": "Check for updates",
-    "checkingUpdates": "Checking...",
-    "installUpdate": "Install update",
-    "versionUnknown": "Unknown",
-    "updateStatus": {
-      "upToDate": "Up to date",
-      "available": "Version {{version}} available",
-      "downloading": "Downloading...",
-      "downloadingProgress": "Downloading {{progress}}%",
-      "installing": "Installing...",
-      "permissionRequired": "Allow installation in Android settings",
-      "installerOpen": "System installer opened",
-      "failed": "Update failed"
-    },
-    "engine": {
-      "title": "Reading engine",
-      "description": "Every format — EPUB, MOBI, AZW3, FB2, CBZ, CBR, TXT, HTML, PDF — opens in one reader, with the same selection, annotation and progress model."
-    },
-    "foliate": {
-      "description": "The open-source reading engine ReadAware is built on."
-    },
-    "vendored": "Vendored",
-    "help": "Help",
-    "website": {
-      "title": "Website",
-      "description": "Product news, downloads, and docs."
-    },
-    "contact": {
-      "title": "Contact",
-      "description": "Questions, bugs, or feedback — reach out directly."
-    },
-    "diagnostics": {
-      "title": "Diagnostics",
-      "description": "ReadAware never sends anything on its own. A diagnostics bundle contains app logs and a storage self-check — no book content, notes, or conversations — and you can inspect everything before it leaves this device.",
-      "exportRow": {
-        "title": "Export diagnostics",
-        "description": "Save the bundle as a JSON file to attach to an email or issue.",
-        "button": "Export"
+    "description": "App-wide behavior — what opens on launch, language, and desktop integration.",
+    "desktopIntegration": {
+      "autoUpdate": {
+        "description": "Show a quiet notice in the main window when a new version is available.",
+        "title": "Automatically check for updates"
       },
-      "reportRow": {
-        "title": "Report a problem",
-        "description": "Review the bundle, then send it to the developers.",
-        "button": "Send report…"
+      "description": "Stored here and applied by the desktop app. No effect in the browser preview.",
+      "fileAssociations": {
+        "description": "Open EPUB, MOBI, AZW3, FB2, CBZ, CBR, TXT, HTML and PDF files with ReadAware.",
+        "title": "File associations"
       },
-      "logsRow": {
-        "title": "Log files",
-        "description": "The rotating log files the bundle is built from.",
-        "button": "Reveal"
+      "launchAtStartup": {
+        "description": "Open ReadAware automatically when you sign in.",
+        "title": "Launch at startup"
       },
-      "dialogTitle": "Send diagnostics report",
-      "previewBody": "This is exactly what will be sent — nothing else leaves your device.",
-      "send": "Send",
-      "cancel": "Cancel",
-      "done": "Done",
-      "sentBody": "Sent — thank you. Quote this receipt id if you contact us about the problem:",
-      "noticeDone": "Done",
-      "noticeError": "Something went wrong",
-      "exportSuccess": "Diagnostics bundle saved.",
-      "exportError": "The bundle could not be assembled or saved.",
-      "reportError": "The report could not be sent. You can export the bundle and email it instead."
-    }
+      "title": "Desktop integration",
+      "whatsNewDialog": {
+        "description": "After an update, show a small dialog once summarizing where to find what changed.",
+        "title": "Show the \"what's new\" notice after updates"
+      }
+    },
+    "language": "Language",
+    "languagePrivacy": "Language & privacy",
+    "onLaunch": "On launch",
+    "startView": "Start view",
+    "startViewOptions": {
+      "resume": "Resume last book",
+      "shelf": "Library shelf"
+    },
+    "title": "General"
   },
   "menus": {
-    "title": "Customize",
     "description": "Arrange the header bars and the selection menu: drag items between Shown and the overflow menu, and reorder them.",
-    "more": "More",
-    "shown": "Shown",
-    "overflow": "Overflow menu",
-    "reset": "Reset to defaults",
     "dragHint": "Drag to reorder or move between zones. Widget items stay inline.",
-    "surface": {
-      "primaryNav": "Primary navigation",
-      "shelfHeader": "Shelf header",
-      "readerHeader": "Reader header",
-      "selection": "Selection menu"
-    },
     "items": {
-      "library": "Library",
+      "addNote": "Add note",
       "agent": "Agent",
-      "search": "Search",
-      "import": "Import book",
-      "viewControl": "Shelf view",
-      "stats": "Reading stats",
-      "settings": "Settings",
-      "toc": "Table of contents",
-      "notes": "Notes",
       "appearance": "Appearance",
+      "askAI": "Ask AI",
       "chat": "Chat",
       "copy": "Copy",
       "highlight": "Highlight",
+      "import": "Import book",
+      "library": "Library",
+      "notes": "Notes",
+      "search": "Search",
+      "settings": "Settings",
+      "stats": "Reading stats",
+      "toc": "Table of contents",
       "underline": "Underline",
-      "addNote": "Add note",
-      "askAI": "Ask AI"
-    }
+      "viewControl": "Shelf view"
+    },
+    "more": "More",
+    "overflow": "Overflow menu",
+    "reset": "Reset to defaults",
+    "shown": "Shown",
+    "surface": {
+      "primaryNav": "Primary navigation",
+      "readerHeader": "Reader header",
+      "selection": "Selection menu",
+      "shelfHeader": "Shelf header"
+    },
+    "title": "Customize"
+  },
+  "pendingBadge": {
+    "comingSoon": "Coming soon"
+  },
+  "reading": {
+    "description": "How books render on the page. Changes apply live to the reader.",
+    "fontSize": "Font Size",
+    "fontWeight": "Font Weight",
+    "layout": "Layout",
+    "lineSpacing": "Line Spacing",
+    "pageColor": {
+      "description": "The book's paper. Auto follows the app theme; the others are fixed.",
+      "title": "Page Color"
+    },
+    "pageMargins": "Page margins",
+    "paragraphSpacing": "Paragraph Spacing",
+    "previewLabel": "Reading preview",
+    "previewSource": "James Joyce · Ulysses",
+    "previewText": "History, Stephen said, is a nightmare from which I am trying to awake.",
+    "previewTextSecondary": "Think you're escaping and run into yourself. Longest way round is the shortest way home.",
+    "readingMode": "Reading Mode",
+    "textAlign": "Text Alignment",
+    "title": "Reading",
+    "typography": "Typography"
+  },
+  "sections": {
+    "about": "About",
+    "ai": "AI",
+    "appearance": "Theme",
+    "dataSync": "Data & Sync",
+    "general": "General",
+    "menus": "Customize",
+    "plugins": "Plugins",
+    "reading": "Reading",
+    "shortcuts": "Shortcuts"
+  },
+  "shortcuts": {
+    "actions": {
+      "close": "Close dialog or overlay",
+      "new-conversation": "New conversation",
+      "next-chapter": "Next chapter",
+      "next-page": "Next page",
+      "prev-chapter": "Previous chapter",
+      "prev-page": "Previous page",
+      "primary-nav": "Switch primary destination",
+      "search": "Open search",
+      "selection-add-note": "Add note",
+      "selection-ask-ai": "Ask AI",
+      "selection-copy": "Copy",
+      "selection-highlight": "Highlight",
+      "selection-look-up": "Look up",
+      "selection-underline": "Underline",
+      "settings": "Open settings",
+      "toggle-controls": "Toggle reader controls"
+    },
+    "categories": {
+      "Global": "Global",
+      "Overlays": "Overlays",
+      "Plugins": "Plugins",
+      "Reading": "Reading",
+      "Selection": "Selection"
+    },
+    "categoryDescriptions": {
+      "plugins": "Assign keys to commands contributed by plugins.",
+      "selection": "Active while text is selected in the reader."
+    },
+    "conflict": "Already used by “{{label}}”",
+    "description": "Click a shortcut to rebind it; press Esc while recording to cancel.",
+    "notSet": "Not set",
+    "rebind": "Rebind {{label}}",
+    "recording": "Press a shortcut…",
+    "reset": "Reset {{label}}",
+    "resetAll": "Reset all to defaults",
+    "title": "Shortcuts"
   }
 }

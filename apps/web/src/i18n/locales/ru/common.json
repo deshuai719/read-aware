@@ -2,11 +2,48 @@
   "actions": {
     "backToLibrary": "Назад в библиотеку",
     "dismiss": "Закрыть",
-    "openSettings": "Открыть настройки"
+    "goAgent": {
+      "keywords": "",
+      "title": ""
+    },
+    "goShelf": {
+      "keywords": "",
+      "title": ""
+    },
+    "goStats": {
+      "keywords": "",
+      "title": ""
+    },
+    "import": {
+      "keywords": "",
+      "title": ""
+    },
+    "openSettings": "Открыть настройки",
+    "select": {
+      "keywords": "",
+      "title": ""
+    }
+  },
+  "collection": {
+    "keywords": "",
+    "subtitle": ""
   },
   "errorBoundary": {
-    "title": "В этом разделе произошла ошибка",
     "body": "Ошибка записана в журнал. Остальная часть ReadAware продолжает работать — попробуйте ещё раз.",
-    "retry": "Повторить"
+    "retry": "Повторить",
+    "title": "В этом разделе произошла ошибка"
+  },
+  "group": {
+    "keywords": "",
+    "none": ""
+  },
+  "layout": {
+    "keywords": ""
+  },
+  "settings": {
+    "updateAvailableToast": ""
+  },
+  "sort": {
+    "keywords": ""
   }
 }

@@ -1,49 +1,52 @@
 {
-  "meta": {
-    "description": "KI-nativer Lese-Arbeitsbereich für kontextreiches Lesen von EPUB und PDF."
+  "actions": {
+    "dismiss": ""
+  },
+  "error": {
+    "body": "Lade die Seite neu, um fortzufahren. Falls das Problem weiterhin besteht, öffne das Buch erneut aus deinem Regal.",
+    "title": "Etwas hat den Lesefluss unterbrochen."
   },
   "header": {
+    "agent": "Agent",
     "back": {
       "allBooks": "Alle Bücher",
       "toShelf": "Zurück zum Regal"
     },
-    "search": "Suchen",
     "import": "Importieren",
     "importing": "Wird importiert...",
     "library": "Bibliothek",
-    "agent": "Agent",
+    "more": "Mehr",
     "primaryNavigation": "Hauptnavigation",
-    "stats": "Lesestatistik",
+    "search": "Suchen",
     "settings": "Einstellungen",
-    "more": "Mehr"
+    "stats": "Lesestatistik"
+  },
+  "meta": {
+    "description": "KI-nativer Lese-Arbeitsbereich für kontextreiches Lesen von EPUB und PDF."
+  },
+  "notFound": {
+    "body": "Kehre zum Haupt-Lese-Arbeitsbereich zurück und mach dort weiter, wo du aufgehört hast.",
+    "title": "Diese Seite existiert nicht."
   },
   "update": {
     "available": "Update verfügbar",
     "availableVersion": "Version {{version}} ist installationsbereit",
     "downloading": "Update wird heruntergeladen...",
     "downloadingProgress": "Download {{progress}}%",
-    "installing": "Update wird installiert...",
     "failed": "Update fehlgeschlagen. Erneut versuchen",
-    "whatsNewTitle": "ReadAware ist jetzt v{{version}}",
+    "installing": "Update wird installiert...",
     "whatsNewBody": "Sieh nach, was in dieser Version neu ist.",
     "whatsNewChangelog": "Änderungsprotokoll ansehen",
     "whatsNewDone": "Alles klar",
-    "whatsNewNew": "Neu",
+    "whatsNewFixed": "Behoben",
     "whatsNewImproved": "Verbessert",
-    "whatsNewFixed": "Behoben"
-  },
-  "error": {
-    "title": "Etwas hat den Lesefluss unterbrochen.",
-    "body": "Lade die Seite neu, um fortzufahren. Falls das Problem weiterhin besteht, öffne das Buch erneut aus deinem Regal."
-  },
-  "notFound": {
-    "title": "Diese Seite existiert nicht.",
-    "body": "Kehre zum Haupt-Lese-Arbeitsbereich zurück und mach dort weiter, wo du aufgehört hast."
+    "whatsNewNew": "Neu",
+    "whatsNewTitle": "ReadAware ist jetzt v{{version}}"
   },
   "window": {
-    "minimize": "Minimieren",
+    "close": "Fenster schließen",
     "maximize": "Maximieren",
-    "restore": "Wiederherstellen",
-    "close": "Fenster schließen"
+    "minimize": "Minimieren",
+    "restore": "Wiederherstellen"
   }
 }

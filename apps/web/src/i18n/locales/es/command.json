@@ -1,75 +1,75 @@
 {
-  "search": {
-    "placeholder": "Busca libros, colecciones, comandos…"
+  "actions": {
+    "goAgent": {
+      "keywords": "agente ia chat preguntar contexto notas",
+      "title": "Preguntar a ReadAware"
+    },
+    "goShelf": {
+      "keywords": "estantería libros inicio",
+      "title": "Biblioteca"
+    },
+    "goStats": {
+      "keywords": "estadísticas gráficos racha tiempo",
+      "title": "Estadísticas de lectura"
+    },
+    "import": {
+      "keywords": "añadir archivo epub pdf",
+      "title": "Importar libro"
+    },
+    "openSettings": {
+      "keywords": "preferencias apariencia",
+      "title": "Ajustes"
+    },
+    "select": {
+      "keywords": "lote múltiples gestionar",
+      "title": "Seleccionar libros"
+    }
+  },
+  "collection": {
+    "keywords": "colección carpeta grupo",
+    "subtitle": "Colección"
+  },
+  "footer": {
+    "close": "Esc Cerrar",
+    "navigate": "↑↓ Navegar",
+    "run": "↵ Ejecutar"
+  },
+  "group": {
+    "by": {
+      "author": "Agrupar por autor",
+      "format": "Agrupar por formato",
+      "status": "Agrupar por estado de lectura"
+    },
+    "keywords": "agrupar sección",
+    "none": "No agrupar"
+  },
+  "groups": {
+    "books": "Libros",
+    "collections": "Colecciones",
+    "goto": "Ir a",
+    "plugins": "Plugins",
+    "shelf": "Estantería"
+  },
+  "layout": {
+    "grid": "Cambiar a vista de cuadrícula",
+    "keywords": "diseño cuadrícula lista vista",
+    "list": "Cambiar a vista de lista"
   },
   "noMatches": "No hay coincidencias para «{{query}}»",
   "results_one": "{{count}} resultado",
   "results_many": "{{count}} resultados",
   "results_other": "{{count}} resultados",
-  "footer": {
-    "navigate": "↑↓ Navegar",
-    "run": "↵ Ejecutar",
-    "close": "Esc Cerrar"
-  },
-  "groups": {
-    "goto": "Ir a",
-    "shelf": "Estantería",
-    "collections": "Colecciones",
-    "books": "Libros",
-    "plugins": "Plugins"
-  },
-  "actions": {
-    "goShelf": {
-      "title": "Biblioteca",
-      "keywords": "estantería libros inicio"
-    },
-    "goStats": {
-      "title": "Estadísticas de lectura",
-      "keywords": "estadísticas gráficos racha tiempo"
-    },
-    "openSettings": {
-      "title": "Ajustes",
-      "keywords": "preferencias apariencia"
-    },
-    "import": {
-      "title": "Importar libro",
-      "keywords": "añadir archivo epub pdf"
-    },
-    "select": {
-      "title": "Seleccionar libros",
-      "keywords": "lote múltiples gestionar"
-    },
-    "goAgent": {
-      "title": "Preguntar a ReadAware",
-      "keywords": "agente ia chat preguntar contexto notas"
-    }
-  },
-  "layout": {
-    "grid": "Cambiar a vista de cuadrícula",
-    "list": "Cambiar a vista de lista",
-    "keywords": "diseño cuadrícula lista vista"
+  "search": {
+    "placeholder": "Busca libros, colecciones, comandos…"
   },
   "sort": {
-    "keywords": "orden ordenar",
     "by": {
-      "recent": "Ordenar por abiertos recientemente",
       "added": "Ordenar por añadidos recientemente",
-      "title": "Ordenar por título",
       "author": "Ordenar por autor",
-      "progress": "Ordenar por progreso"
-    }
-  },
-  "group": {
-    "keywords": "agrupar sección",
-    "none": "No agrupar",
-    "by": {
-      "status": "Agrupar por estado de lectura",
-      "author": "Agrupar por autor",
-      "format": "Agrupar por formato"
-    }
-  },
-  "collection": {
-    "subtitle": "Colección",
-    "keywords": "colección carpeta grupo"
+      "progress": "Ordenar por progreso",
+      "recent": "Ordenar por abiertos recientemente",
+      "title": "Ordenar por título"
+    },
+    "keywords": "orden ordenar"
   }
 }

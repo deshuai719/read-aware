@@ -1,74 +1,74 @@
 {
-  "search": {
-    "placeholder": "Bücher, Sammlungen, Befehle suchen…"
+  "actions": {
+    "goAgent": {
+      "keywords": "agent ki chat fragen kontext notizen",
+      "title": "ReadAware fragen"
+    },
+    "goShelf": {
+      "keywords": "regal bücher start",
+      "title": "Bibliothek"
+    },
+    "goStats": {
+      "keywords": "statistik diagramme serie zeit",
+      "title": "Lesestatistik"
+    },
+    "import": {
+      "keywords": "hinzufügen datei epub pdf",
+      "title": "Buch importieren"
+    },
+    "openSettings": {
+      "keywords": "einstellungen präferenzen darstellung",
+      "title": "Einstellungen"
+    },
+    "select": {
+      "keywords": "stapel mehrere verwalten",
+      "title": "Bücher auswählen"
+    }
+  },
+  "collection": {
+    "keywords": "sammlung ordner gruppe",
+    "subtitle": "Sammlung"
+  },
+  "footer": {
+    "close": "Esc Schließen",
+    "navigate": "↑↓ Navigieren",
+    "run": "↵ Ausführen"
+  },
+  "group": {
+    "by": {
+      "author": "Nach Autor gruppieren",
+      "format": "Nach Format gruppieren",
+      "status": "Nach Lesestatus gruppieren"
+    },
+    "keywords": "gruppieren abschnitt",
+    "none": "Nicht gruppieren"
+  },
+  "groups": {
+    "books": "Bücher",
+    "collections": "Sammlungen",
+    "goto": "Gehe zu",
+    "plugins": "Plugins",
+    "shelf": "Regal"
+  },
+  "layout": {
+    "grid": "Zur Rasteransicht wechseln",
+    "keywords": "layout raster liste ansicht",
+    "list": "Zur Listenansicht wechseln"
   },
   "noMatches": "Keine Treffer für „{{query}}“",
   "results_one": "{{count}} Ergebnis",
   "results_other": "{{count}} Ergebnisse",
-  "footer": {
-    "navigate": "↑↓ Navigieren",
-    "run": "↵ Ausführen",
-    "close": "Esc Schließen"
-  },
-  "groups": {
-    "goto": "Gehe zu",
-    "shelf": "Regal",
-    "collections": "Sammlungen",
-    "books": "Bücher",
-    "plugins": "Plugins"
-  },
-  "actions": {
-    "goShelf": {
-      "title": "Bibliothek",
-      "keywords": "regal bücher start"
-    },
-    "goStats": {
-      "title": "Lesestatistik",
-      "keywords": "statistik diagramme serie zeit"
-    },
-    "openSettings": {
-      "title": "Einstellungen",
-      "keywords": "einstellungen präferenzen darstellung"
-    },
-    "import": {
-      "title": "Buch importieren",
-      "keywords": "hinzufügen datei epub pdf"
-    },
-    "select": {
-      "title": "Bücher auswählen",
-      "keywords": "stapel mehrere verwalten"
-    },
-    "goAgent": {
-      "title": "ReadAware fragen",
-      "keywords": "agent ki chat fragen kontext notizen"
-    }
-  },
-  "layout": {
-    "grid": "Zur Rasteransicht wechseln",
-    "list": "Zur Listenansicht wechseln",
-    "keywords": "layout raster liste ansicht"
+  "search": {
+    "placeholder": "Bücher, Sammlungen, Befehle suchen…"
   },
   "sort": {
-    "keywords": "reihenfolge sortieren",
     "by": {
-      "recent": "Nach zuletzt geöffnet sortieren",
       "added": "Nach zuletzt hinzugefügt sortieren",
-      "title": "Nach Titel sortieren",
       "author": "Nach Autor sortieren",
-      "progress": "Nach Fortschritt sortieren"
-    }
-  },
-  "group": {
-    "keywords": "gruppieren abschnitt",
-    "none": "Nicht gruppieren",
-    "by": {
-      "status": "Nach Lesestatus gruppieren",
-      "author": "Nach Autor gruppieren",
-      "format": "Nach Format gruppieren"
-    }
-  },
-  "collection": {
-    "subtitle": "Sammlung",
-    "keywords": "sammlung ordner gruppe"
+      "progress": "Nach Fortschritt sortieren",
+      "recent": "Nach zuletzt geöffnet sortieren",
+      "title": "Nach Titel sortieren"
+    },
+    "keywords": "reihenfolge sortieren"
   }
 }

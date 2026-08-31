@@ -1,8 +1,8 @@
 {
+  "avatar": "Avatar",
+  "breadcrumb": "Ruta de navegación",
   "loading": "Cargando",
   "progress": "Progreso",
-  "tabs": "Pestañas",
-  "breadcrumb": "Ruta de navegación",
-  "avatar": "Avatar",
-  "remove": "Quitar {{name}}"
+  "remove": "Quitar {{name}}",
+  "tabs": "Pestañas"
 }

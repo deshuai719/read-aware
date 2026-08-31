@@ -1,49 +1,52 @@
 {
-  "meta": {
-    "description": "Espace de lecture natif IA pour une lecture riche en contexte des fichiers EPUB et PDF."
+  "actions": {
+    "dismiss": ""
+  },
+  "error": {
+    "body": "Actualisez la page pour continuer. Si le problème persiste, rouvrez le livre depuis votre étagère.",
+    "title": "Un incident a interrompu le fil de lecture."
   },
   "header": {
+    "agent": "Agent",
     "back": {
       "allBooks": "Tous les livres",
       "toShelf": "Retour à l’étagère"
     },
-    "search": "Rechercher",
     "import": "Importer",
     "importing": "Importation…",
     "library": "Bibliothèque",
-    "agent": "Agent",
+    "more": "Plus",
     "primaryNavigation": "Navigation principale",
-    "stats": "Statistiques de lecture",
+    "search": "Rechercher",
     "settings": "Paramètres",
-    "more": "Plus"
+    "stats": "Statistiques de lecture"
+  },
+  "meta": {
+    "description": "Espace de lecture natif IA pour une lecture riche en contexte des fichiers EPUB et PDF."
+  },
+  "notFound": {
+    "body": "Revenez à l’espace de lecture principal et reprenez où vous en étiez.",
+    "title": "Cette page n’existe pas."
   },
   "update": {
     "available": "Mise à jour disponible",
     "availableVersion": "La version {{version}} est prête à installer",
     "downloading": "Téléchargement de la mise à jour...",
     "downloadingProgress": "Téléchargement {{progress}}%",
-    "installing": "Installation de la mise à jour...",
     "failed": "Échec de la mise à jour. Réessayer",
-    "whatsNewTitle": "ReadAware est passé en v{{version}}",
+    "installing": "Installation de la mise à jour...",
     "whatsNewBody": "Découvrez ce qui a changé dans cette version.",
     "whatsNewChangelog": "Voir le journal des modifications",
     "whatsNewDone": "Compris",
-    "whatsNewNew": "Nouveautés",
+    "whatsNewFixed": "Corrections",
     "whatsNewImproved": "Améliorations",
-    "whatsNewFixed": "Corrections"
-  },
-  "error": {
-    "title": "Un incident a interrompu le fil de lecture.",
-    "body": "Actualisez la page pour continuer. Si le problème persiste, rouvrez le livre depuis votre étagère."
-  },
-  "notFound": {
-    "title": "Cette page n’existe pas.",
-    "body": "Revenez à l’espace de lecture principal et reprenez où vous en étiez."
+    "whatsNewNew": "Nouveautés",
+    "whatsNewTitle": "ReadAware est passé en v{{version}}"
   },
   "window": {
-    "minimize": "Réduire",
+    "close": "Fermer la fenêtre",
     "maximize": "Agrandir",
-    "restore": "Restaurer",
-    "close": "Fermer la fenêtre"
+    "minimize": "Réduire",
+    "restore": "Restaurer"
   }
 }

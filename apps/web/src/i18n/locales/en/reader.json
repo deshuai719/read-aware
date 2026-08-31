@@ -1,179 +1,200 @@
 {
-  "shelf": "Shelf",
-  "backToShelf": "Back to shelf",
-  "contents": "Contents",
-  "tableOfContents": "Table of contents",
-  "chat": "Chat",
   "aiChat": "AI chat",
-  "resizeContents": "Resize contents panel",
-  "resizeChat": "Resize chat panel",
-  "noToc": "This file does not expose a navigable table of contents.",
-  "progress": "{{page}} / {{total}} · {{percent}}",
-  "readingPosition": "Reading position",
-  "notes": "Notes",
-  "emptyNotes": "No highlights or notes yet. Select text in the reader to mark it.",
-  "previousPage": "Previous page",
-  "nextPage": "Next page",
-  "go": "Go",
-  "readerLabel": "Book reader",
-  "opening": "Opening {{name}}",
-  "book": "book",
-  "loadError": "Unable to load this file.",
-  "tryAgain": "Try again",
-  "backToLibrary": "Back to library",
-  "readingAppearance": "Reading appearance",
   "applyTo": "Apply to",
-  "scopeHintBook": "Changes affect this book only.",
-  "scopeHintGlobal": "Changes affect every book that follows your global settings.",
-  "pageColor": "Page Color",
-  "fontSize": "Font Size",
-  "fontWeight": "Font Weight",
-  "lineSpacing": "Line Spacing",
-  "paragraphSpacing": "Paragraph Spacing",
-  "textAlign": "Text Alignment",
-  "readingMode": "Reading Mode",
-  "fixedLayoutHint": "Fixed-layout books (PDF, comics) come with their own typography — font and spacing cannot be changed here.",
+  "backToLibrary": "Back to library",
+  "backToShelf": "Back to shelf",
+  "book": "book",
+  "chat": "Chat",
+  "closeNote": "Close note",
+  "colors": {
+    "blue": "blue",
+    "green": "green",
+    "pink": "pink",
+    "yellow": "yellow"
+  },
+  "completion": {
+    "backToBook": "Back to the book",
+    "hours": "{{count}}h",
+    "hours_one": "completion.hours",
+    "hours_other": "completion.hours",
+    "hoursMinutes": "{{hours}}h {{minutes}}m",
+    "lookBack": "Look back on this book",
+    "lookBackPrompt": "I've just finished {{title}}. Look back on it with me — go through what I marked and tell me what drew my attention and what threads run between those passages. Stay with what's actually in my marks; no plot summary.",
+    "markedFinished": "Finished",
+    "markFinished": "Mark as finished",
+    "marksTitle": "Your marks ({{count}})",
+    "marksTitle_one": "completion.marksTitle",
+    "marksTitle_other": "completion.marksTitle",
+    "minutes": "{{count}}m",
+    "minutes_one": "completion.minutes",
+    "minutes_other": "completion.minutes",
+    "summary": "{{time}} of reading, across {{days}} days.",
+    "summaryDetail": "{{perDay}} a day on average · longest streak {{streak}} days"
+  },
+  "contents": "Contents",
+  "contextMenu": {
+    "openContents": "Open contents",
+    "openNotes": "Open notes",
+    "openSearch": "Open search"
+  },
+  "dictionary": {
+    "addToVocab": "Add to vocabulary",
+    "contextLabel": "In this passage",
+    "copied": "Copied",
+    "copy": "Copy",
+    "empty": "No definition found for this term.",
+    "error": "Couldn't look this up. Check your AI provider in Settings and try again.",
+    "etymologyLabel": "Origin",
+    "explainInLabel": "Explain in",
+    "footer": "AI-generated — definitions may be imperfect.",
+    "glossesLabel": "Words & phrases",
+    "inVocab": "In vocabulary",
+    "languageAuto": "Match app language",
+    "loading": "Looking it up…",
+    "noteLabel": "Note",
+    "regenerate": "Regenerate",
+    "retry": "Try again",
+    "title": "Dictionary",
+    "translationLabel": "Translation",
+    "unconfigured": "Connect an AI provider in Settings to enable definitions."
+  },
+  "dismissNote": "Dismiss note",
+  "emptyNotes": "No highlights or notes yet. Select text in the reader to mark it.",
+  "fileMissing": {
+    "no-sync": "This book's file isn't on this device, and sync is off. Import the original file to read it here.",
+    "not-on-relay": "This book's file never finished uploading from the device it was imported on. Open ReadAware there to let it upload, or import the original file here.",
+    "reimport": "Import the file",
+    "unauthenticated": "Sign in to your sync account again to download this book's file.",
+    "undecodable": "The downloaded file couldn't be decrypted with this device's sync passphrase.",
+    "unreachable": "This book's file is in your cloud library, but the sync server can't be reached right now."
+  },
   "fixedLayoutColor": "Page Rendering",
   "fixedLayoutColorHint": "A dark page color redraws pages in two tones, dropping their color.",
   "fixedLayoutColorOption": {
-    "theme": "Follow page color",
-    "original": "Original"
+    "original": "Original",
+    "theme": "Follow page color"
   },
-  "scope": {
-    "global": "All books",
-    "book": "This book"
-  },
-  "menu": {
-    "copied": "Copied",
-    "copySelection": "Copy selection",
-    "copy": "Copy",
-    "highlight": "Highlight",
-    "underline": "Underline",
-    "addNote": "Add a note",
-    "askAi": "Ask AI about this",
-    "remove": "Remove"
-  },
-  "recolor": "Recolor {{color}}",
-  "colors": {
-    "yellow": "yellow",
-    "green": "green",
-    "blue": "blue",
-    "pink": "pink"
-  },
-  "footnote": {
-    "footnote": "Footnote",
-    "endnote": "Endnote",
-    "reference": "Reference",
-    "definition": "Definition",
-    "note": "Note"
-  },
-  "imageViewer": {
-    "label": "Image viewer",
-    "close": "Close image viewer",
-    "zoomIn": "Zoom in",
-    "zoomOut": "Zoom out",
-    "rotate": "Rotate",
-    "copy": "Copy image",
-    "copied": "Copied"
-  },
-  "dismissNote": "Dismiss note",
-  "closeNote": "Close note",
-  "dictionary": {
-    "title": "Dictionary",
-    "loading": "Looking it up…",
-    "error": "Couldn't look this up. Check your AI provider in Settings and try again.",
-    "retry": "Try again",
-    "unconfigured": "Connect an AI provider in Settings to enable definitions.",
-    "empty": "No definition found for this term.",
-    "contextLabel": "In this passage",
-    "etymologyLabel": "Origin",
-    "translationLabel": "Translation",
-    "glossesLabel": "Words & phrases",
-    "noteLabel": "Note",
-    "explainInLabel": "Explain in",
-    "languageAuto": "Match app language",
-    "footer": "AI-generated — definitions may be imperfect.",
-    "regenerate": "Regenerate",
-    "copy": "Copy",
-    "copied": "Copied",
-    "addToVocab": "Add to vocabulary",
-    "inVocab": "In vocabulary"
-  },
+  "fixedLayoutHint": "Fixed-layout books (PDF, comics) come with their own typography — font and spacing cannot be changed here.",
+  "fontSize": "Font Size",
   "fontSizeOption": {
-    "xx-small": "XXS",
-    "x-small": "XS",
-    "small": "Small",
-    "medium": "Medium",
     "large": "Large",
+    "medium": "Medium",
+    "small": "Small",
     "x-large": "XL",
+    "x-small": "XS",
     "xx-large": "XXL",
+    "xx-small": "XXS",
     "xxx-large": "XXXL"
   },
+  "fontWeight": "Font Weight",
   "fontWeightOption": {
+    "bold": "Bold",
     "light": "Light",
-    "regular": "Regular",
     "medium": "Medium",
-    "bold": "Bold"
+    "regular": "Regular"
   },
+  "footnote": {
+    "definition": "Definition",
+    "endnote": "Endnote",
+    "footnote": "Footnote",
+    "note": "Note",
+    "reference": "Reference"
+  },
+  "go": "Go",
+  "imageViewer": {
+    "close": "Close image viewer",
+    "copied": "Copied",
+    "copy": "Copy image",
+    "label": "Image viewer",
+    "rotate": "Rotate",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out"
+  },
+  "lineSpacing": "Line Spacing",
   "lineSpacingOption": {
-    "compact": "Compact",
     "comfortable": "Comfortable",
+    "compact": "Compact",
     "relaxed": "Relaxed"
   },
-  "paragraphSpacingOption": {
-    "tight": "Tight",
-    "normal": "Normal",
-    "loose": "Loose"
+  "loadError": "Unable to load this file.",
+  "menu": {
+    "addNote": "Add a note",
+    "askAi": "Ask AI about this",
+    "copied": "Copied",
+    "copy": "Copy",
+    "copySelection": "Copy selection",
+    "highlight": "Highlight",
+    "remove": "Remove",
+    "underline": "Underline"
   },
-  "textAlignOption": {
-    "book": "As published",
-    "start": "Left",
-    "justify": "Justified"
+  "nextPage": "Next page",
+  "notes": "Notes",
+  "noToc": "This file does not expose a navigable table of contents.",
+  "opening": "Opening {{name}}",
+  "pageColor": "Page Color",
+  "pageColorOption": {
+    "auto": "Auto",
+    "dark": "Dark",
+    "light": "Light",
+    "warm": "Warm"
   },
   "pageMargins": "Page margins",
   "pageMarginsOption": {
-    "narrow": "Narrow",
     "medium": "Medium",
+    "narrow": "Narrow",
     "wide": "Wide"
   },
-  "readingModeOption": {
-    "scroll": "Scroll",
-    "paginated-single": "Single Page",
-    "paginated-double": "Two Pages"
+  "paragraphSpacing": "Paragraph Spacing",
+  "paragraphSpacingOption": {
+    "loose": "Loose",
+    "normal": "Normal",
+    "tight": "Tight"
   },
-  "pageColorOption": {
-    "auto": "Auto",
-    "light": "Light",
-    "warm": "Warm",
-    "dark": "Dark"
-  },
-  "completion": {
-    "markFinished": "Mark as finished",
-    "markedFinished": "Finished",
-    "minutes": "{{count}}m",
-    "hours": "{{count}}h",
-    "hoursMinutes": "{{hours}}h {{minutes}}m",
-    "marksTitle": "Your marks ({{count}})",
-    "summary": "{{time}} of reading, across {{days}} days.",
-    "summaryDetail": "{{perDay}} a day on average · longest streak {{streak}} days",
-    "backToBook": "Back to the book",
-    "lookBack": "Look back on this book",
-    "lookBackPrompt": "I've just finished {{title}}. Look back on it with me — go through what I marked and tell me what drew my attention and what threads run between those passages. Stay with what's actually in my marks; no plot summary."
-  },
+  "previousPage": "Previous page",
+  "progress": "{{page}} / {{total}} · {{percent}}",
   "readAloud": {
     "start": "Read aloud",
     "stop": "Stop reading aloud"
+  },
+  "readerLabel": "Book reader",
+  "readingAppearance": "Reading appearance",
+  "readingMode": "Reading Mode",
+  "readingModeOption": {
+    "paginated-double": "Two Pages",
+    "paginated-single": "Single Page",
+    "scroll": "Scroll"
+  },
+  "readingPosition": "Reading position",
+  "recolor": "Recolor {{color}}",
+  "resizeChat": "Resize chat panel",
+  "resizeContents": "Resize contents panel",
+  "resizeSearch": "Resize search panel",
+  "scope": {
+    "book": "This book",
+    "global": "All books"
+  },
+  "scopeHintBook": "Changes affect this book only.",
+  "scopeHintGlobal": "Changes affect every book that follows your global settings.",
+  "search": {
+    "label": "Search in book",
+    "noResults": "No matches found",
+    "placeholder": "Search in book…",
+    "running": "Searching",
+    "truncated": "Showing only the first {{count}} results",
+    "truncated_one": "Showing only the first {{count}} results",
+    "truncated_other": "Showing only the first {{count}} results"
+  },
+  "shelf": "Shelf",
+  "tableOfContents": "Table of contents",
+  "textAlign": "Text Alignment",
+  "textAlignOption": {
+    "book": "As published",
+    "justify": "Justified",
+    "start": "Left"
   },
   "textUnitMode": {
     "progress": "Position in chapter",
     "sessionTime": "Time this session"
   },
-  "fileMissing": {
-    "no-sync": "This book's file isn't on this device, and sync is off. Import the original file to read it here.",
-    "not-on-relay": "This book's file never finished uploading from the device it was imported on. Open ReadAware there to let it upload, or import the original file here.",
-    "unauthenticated": "Sign in to your sync account again to download this book's file.",
-    "unreachable": "This book's file is in your cloud library, but the sync server can't be reached right now.",
-    "undecodable": "The downloaded file couldn't be decrypted with this device's sync passphrase.",
-    "reimport": "Import the file"
-  }
+  "tryAgain": "Try again"
 }

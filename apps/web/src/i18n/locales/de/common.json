@@ -2,11 +2,48 @@
   "actions": {
     "backToLibrary": "Zurück zur Bibliothek",
     "dismiss": "Schließen",
-    "openSettings": "Einstellungen öffnen"
+    "goAgent": {
+      "keywords": "",
+      "title": ""
+    },
+    "goShelf": {
+      "keywords": "",
+      "title": ""
+    },
+    "goStats": {
+      "keywords": "",
+      "title": ""
+    },
+    "import": {
+      "keywords": "",
+      "title": ""
+    },
+    "openSettings": "Einstellungen öffnen",
+    "select": {
+      "keywords": "",
+      "title": ""
+    }
+  },
+  "collection": {
+    "keywords": "",
+    "subtitle": ""
   },
   "errorBoundary": {
-    "title": "In dieser Ansicht ist ein Fehler aufgetreten",
     "body": "Der Fehler wurde im Protokoll festgehalten. Der Rest von ReadAware funktioniert weiter – du kannst es erneut versuchen.",
-    "retry": "Erneut versuchen"
+    "retry": "Erneut versuchen",
+    "title": "In dieser Ansicht ist ein Fehler aufgetreten"
+  },
+  "group": {
+    "keywords": "",
+    "none": ""
+  },
+  "layout": {
+    "keywords": ""
+  },
+  "settings": {
+    "updateAvailableToast": ""
+  },
+  "sort": {
+    "keywords": ""
   }
 }

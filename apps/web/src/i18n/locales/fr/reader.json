@@ -1,179 +1,204 @@
 {
-  "shelf": "Étagère",
-  "backToShelf": "Retour à l’étagère",
-  "contents": "Sommaire",
-  "tableOfContents": "Table des matières",
-  "chat": "Discussion",
   "aiChat": "Discussion IA",
-  "resizeContents": "Redimensionner le panneau du sommaire",
-  "resizeChat": "Redimensionner le panneau de discussion",
-  "noToc": "Ce fichier ne propose pas de table des matières navigable.",
-  "progress": "{{page}} / {{total}} · {{percent}}",
-  "readingPosition": "Position de lecture",
-  "notes": "Notes",
-  "emptyNotes": "Aucun surlignage ni note pour l’instant. Sélectionnez du texte dans le lecteur pour le marquer.",
-  "previousPage": "Page précédente",
-  "nextPage": "Page suivante",
-  "go": "Aller",
-  "readerLabel": "Lecteur de livres",
-  "opening": "Ouverture de {{name}}",
-  "book": "livre",
-  "loadError": "Impossible de charger ce fichier.",
-  "tryAgain": "Réessayer",
-  "backToLibrary": "Retour à la bibliothèque",
-  "readingAppearance": "Apparence de lecture",
   "applyTo": "Appliquer à",
-  "scopeHintBook": "Les modifications n’affectent que ce livre.",
-  "scopeHintGlobal": "Les modifications affectent tous les livres qui suivent vos paramètres globaux.",
-  "pageColor": "Couleur de la page",
-  "fontSize": "Taille de police",
-  "fontWeight": "Graisse",
-  "lineSpacing": "Interligne",
-  "paragraphSpacing": "Espacement des paragraphes",
-  "textAlign": "Alignement",
-  "readingMode": "Mode de lecture",
-  "fixedLayoutHint": "Les livres à mise en page fixe (PDF, bandes dessinées) ont leur propre typographie : la police et les espacements ne se règlent pas ici.",
+  "backToLibrary": "Retour à la bibliothèque",
+  "backToShelf": "Retour à l’étagère",
+  "book": "livre",
+  "chat": "Discussion",
+  "closeNote": "Fermer la note",
+  "colors": {
+    "blue": "bleu",
+    "green": "vert",
+    "pink": "rose",
+    "yellow": "jaune"
+  },
+  "completion": {
+    "backToBook": "Retour au livre",
+    "hours": "{{count}} h",
+    "hours_one": "",
+    "hours_many": "",
+    "hours_other": "",
+    "hoursMinutes": "{{hours}} h {{minutes}} min",
+    "lookBack": "Revenir sur ce livre",
+    "lookBackPrompt": "Je viens de terminer {{title}}. Revenons dessus ensemble : parcours ce que j'ai marqué et dis-moi ce qui a retenu mon attention et quels fils traversent ces passages. Tiens-t'en à mes marques ; pas de résumé de l'intrigue.",
+    "markedFinished": "Terminé",
+    "markFinished": "Marquer comme terminé",
+    "marksTitle": "Vos marques ({{count}})",
+    "marksTitle_one": "",
+    "marksTitle_many": "",
+    "marksTitle_other": "",
+    "minutes": "{{count}} min",
+    "minutes_one": "",
+    "minutes_many": "",
+    "minutes_other": "",
+    "summary": "{{time}} de lecture, sur {{days}} jours.",
+    "summaryDetail": "{{perDay}} par jour en moyenne · plus longue série {{streak}} jours"
+  },
+  "contents": "Sommaire",
+  "contextMenu": {
+    "openContents": "Ouvrir la table des matières",
+    "openNotes": "Ouvrir les notes",
+    "openSearch": "Ouvrir la recherche"
+  },
+  "dictionary": {
+    "addToVocab": "Ajouter au lexique",
+    "contextLabel": "Dans ce passage",
+    "copied": "Copié",
+    "copy": "Copier",
+    "empty": "Aucune définition trouvée pour ce terme.",
+    "error": "Recherche impossible. Vérifiez votre fournisseur d'IA dans les Réglages, puis réessayez.",
+    "etymologyLabel": "Origine",
+    "explainInLabel": "Expliquer en",
+    "footer": "Généré par IA — les définitions peuvent être imparfaites.",
+    "glossesLabel": "Mots et expressions",
+    "inVocab": "Dans le lexique",
+    "languageAuto": "Suivre la langue de l'app",
+    "loading": "Recherche en cours…",
+    "noteLabel": "Remarque",
+    "regenerate": "Régénérer",
+    "retry": "Réessayer",
+    "title": "Dictionnaire",
+    "translationLabel": "Traduction",
+    "unconfigured": "Connectez un fournisseur d'IA dans les Réglages pour activer les définitions."
+  },
+  "dismissNote": "Ignorer la note",
+  "emptyNotes": "Aucun surlignage ni note pour l’instant. Sélectionnez du texte dans le lecteur pour le marquer.",
+  "fileMissing": {
+    "no-sync": "Le fichier de ce livre n'est pas sur cet appareil et la synchronisation est désactivée. Importez le fichier d'origine pour le lire ici.",
+    "not-on-relay": "Le fichier de ce livre n'a jamais fini d'être envoyé depuis l'appareil d'origine. Ouvrez ReadAware là-bas pour lancer l'envoi, ou importez le fichier d'origine ici.",
+    "reimport": "Importer le fichier",
+    "unauthenticated": "Reconnectez-vous à votre compte de synchronisation pour télécharger le fichier de ce livre.",
+    "undecodable": "Le fichier téléchargé n'a pas pu être déchiffré avec la phrase secrète de synchronisation de cet appareil.",
+    "unreachable": "Le fichier de ce livre est dans votre bibliothèque cloud, mais le serveur de synchronisation est injoignable pour le moment."
+  },
   "fixedLayoutColor": "Rendu des pages",
   "fixedLayoutColorHint": "Une couleur de page sombre redessine les pages en deux tons et abandonne leur couleur.",
   "fixedLayoutColorOption": {
-    "theme": "Suivre la couleur de page",
-    "original": "Original"
+    "original": "Original",
+    "theme": "Suivre la couleur de page"
   },
-  "scope": {
-    "global": "Tous les livres",
-    "book": "Ce livre"
-  },
-  "menu": {
-    "copied": "Copié",
-    "copySelection": "Copier la sélection",
-    "copy": "Copier",
-    "highlight": "Surligner",
-    "underline": "Souligner",
-    "addNote": "Ajouter une note",
-    "askAi": "Interroger l’IA à ce sujet",
-    "remove": "Supprimer"
-  },
-  "recolor": "Recolorer en {{color}}",
-  "colors": {
-    "yellow": "jaune",
-    "green": "vert",
-    "blue": "bleu",
-    "pink": "rose"
-  },
-  "footnote": {
-    "footnote": "Note de bas de page",
-    "endnote": "Note de fin",
-    "reference": "Référence",
-    "definition": "Définition",
-    "note": "Note"
-  },
-  "imageViewer": {
-    "label": "Visionneuse d'image",
-    "close": "Fermer la visionneuse d'image",
-    "zoomIn": "Zoom avant",
-    "zoomOut": "Zoom arrière",
-    "rotate": "Pivoter",
-    "copy": "Copier l'image",
-    "copied": "Copié"
-  },
-  "dismissNote": "Ignorer la note",
-  "closeNote": "Fermer la note",
-  "dictionary": {
-    "title": "Dictionnaire",
-    "loading": "Recherche en cours…",
-    "error": "Recherche impossible. Vérifiez votre fournisseur d'IA dans les Réglages, puis réessayez.",
-    "retry": "Réessayer",
-    "unconfigured": "Connectez un fournisseur d'IA dans les Réglages pour activer les définitions.",
-    "empty": "Aucune définition trouvée pour ce terme.",
-    "contextLabel": "Dans ce passage",
-    "etymologyLabel": "Origine",
-    "translationLabel": "Traduction",
-    "glossesLabel": "Mots et expressions",
-    "noteLabel": "Remarque",
-    "explainInLabel": "Expliquer en",
-    "languageAuto": "Suivre la langue de l'app",
-    "footer": "Généré par IA — les définitions peuvent être imparfaites.",
-    "regenerate": "Régénérer",
-    "copy": "Copier",
-    "copied": "Copié",
-    "addToVocab": "Ajouter au lexique",
-    "inVocab": "Dans le lexique"
-  },
+  "fixedLayoutHint": "Les livres à mise en page fixe (PDF, bandes dessinées) ont leur propre typographie : la police et les espacements ne se règlent pas ici.",
+  "fontSize": "Taille de police",
   "fontSizeOption": {
-    "xx-small": "XXS",
-    "x-small": "XS",
-    "small": "Petite",
-    "medium": "Moyenne",
     "large": "Grande",
+    "medium": "Moyenne",
+    "small": "Petite",
     "x-large": "XL",
+    "x-small": "XS",
     "xx-large": "XXL",
+    "xx-small": "XXS",
     "xxx-large": "XXXL"
   },
+  "fontWeight": "Graisse",
   "fontWeightOption": {
+    "bold": "Grasse",
     "light": "Fine",
-    "regular": "Normale",
     "medium": "Moyenne",
-    "bold": "Grasse"
+    "regular": "Normale"
   },
+  "footnote": {
+    "definition": "Définition",
+    "endnote": "Note de fin",
+    "footnote": "Note de bas de page",
+    "note": "Note",
+    "reference": "Référence"
+  },
+  "go": "Aller",
+  "imageViewer": {
+    "close": "Fermer la visionneuse d'image",
+    "copied": "Copié",
+    "copy": "Copier l'image",
+    "label": "Visionneuse d'image",
+    "rotate": "Pivoter",
+    "zoomIn": "Zoom avant",
+    "zoomOut": "Zoom arrière"
+  },
+  "lineSpacing": "Interligne",
   "lineSpacingOption": {
-    "compact": "Compact",
     "comfortable": "Confortable",
+    "compact": "Compact",
     "relaxed": "Détendu"
   },
-  "paragraphSpacingOption": {
-    "tight": "Serré",
-    "normal": "Normal",
-    "loose": "Large"
+  "loadError": "Impossible de charger ce fichier.",
+  "menu": {
+    "addNote": "Ajouter une note",
+    "askAi": "Interroger l’IA à ce sujet",
+    "copied": "Copié",
+    "copy": "Copier",
+    "copySelection": "Copier la sélection",
+    "highlight": "Surligner",
+    "remove": "Supprimer",
+    "underline": "Souligner"
   },
-  "textAlignOption": {
-    "book": "Comme publié",
-    "start": "À gauche",
-    "justify": "Justifié"
+  "nextPage": "Page suivante",
+  "notes": "Notes",
+  "noToc": "Ce fichier ne propose pas de table des matières navigable.",
+  "opening": "Ouverture de {{name}}",
+  "pageColor": "Couleur de la page",
+  "pageColorOption": {
+    "auto": "Auto",
+    "dark": "Sombre",
+    "light": "Clair",
+    "warm": "Chaud"
   },
   "pageMargins": "Marges de page",
   "pageMarginsOption": {
-    "narrow": "Étroites",
     "medium": "Moyennes",
+    "narrow": "Étroites",
     "wide": "Larges"
   },
-  "readingModeOption": {
-    "scroll": "Défilement",
-    "paginated-single": "Page simple",
-    "paginated-double": "Deux pages"
+  "paragraphSpacing": "Espacement des paragraphes",
+  "paragraphSpacingOption": {
+    "loose": "Large",
+    "normal": "Normal",
+    "tight": "Serré"
   },
-  "pageColorOption": {
-    "auto": "Auto",
-    "light": "Clair",
-    "warm": "Chaud",
-    "dark": "Sombre"
-  },
-  "completion": {
-    "markFinished": "Marquer comme terminé",
-    "markedFinished": "Terminé",
-    "minutes": "{{count}} min",
-    "hours": "{{count}} h",
-    "hoursMinutes": "{{hours}} h {{minutes}} min",
-    "marksTitle": "Vos marques ({{count}})",
-    "summary": "{{time}} de lecture, sur {{days}} jours.",
-    "summaryDetail": "{{perDay}} par jour en moyenne · plus longue série {{streak}} jours",
-    "backToBook": "Retour au livre",
-    "lookBack": "Revenir sur ce livre",
-    "lookBackPrompt": "Je viens de terminer {{title}}. Revenons dessus ensemble : parcours ce que j'ai marqué et dis-moi ce qui a retenu mon attention et quels fils traversent ces passages. Tiens-t'en à mes marques ; pas de résumé de l'intrigue."
-  },
+  "previousPage": "Page précédente",
+  "progress": "{{page}} / {{total}} · {{percent}}",
   "readAloud": {
     "start": "Lire à voix haute",
     "stop": "Arrêter la lecture"
+  },
+  "readerLabel": "Lecteur de livres",
+  "readingAppearance": "Apparence de lecture",
+  "readingMode": "Mode de lecture",
+  "readingModeOption": {
+    "paginated-double": "Deux pages",
+    "paginated-single": "Page simple",
+    "scroll": "Défilement"
+  },
+  "readingPosition": "Position de lecture",
+  "recolor": "Recolorer en {{color}}",
+  "resizeChat": "Redimensionner le panneau de discussion",
+  "resizeContents": "Redimensionner le panneau du sommaire",
+  "resizeSearch": "Redimensionner le panneau de recherche",
+  "scope": {
+    "book": "Ce livre",
+    "global": "Tous les livres"
+  },
+  "scopeHintBook": "Les modifications n’affectent que ce livre.",
+  "scopeHintGlobal": "Les modifications affectent tous les livres qui suivent vos paramètres globaux.",
+  "search": {
+    "label": "Rechercher dans le livre",
+    "noResults": "Aucun résultat trouvé",
+    "placeholder": "Rechercher dans le livre…",
+    "running": "Recherche en cours",
+    "truncated_one": "Affichage des {{count}} premiers résultats uniquement",
+    "truncated_many": "",
+    "truncated_other": "Affichage des {{count}} premiers résultats uniquement",
+    "truncated": "Affichage des {{count}} premiers résultats uniquement"
+  },
+  "shelf": "Étagère",
+  "tableOfContents": "Table des matières",
+  "textAlign": "Alignement",
+  "textAlignOption": {
+    "book": "Comme publié",
+    "justify": "Justifié",
+    "start": "À gauche"
   },
   "textUnitMode": {
     "progress": "Position dans le chapitre",
     "sessionTime": "Temps de la session"
   },
-  "fileMissing": {
-    "no-sync": "Le fichier de ce livre n'est pas sur cet appareil et la synchronisation est désactivée. Importez le fichier d'origine pour le lire ici.",
-    "not-on-relay": "Le fichier de ce livre n'a jamais fini d'être envoyé depuis l'appareil d'origine. Ouvrez ReadAware là-bas pour lancer l'envoi, ou importez le fichier d'origine ici.",
-    "unauthenticated": "Reconnectez-vous à votre compte de synchronisation pour télécharger le fichier de ce livre.",
-    "unreachable": "Le fichier de ce livre est dans votre bibliothèque cloud, mais le serveur de synchronisation est injoignable pour le moment.",
-    "undecodable": "Le fichier téléchargé n'a pas pu être déchiffré avec la phrase secrète de synchronisation de cet appareil.",
-    "reimport": "Importer le fichier"
-  }
+  "tryAgain": "Réessayer"
 }

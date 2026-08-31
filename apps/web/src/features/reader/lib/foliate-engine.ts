@@ -124,6 +124,23 @@ export type FoliateRenderer = {
   scrolled?: boolean;
 };
 
+/** One search hit's excerpt: text before / the match / text after. */
+export type FoliateSearchExcerpt = { pre: string; match: string; post: string };
+
+export type FoliateSearchSubitem = { cfi: string; excerpt: FoliateSearchExcerpt };
+
+/**
+ * A yield from `view.search()` in whole-book mode (the only mode the app uses):
+ * per-section progress, a section's hits (with its TOC label), and the
+ * `'done'` sentinel that terminates the stream. The engine also yields
+ * single-hit `{ cfi, excerpt }` shapes in per-section mode, which the app never
+ * requests; the sentinel string covers its trailing `'done'`.
+ */
+export type FoliateSearchYield =
+  | { progress: number }
+  | { label: string; subitems: FoliateSearchSubitem[] }
+  | string;
+
 export type FoliateView = HTMLElement & {
   open: (book: BookFileSource | string | FoliateBook) => Promise<void>;
   book?: FoliateBook;
@@ -151,6 +168,19 @@ export type FoliateView = HTMLElement & {
     remove?: boolean,
   ) => Promise<{ index: number; label: string } | undefined>;
   deleteAnnotation: (annotation: FoliateAnnotation) => Promise<unknown>;
+  /** Full-book text search: streams `{progress}` per scanned section, then
+   *  `{label, subitems}` for sections with hits, ending with `'done'`. Each hit
+   *  is drawn as an outline highlight until `clearSearch()`. */
+  search: (opts: {
+    query: string;
+    matchCase?: boolean;
+    matchDiacritics?: boolean;
+    matchWholeWords?: boolean;
+  }) => AsyncGenerator<FoliateSearchYield, void, unknown>;
+  /** Jump to a CFI and select the passage there (true selection, copyable). */
+  select: (target: string) => Promise<void>;
+  /** Remove every outline highlight drawn by `search()`. */
+  clearSearch: () => void;
 };
 
 export type FoliateHighlightFn = unknown;

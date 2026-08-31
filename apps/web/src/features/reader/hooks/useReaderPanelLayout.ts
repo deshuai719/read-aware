@@ -33,7 +33,7 @@ export function useReaderPanelLayout(bookId: string) {
   }, [bookId]);
 
   const update = useCallback(
-    (key: "tocOpen" | "notesOpen", next: BoolUpdater) => {
+    (key: "tocOpen" | "notesOpen" | "searchOpen", next: BoolUpdater) => {
       const prev = layoutRef.current;
       const value = typeof next === "function" ? next(prev[key]) : next;
       if (value === prev[key]) return;
@@ -47,11 +47,14 @@ export function useReaderPanelLayout(bookId: string) {
 
   const setTocOpen = useCallback((next: BoolUpdater) => update("tocOpen", next), [update]);
   const setNotesOpen = useCallback((next: BoolUpdater) => update("notesOpen", next), [update]);
+  const setSearchOpen = useCallback((next: BoolUpdater) => update("searchOpen", next), [update]);
 
   return {
     tocOpen: layout.tocOpen,
     notesOpen: layout.notesOpen,
+    searchOpen: layout.searchOpen,
     setTocOpen,
     setNotesOpen,
+    setSearchOpen,
   };
 }

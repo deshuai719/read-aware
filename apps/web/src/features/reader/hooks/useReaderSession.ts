@@ -66,6 +66,10 @@ export function useReaderSession({
     cfiRange: string;
     requestId: number;
   } | null>(null);
+  const [searchNavigationRequest, setSearchNavigationRequest] = useLocalAtom<{
+    cfi: string;
+    requestId: number;
+  } | null>(null);
   const [fractionNavigationRequest, setFractionNavigationRequest] = useLocalAtom<{
     fraction: number;
     requestId: number;
@@ -138,6 +142,7 @@ export function useReaderSession({
     setCurrentChapterHref(null);
     setChapterNavigationRequest(null);
     setAnnotationNavigationRequest(null);
+    setSearchNavigationRequest(null);
     setFractionNavigationRequest(null);
     setReaderFraction(null);
   }, [
@@ -148,6 +153,7 @@ export function useReaderSession({
     setReaderFraction,
     setReaderPage,
     setReaderToc,
+    setSearchNavigationRequest,
   ]);
 
   const queueProgressSave = useCallback((bookId: string, progress: BookProgress) => {
@@ -285,6 +291,16 @@ export function useReaderSession({
     setShellVisible(false);
   }, [setAnnotationNavigationRequest, setShellVisible]);
 
+  // Jumping to a search hit works exactly like the annotation/notes jump —
+  // same request+requestId channel, consumed by the reader view via `select`.
+  const handleSearchResultSelect = useCallback((cfi: string) => {
+    setSearchNavigationRequest((previous) => ({
+      cfi,
+      requestId: (previous?.requestId ?? 0) + 1,
+    }));
+    setShellVisible(false);
+  }, [setSearchNavigationRequest, setShellVisible]);
+
   const overlayVisible = shellVisible;
   const selectedEpubProgress = selectedBook?.progress ?? null;
   // The engine's fraction once it has relocated; before that, the position the
@@ -303,6 +319,7 @@ export function useReaderSession({
     currentChapterHref,
     chapterNavigationRequest,
     annotationNavigationRequest,
+    searchNavigationRequest,
     fractionNavigationRequest,
     overlayVisible,
     selectedEpubProgress,
@@ -319,6 +336,7 @@ export function useReaderSession({
     handleSeek,
     handleChapterSelect,
     handleAnnotationSelect,
+    handleSearchResultSelect,
     setReaderToc,
     setCurrentChapterHref,
   };

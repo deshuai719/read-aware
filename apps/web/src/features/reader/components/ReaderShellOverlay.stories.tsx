@@ -45,6 +45,18 @@ const textUnitMode = {
   icon: "paragraph",
 } as unknown as RegisteredReaderMode;
 
+/** Inert search state for the shell stories — the engine lives elsewhere. */
+const emptySearch = {
+  query: "",
+  results: [],
+  progress: null,
+  running: false,
+  truncated: false,
+  setQuery: () => {},
+  runSearch: () => {},
+  clear: () => {},
+};
+
 /**
  * The reader's chrome: the top bar over the page, with the table of contents,
  * the notes popover, appearance, and the progress scrubber.
@@ -70,6 +82,8 @@ const meta = {
     onBack: () => {},
     onChapterSelect: () => {},
     onAnnotationSelect: () => {},
+    onSearchResultSelect: () => {},
+    search: emptySearch,
     onSeek: () => {},
     onToggleTextUnitMode: () => {},
   },

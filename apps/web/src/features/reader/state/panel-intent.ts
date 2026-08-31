@@ -6,7 +6,7 @@
  */
 import { atom } from "jotai";
 
-export type ReaderPanelKind = "toc" | "annotations" | "appearance" | "chat";
+export type ReaderPanelKind = "toc" | "annotations" | "appearance" | "chat" | "search";
 
 export type ReaderPanelIntent = {
   id: string;

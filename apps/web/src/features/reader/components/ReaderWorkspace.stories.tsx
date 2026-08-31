@@ -47,6 +47,7 @@ const meta = {
     currentChapterHref: null,
     chapterNavigationRequest: null,
     annotationNavigationRequest: null,
+    searchNavigationRequest: null,
     fractionNavigationRequest: null,
     overlayVisible: true,
     selectedEpubProgress: null,
@@ -67,6 +68,7 @@ const meta = {
     onBookReady: () => {},
     onChapterSelect: () => {},
     onAnnotationSelect: () => {},
+    onSearchResultSelect: () => {},
   },
   decorators: [
     (Story) => (

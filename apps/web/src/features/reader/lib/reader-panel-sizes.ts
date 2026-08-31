@@ -18,9 +18,11 @@ export type ReaderPanelSizes = {
   toc: number;
   /** AI chat (right) panel width in px. */
   chat: number;
+  /** In-book search (left, beside the contents) panel width in px. */
+  search: number;
 };
 
-const DEFAULT_SIZES: ReaderPanelSizes = { toc: 288, chat: 352 };
+const DEFAULT_SIZES: ReaderPanelSizes = { toc: 288, chat: 352, search: 320 };
 
 export function clampPanelWidth(px: number): number {
   return Math.min(MAX_PANEL_WIDTH, Math.max(MIN_PANEL_WIDTH, Math.round(px)));
@@ -34,6 +36,8 @@ function readSizes(): ReaderPanelSizes {
     return {
       toc: typeof parsed.toc === "number" ? clampPanelWidth(parsed.toc) : DEFAULT_SIZES.toc,
       chat: typeof parsed.chat === "number" ? clampPanelWidth(parsed.chat) : DEFAULT_SIZES.chat,
+      search:
+        typeof parsed.search === "number" ? clampPanelWidth(parsed.search) : DEFAULT_SIZES.search,
     };
   } catch {
     return DEFAULT_SIZES;

@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useAtomValue } from "jotai";
 import { Body, Button, Spinner } from "@read-aware/ui";
 import { useTranslation } from "../../../i18n";
 import type { BookFormat, LibraryBook, ReaderProgress } from "../../library/lib/library-types";
 import type { ReaderLoadError } from "../hooks/useReaderSession";
+import { useReaderSearch } from "../hooks/useReaderSearch";
 import { useReaderPalette } from "../../settings/hooks/useReaderPalette";
 import { useDelayedFlag } from "../hooks/useDelayedFlag";
 import { readTextUnitModeState } from "../lib/text-unit-mode-state";
@@ -13,7 +14,7 @@ import { useReadingTimeTracker } from "../hooks/useReadingTimeTracker";
 import { FoliateReaderView } from "./FoliateReaderView";
 import { ReaderShellOverlay } from "./ReaderShellOverlay";
 import type { LoadedBook, ReadingCursor, TocEntry } from "../lib/reader-types";
-import type { FoliateBook } from "../lib/foliate-engine";
+import type { FoliateBook, FoliateView } from "../lib/foliate-engine";
 import { textUnitReaderModeAtom } from "../../plugins/state/plugin-store";
 
 type ReaderWorkspaceProps = {
@@ -29,6 +30,10 @@ type ReaderWorkspaceProps = {
   } | null;
   annotationNavigationRequest: {
     cfiRange: string;
+    requestId: number;
+  } | null;
+  searchNavigationRequest: {
+    cfi: string;
     requestId: number;
   } | null;
   fractionNavigationRequest: {
@@ -56,6 +61,7 @@ type ReaderWorkspaceProps = {
   onBookReady: (book: LibraryBook, foliateBook: FoliateBook) => void;
   onChapterSelect: (href: string) => void;
   onAnnotationSelect: (cfiRange: string) => void;
+  onSearchResultSelect: (cfi: string) => void;
 };
 
 export function ReaderWorkspace({
@@ -67,6 +73,7 @@ export function ReaderWorkspace({
   currentChapterHref,
   chapterNavigationRequest,
   annotationNavigationRequest,
+  searchNavigationRequest,
   fractionNavigationRequest,
   overlayVisible,
   selectedEpubProgress,
@@ -87,6 +94,7 @@ export function ReaderWorkspace({
   onBookReady,
   onChapterSelect,
   onAnnotationSelect,
+  onSearchResultSelect,
 }: ReaderWorkspaceProps) {
   const { t } = useTranslation("reader");
   const { effective: readerSettings } = useReaderAppearance(selectedBook.id);
@@ -94,6 +102,11 @@ export function ReaderWorkspace({
   // Only surface the source loader once opening is genuinely slow, so fast opens
   // show nothing (themed background) instead of a flashed line of text.
   const showSourceLoader = useDelayedFlag(!readerSource && !readerLoadError, 250);
+
+  // The engine element lives here, one level above the view that creates it:
+  // the shell's search panel drives the search lifecycle through the same ref.
+  const viewRef = useRef<FoliateView | null>(null);
+  const search = useReaderSearch({ viewRef, bookId: selectedBook.id });
 
   const headerVisible = !isReaderLoading && overlayVisible;
   // Hide the native traffic lights only during true immersive reading (book
@@ -160,6 +173,7 @@ export function ReaderWorkspace({
           selectedBook={selectedBook}
           initialBook={readerSource.data}
           readerSettings={readerSettings}
+          viewRef={viewRef}
           shellVisible={overlayVisible}
           onCloseReader={onCloseReader}
           onContentClick={onToggleShell}
@@ -180,6 +194,7 @@ export function ReaderWorkspace({
           initialProgress={selectedEpubProgress}
           chapterNavigationRequest={chapterNavigationRequest}
           annotationNavigationRequest={annotationNavigationRequest}
+          searchNavigationRequest={searchNavigationRequest}
           fractionNavigationRequest={fractionNavigationRequest}
         />
       ) : null}
@@ -241,6 +256,8 @@ export function ReaderWorkspace({
         }
         onChapterSelect={onChapterSelect}
         onAnnotationSelect={onAnnotationSelect}
+        onSearchResultSelect={onSearchResultSelect}
+        search={search}
         onSeek={onSeek}
         textUnitMode={textUnitMode}
         textUnitModeActive={textUnitModeActive}

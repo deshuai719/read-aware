@@ -13,11 +13,14 @@ export type ReaderPanelLayout = {
   tocOpen: boolean;
   /** Whether the right-hand AI chat panel is open. */
   notesOpen: boolean;
+  /** Whether the in-book search panel is open. */
+  searchOpen: boolean;
 };
 
 export const DEFAULT_PANEL_LAYOUT: ReaderPanelLayout = {
   tocOpen: false,
   notesOpen: false,
+  searchOpen: false,
 };
 
 type PanelLayoutStore = Record<string, ReaderPanelLayout>;
@@ -35,6 +38,7 @@ function readStore(): PanelLayoutStore {
       result[bookId] = {
         tocOpen: value.tocOpen === true,
         notesOpen: value.notesOpen === true,
+        searchOpen: value.searchOpen === true,
       };
     }
     return result;
@@ -54,6 +58,7 @@ export function saveReaderPanelLayout(bookId: string, layout: ReaderPanelLayout)
     store[bookId] = {
       tocOpen: layout.tocOpen,
       notesOpen: layout.notesOpen,
+      searchOpen: layout.searchOpen,
     };
     localKV.setItem(STORAGE_KEY, JSON.stringify(store));
   } catch {

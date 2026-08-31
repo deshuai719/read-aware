@@ -1,7 +1,18 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { ReactNode, RefObject } from "react";
 import type { TFunction } from "i18next";
+import {
+  ChatCircleDots,
+  Copy,
+  Highlighter,
+  ListBullets,
+  MagnifyingGlass,
+  NotePencil,
+  Notebook,
+  TextUnderline,
+} from "@phosphor-icons/react";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { Body, Button, Spinner } from "@read-aware/ui";
+import { Body, Button, DropdownMenu, Spinner } from "@read-aware/ui";
 import { cn } from "@read-aware/ui/cn";
 import { useTranslation } from "../../../i18n";
 import { textUnitModeSettingsAtom, shortcutBindingsAtom } from "../../../state/ui";
@@ -92,6 +103,11 @@ type FoliateReaderViewProps = {
   selectedBook?: LibraryBook | null;
   initialBook?: LoadedBook | null;
   readerSettings?: ReaderSettings;
+  /**
+   * The engine element, owned by the workspace: the shell's search panel and
+   * this view share one search lifecycle through it.
+   */
+  viewRef: RefObject<FoliateView | null>;
   /** Whether the reader shell (header overlay) is currently open. Lets the view
    *  reset its scroll-dismissal distance each time the shell appears. */
   shellVisible?: boolean;
@@ -136,6 +152,11 @@ type FoliateReaderViewProps = {
   } | null;
   annotationNavigationRequest?: {
     cfiRange: string;
+    requestId: number;
+  } | null;
+  /** Jump to a search hit — lands on the CFI and selects the passage. */
+  searchNavigationRequest?: {
+    cfi: string;
     requestId: number;
   } | null;
   /** Jump to a position in the book, 0..1 — the header progress bar's scrub. */
@@ -316,6 +337,7 @@ export function FoliateReaderView({
   selectedBook = null,
   initialBook = null,
   readerSettings = DEFAULT_READER_SETTINGS,
+  viewRef,
   shellVisible = false,
   onCloseReader,
   onContentClick,
@@ -336,6 +358,7 @@ export function FoliateReaderView({
   initialProgress = null,
   chapterNavigationRequest = null,
   annotationNavigationRequest = null,
+  searchNavigationRequest = null,
   fractionNavigationRequest = null,
 }: FoliateReaderViewProps) {
   const { t } = useTranslation("reader");
@@ -348,7 +371,6 @@ export function FoliateReaderView({
   tRef.current = t;
   const readerRootRef = useRef<HTMLElement | null>(null);
   const viewportRef = useRef<HTMLDivElement | null>(null);
-  const viewRef = useRef<FoliateView | null>(null);
   const lastLocationTargetRef = useRef<string | null>(null);
   const initialFractionRef = useRef(0);
   const loadedBookRef = useRef<LoadedBook | null>(null);
@@ -476,6 +498,9 @@ export function FoliateReaderView({
   const [currentChapterHref, setCurrentChapterHref] = useState<string | null>(null);
   const [isFixedLayout, setIsFixedLayout] = useState(false);
   const [selection, setSelection] = useState<ReaderSelectionState | null>(null);
+  // Right-click menu anchor (reader-viewport coords, from the section iframes).
+  // Null = closed. The menu is a controlled DropdownMenu rendered in the root.
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
   const [activeAnnotation, setActiveAnnotation] = useState<{
     highlight: Highlight;
     anchorRect: SelectionOverlayRect;
@@ -954,6 +979,16 @@ export function FoliateReaderView({
   // ReaderShellOverlay（打开目标面板）各自消费。
   const dispatchPanelIntent = useSetAtom(readerPanelIntentAtom);
 
+  // Ctrl+F / Cmd+F opens the search panel (the same panel-intent channel the
+  // navigator bar's direct buttons use). Fixed-layout books have no searchable
+  // text, so the shortcut is inert there — the shell hides the button too.
+  const openSearchPanel = useCallback(() => {
+    const bookId = selectedBook?.id;
+    if (bookId) dispatchPanelIntent(createReaderPanelIntent(bookId, "search"));
+  }, [dispatchPanelIntent, selectedBook?.id]);
+  const openSearchPanelRef = useRef(openSearchPanel);
+  useEffect(() => { openSearchPanelRef.current = openSearchPanel; });
+
   // Stepping to another unit is a "resume reading" gesture: it dismisses
   // overlays raised for the one left behind (footnote and annotation menu)
   // because their content is stale the moment the wash moves on, and
@@ -1284,9 +1319,25 @@ export function FoliateReaderView({
       }
     }
 
+    // In-book search (Ctrl+F / Cmd+F). Checked before the modifier guard since
+    // it requires the modifier. Fixed-layout books (PDF, comics) have no text
+    // to search.
+    if (
+      (event.ctrlKey || event.metaKey) &&
+      !event.altKey &&
+      event.key.toLowerCase() === "f"
+    ) {
+      event.preventDefault();
+      if (!isFixedLayoutRef.current) openSearchPanelRef.current?.();
+      return;
+    }
+
     if (event.metaKey || event.ctrlKey || event.altKey) return;
 
     if (event.key === "Escape") {
+      // A right-click menu is an overlay like the selection menu — Escape
+      // closes it first, then falls through to the existing dismissal logic.
+      setContextMenu(null);
       if (selectionRef.current) clearSelection();
       else if (textUnitModeActiveStateRef.current) onExitTextUnitModeRef.current?.();
     }
@@ -1336,6 +1387,37 @@ export function FoliateReaderView({
   const attachDocListeners = useCallback((doc: Document, index: number) => {
     // Desktop: kill the webview's native right-click menu inside book content too.
     suppressNativeContextMenu(doc);
+
+    // Right-click inside the book opens the app's context menu (rendered by
+    // this component at the reader-root level). The event's client coords are
+    // the IFRAME's viewport space — translate them into the reader root's
+    // viewport (fixed-layout pages additionally scale) and anchor the menu
+    // there. Hanging this per-section keeps events where the iframe realm
+    // keeps them; the pointerdown listener below deliberately does NOT clear a
+    // live selection for button !== 0, so the menu can offer text actions on
+    // the passage the reader right-clicked.
+    doc.addEventListener(
+      "contextmenu",
+      (event) => {
+        event.preventDefault();
+        const readerRoot = readerRootRef.current;
+        const frameElement = doc.defaultView?.frameElement;
+        if (!readerRoot || !(frameElement instanceof HTMLElement)) return;
+        const frameRect = frameElement.getBoundingClientRect();
+        const viewportRect = readerRoot.getBoundingClientRect();
+        const point = clampRectToViewport(
+          { left: event.clientX, top: event.clientY, width: 1, height: 1 },
+          frameRect,
+          viewportRect,
+          frameScaleOf(frameElement, frameRect),
+        );
+        if (!point) return;
+        // clampRectToViewport yields root-relative coords; the menu is
+        // position: fixed, so add the root's own viewport offset back.
+        setContextMenu({ x: point.left + viewportRect.left, y: point.top + viewportRect.top });
+      },
+      true,
+    );
 
     // Reading-activity signal for the time tracker. Pointer movement, keys,
     // scrolling, and wheel inside the book all mean "still reading" — vital in
@@ -1434,7 +1516,10 @@ export function FoliateReaderView({
         startX: event.clientX,
         startY: event.clientY,
       };
-      if (hadSelection) {
+      // Only primary clicks clear a live selection. A right-click must keep it
+      // intact: the context-menu handler reads it to offer text actions on
+      // exactly the passage the reader selected.
+      if (hadSelection && event.button === 0) {
         clearSelection();
         armContentClickSuppression();
         return;
@@ -1643,9 +1728,11 @@ export function FoliateReaderView({
 
     // A native intra-section scroll (anchor jump, focus) should still drop a live
     // selection; shell dismissal is driven by the wheel-distance accumulator and
-    // the relocate page check, not by the raw scroll event.
+    // the relocate page check, not by the raw scroll event. A fixed-position
+    // context menu would float over scrolled-away content, so it closes too.
     doc.addEventListener("scroll", () => {
       clearSelection();
+      setContextMenu(null);
     }, true);
 
     // Wheel routing (see handleWheelEvent): trackpad page turns in paginated
@@ -1967,9 +2054,11 @@ export function FoliateReaderView({
           }
           // 句级菜单只在页码真的变了时随位置收掉。Android 上点击后常跟着一次
           // 并非翻页的 relocate（视口/布局微调），无条件关会让菜单开了即灭。
+          // 右键菜单同理（锚定旧页码的坐标，翻页后语义失效）。
           const previousLocation = prevReadingLocationRef.current;
           if (previousLocation && previousLocation.current !== current) {
             setUnitMenuAnchor(null);
+            setContextMenu(null);
           }
           prevReadingLocationRef.current = { current, cfi };
           textUnitNavigatorRef.current.handleRelocate(detail);
@@ -2134,6 +2223,15 @@ export function FoliateReaderView({
   }, [annotationNavigationRequest?.cfiRange, annotationNavigationRequest?.requestId]);
 
   useEffect(() => {
+    const cfi = searchNavigationRequest?.cfi;
+    if (!cfi) return;
+    // `select`, not `goTo`: lands on the passage AND selects it — the hit is
+    // visibly marked and immediately copyable, which is the point of "jump to
+    // the search result".
+    void viewRef.current?.select(cfi);
+  }, [searchNavigationRequest?.cfi, searchNavigationRequest?.requestId]);
+
+  useEffect(() => {
     const fraction = fractionNavigationRequest?.fraction;
     if (fraction == null) return;
     void goToFraction(fraction);
@@ -2145,6 +2243,101 @@ export function FoliateReaderView({
   // scroller and crosses pages at its edges.
   const showPageTurnControls =
     readingMode !== "scroll" && !isLoading && !error;
+
+  // Right-click menu contents, re-derived whenever it opens: a live selection
+  // gets the passage actions (the same verbs the selection toolbar offers);
+  // otherwise the reader-level navigation actions, which all funnel through
+  // the shell's panel-intent channel (same one the navigator bar uses).
+  const contextMenuItems: {
+    label: string;
+    onClick: () => void;
+    icon: ReactNode;
+  }[] = (() => {
+    const bookId = selectedBook?.id;
+    if (selection) {
+      const items = [
+        {
+          label: t("menu.copy"),
+          icon: <Copy size={15} weight="regular" aria-hidden="true" />,
+          onClick: () => {
+            setContextMenu(null);
+            void copyTargetText(selection.text);
+            clearSelection();
+          },
+        },
+        {
+          label: t("menu.highlight"),
+          icon: <Highlighter size={15} weight="regular" aria-hidden="true" />,
+          onClick: () => {
+            setContextMenu(null);
+            void handleHighlight();
+          },
+        },
+        {
+          label: t("menu.underline"),
+          icon: <TextUnderline size={15} weight="regular" aria-hidden="true" />,
+          onClick: () => {
+            setContextMenu(null);
+            handleUnderline();
+          },
+        },
+        {
+          label: t("menu.addNote"),
+          icon: <NotePencil size={15} weight="regular" aria-hidden="true" />,
+          onClick: () => {
+            setContextMenu(null);
+            handleAddNote();
+          },
+        },
+        ...(askAiEnabledRef.current
+          ? [
+              {
+                label: t("menu.askAi"),
+                icon: <ChatCircleDots size={15} weight="regular" aria-hidden="true" />,
+                onClick: () => {
+                  setContextMenu(null);
+                  handleAskAI();
+                },
+              },
+            ]
+          : []),
+      ];
+      return items;
+    }
+    return [
+      {
+        label: t("contextMenu.openContents"),
+        icon: <ListBullets size={15} weight="regular" aria-hidden="true" />,
+        onClick: () => {
+          setContextMenu(null);
+          if (bookId) dispatchPanelIntent(createReaderPanelIntent(bookId, "toc"));
+        },
+      },
+      // Fixed-layout books (PDF, comics) have no searchable text — the search
+      // entry is hidden there just like the shell's search button.
+      ...(!isFixedLayoutRef.current
+        ? [
+            {
+              label: t("contextMenu.openSearch"),
+              icon: <MagnifyingGlass size={15} weight="regular" aria-hidden="true" />,
+              onClick: () => {
+                setContextMenu(null);
+                if (bookId) dispatchPanelIntent(createReaderPanelIntent(bookId, "search"));
+              },
+            },
+          ]
+        : []),
+      {
+        label: t("contextMenu.openNotes"),
+        icon: <Notebook size={15} weight="regular" aria-hidden="true" />,
+        onClick: () => {
+          setContextMenu(null);
+          // "annotations" is the notes/highlights popover; "chat" is the AI dock.
+          if (bookId) dispatchPanelIntent(createReaderPanelIntent(bookId, "annotations"));
+        },
+      },
+    ];
+  })();
 
   return (
     <section ref={readerRootRef} className="relative h-full w-full overflow-hidden">
@@ -2166,50 +2359,57 @@ export function FoliateReaderView({
         onNext={() => void turnPage(1)}
       />
       {isIOS() && <ReaderSelectionHighlight selection={selection} />}
-      <ReaderSelectionMenu
-        selection={selection}
-        onCopy={() => copyTargetText(selectionRef.current?.text ?? "")}
-        onHighlight={() => { void handleHighlight(); }}
-        onUnderline={handleUnderline}
-        onAddNote={handleAddNote}
-        onAskAI={handleAskAI}
-        pluginInput={pluginInputForSource("selection")}
-      />
-      {/* 逐句模式的句级菜单：点中当前句的 wash 弹出，动作与选区菜单同一套
-          （含用户在设置里的排布），只是目标换成静息句。与选区菜单互斥：
-          活动选区在场时句级菜单让位（关闭 effect 之外再加渲染护栏，任何
-          时序下两者都不可能同帧出现）。 */}
-      {textUnitModeEngineActive && !selection && textUnitNavigator.current && (
-        <ReaderSelectionMenu
-          selection={
-            unitMenuAnchor
-              ? {
-                  anchorRect: unitMenuAnchor,
-                  cfiRange: textUnitNavigator.current.cfiRange,
-                  text: textUnitNavigator.current.text,
-                }
-              : null
-          }
-          onCopy={() => copyTargetText(textUnitNavigator.current?.text ?? "")}
-          onHighlight={() => {
-            setUnitMenuAnchor(null);
-            void handleNavigatorMark("highlight");
-          }}
-          onUnderline={() => {
-            setUnitMenuAnchor(null);
-            void handleNavigatorMark("underline");
-          }}
-          onAddNote={() => {
-            setUnitMenuAnchor(null);
-            handleNavigatorAddNote();
-          }}
-          onAskAI={() => {
-            setUnitMenuAnchor(null);
-            handleNavigatorAskAI();
-          }}
-          allowAnnotations={textUnitNavigator.current.cfiRange != null}
-          pluginInput={pluginInputForSource("navigator")}
-        />
+      {/* The selection toolbars yield to the right-click menu: both float over
+          the same text, and a right-click that just opened a passage menu must
+          not leave the selection bar hanging next to it. */}
+      {contextMenu == null && (
+        <>
+          <ReaderSelectionMenu
+            selection={selection}
+            onCopy={() => copyTargetText(selectionRef.current?.text ?? "")}
+            onHighlight={() => { void handleHighlight(); }}
+            onUnderline={handleUnderline}
+            onAddNote={handleAddNote}
+            onAskAI={handleAskAI}
+            pluginInput={pluginInputForSource("selection")}
+          />
+          {/* 逐句模式的句级菜单：点中当前句的 wash 弹出，动作与选区菜单同一套
+              （含用户在设置里的排布），只是目标换成静息句。与选区菜单互斥：
+              活动选区在场时句级菜单让位（关闭 effect 之外再加渲染护栏，任何
+              时序下两者都不可能同帧出现）。 */}
+          {textUnitModeEngineActive && !selection && textUnitNavigator.current && (
+            <ReaderSelectionMenu
+              selection={
+                unitMenuAnchor
+                  ? {
+                      anchorRect: unitMenuAnchor,
+                      cfiRange: textUnitNavigator.current.cfiRange,
+                      text: textUnitNavigator.current.text,
+                    }
+                  : null
+              }
+              onCopy={() => copyTargetText(textUnitNavigator.current?.text ?? "")}
+              onHighlight={() => {
+                setUnitMenuAnchor(null);
+                void handleNavigatorMark("highlight");
+              }}
+              onUnderline={() => {
+                setUnitMenuAnchor(null);
+                void handleNavigatorMark("underline");
+              }}
+              onAddNote={() => {
+                setUnitMenuAnchor(null);
+                handleNavigatorAddNote();
+              }}
+              onAskAI={() => {
+                setUnitMenuAnchor(null);
+                handleNavigatorAskAI();
+              }}
+              allowAnnotations={textUnitNavigator.current.cfiRange != null}
+              pluginInput={pluginInputForSource("navigator")}
+            />
+          )}
+        </>
       )}
       {textUnitMode && (
         <TextUnitNavigatorBar
@@ -2277,6 +2477,20 @@ export function FoliateReaderView({
         }}
         pluginInput={pluginInputForSource("annotation")}
       />
+
+      {/* 书内右键菜单：受控于 contextMenu 状态（iframe 坐标已换算到本层），
+          position 模式让面板直接固定到右键点。 */}
+      {contextMenu && (
+        <DropdownMenu
+          open
+          onOpenChange={(open) => {
+            if (!open) setContextMenu(null);
+          }}
+          position={contextMenu}
+          className="pointer-events-auto"
+          items={contextMenuItems}
+        />
+      )}
 
       {showLoader && (
         <div className="absolute inset-0 flex items-center justify-center bg-inherit">

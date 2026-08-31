@@ -519,6 +519,7 @@ function App() {
                 currentChapterHref={reader.currentChapterHref}
                 chapterNavigationRequest={reader.chapterNavigationRequest}
                 annotationNavigationRequest={reader.annotationNavigationRequest}
+                searchNavigationRequest={reader.searchNavigationRequest}
                 fractionNavigationRequest={reader.fractionNavigationRequest}
                 overlayVisible={reader.overlayVisible}
                 selectedEpubProgress={reader.selectedEpubProgress}
@@ -539,6 +540,7 @@ function App() {
                 onBookReady={library.handleBookReady}
                 onChapterSelect={reader.handleChapterSelect}
                 onAnnotationSelect={reader.handleAnnotationSelect}
+                onSearchResultSelect={reader.handleSearchResultSelect}
               />
             </Suspense>
           </FeatureErrorBoundary>

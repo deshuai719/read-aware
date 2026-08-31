@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAtomValue } from "jotai";
-import { CaretLeft, ChatCircle, ListBullets } from "@phosphor-icons/react";
+import { CaretLeft, ChatCircle, ListBullets, MagnifyingGlass } from "@phosphor-icons/react";
 import { cn } from "@read-aware/ui/cn";
 import { usePhoneViewport } from "@read-aware/ui/media";
 import { Body, IconButton, ScrollArea, Tooltip } from "@read-aware/ui";
@@ -30,11 +30,13 @@ import { buildProgressMarks } from "../lib/reader-progress";
 import { readerPanelIntentAtom } from "../state/panel-intent";
 import { useReaderPanelLayout } from "../hooks/useReaderPanelLayout";
 import { useReaderPanelSizes } from "../hooks/useReaderPanelSizes";
+import type { ReaderSearchApi } from "../hooks/useReaderSearch";
 import type { TocEntry } from "../lib/reader-types";
 import { ReaderNotesPopover } from "./ReaderNotesPopover";
 import { ReaderProgressScrubber } from "./ReaderProgressScrubber";
 import { ReaderResizeHandle } from "./ReaderResizeHandle";
 import { ReaderAppearanceMenu } from "./ReaderAppearanceMenu";
+import { ReaderSearchPanel } from "./ReaderSearchPanel";
 import { contributionText } from "../../plugins/lib/plugin-i18n";
 
 type ReaderShellOverlayProps = {
@@ -49,6 +51,10 @@ type ReaderShellOverlayProps = {
   readingCursor?: ReadingCursor | null;
   onChapterSelect?: (href: string) => void;
   onAnnotationSelect?: (cfiRange: string) => void;
+  /** Jump to a search hit (lands + selects; the session owns the channel). */
+  onSearchResultSelect?: (cfi: string) => void;
+  /** In-book search state + actions, owned by the workspace's useReaderSearch. */
+  search: ReaderSearchApi;
   /** Jump to a position in the book, 0..1 — the progress bar's drag target. */
   onSeek?: (fraction: number) => void;
   /** Installed text-unit mode, if a plugin contributes one. */
@@ -75,6 +81,8 @@ export function ReaderShellOverlay({
   readingCursor = null,
   onChapterSelect,
   onAnnotationSelect,
+  onSearchResultSelect,
+  search,
   onSeek,
   textUnitMode = null,
   textUnitModeActive = false,
@@ -104,9 +112,10 @@ export function ReaderShellOverlay({
   // Chapter ticks for the progress bar, and the labels its scrub readout names.
   const progressMarks = useMemo(() => buildProgressMarks(tocEntries), [tocEntries]);
 
-  // TOC + chat panels persist per book (restored when the book reopens); the
-  // appearance popover is transient and resets each session.
-  const { tocOpen, notesOpen, setTocOpen, setNotesOpen } = useReaderPanelLayout(bookId);
+  // TOC + chat + search panels persist per book (restored when the book
+  // reopens); the appearance popover is transient and resets each session.
+  const { tocOpen, notesOpen, searchOpen, setTocOpen, setNotesOpen, setSearchOpen } =
+    useReaderPanelLayout(bookId);
   const { sizes, adjust: adjustPanel, persist: persistPanelSizes } = useReaderPanelSizes();
   const [appearanceOpen, setAppearanceOpen] = useState(false);
   const [annotationsOpen, setAnnotationsOpen] = useState(false);
@@ -116,6 +125,10 @@ export function ReaderShellOverlay({
   // reader tapped the page to check the header.
   const [chatFocusRequestId, setChatFocusRequestId] = useState(0);
   const requestChatFocus = useCallback(() => setChatFocusRequestId((id) => id + 1), []);
+  // The search panel's input focuses the same way: on a panel-intent arrival
+  // (Ctrl+F), not on every time the chrome is revealed.
+  const [searchFocusRequestId, setSearchFocusRequestId] = useState(0);
+  const requestSearchFocus = useCallback(() => setSearchFocusRequestId((id) => id + 1), []);
 
   // Phone-width: the side docks become full-screen sheets (below the top bar),
   // so only one can be open at a time and resizing is meaningless.
@@ -123,14 +136,36 @@ export function ReaderShellOverlay({
   const toggleToc = () => {
     const next = !tocOpen;
     setTocOpen(next);
-    if (next && isPhone) setNotesOpen(false);
+    if (next && isPhone) {
+      setNotesOpen(false);
+      setSearchOpen(false);
+    }
   };
   const toggleNotes = () => {
     const next = !notesOpen;
     setNotesOpen(next);
     if (next) requestChatFocus();
-    if (next && isPhone) setTocOpen(false);
+    if (next && isPhone) {
+      setTocOpen(false);
+      setSearchOpen(false);
+    }
   };
+  const toggleSearch = () => {
+    const next = !searchOpen;
+    setSearchOpen(next);
+    if (next) requestSearchFocus();
+    if (next && isPhone) {
+      setTocOpen(false);
+      setNotesOpen(false);
+    }
+  };
+
+  // Closing the search panel ends the search session: cancel any running scan
+  // and clear the engine's result highlights. `clear` is a stable callback, so
+  // this only fires on actual open-state changes.
+  useEffect(() => {
+    if (!searchOpen) search.clear();
+  }, [search.clear, searchOpen]);
 
   // Android back gesture: a phone full-screen sheet is a deeper layer, so back
   // closes it (chat first — it renders on top) instead of unwinding the whole
@@ -140,6 +175,10 @@ export function ReaderShellOverlay({
     if (!visible || !isPhone) return false;
     if (notesOpen) {
       setNotesOpen(false);
+      return true;
+    }
+    if (searchOpen) {
+      setSearchOpen(false);
       return true;
     }
     if (tocOpen) {
@@ -278,12 +317,18 @@ export function ReaderShellOverlay({
     switch (panelIntent.panel) {
       case "toc":
         setTocOpen(true);
-        if (isPhone) setNotesOpen(false);
+        if (isPhone) {
+          setNotesOpen(false);
+          setSearchOpen(false);
+        }
         break;
       case "chat":
         setNotesOpen(true);
         requestChatFocus();
-        if (isPhone) setTocOpen(false);
+        if (isPhone) {
+          setTocOpen(false);
+          setSearchOpen(false);
+        }
         break;
       case "appearance":
         setAppearanceOpen(true);
@@ -291,8 +336,16 @@ export function ReaderShellOverlay({
       case "annotations":
         setAnnotationsOpen(true);
         break;
+      case "search":
+        setSearchOpen(true);
+        requestSearchFocus();
+        if (isPhone) {
+          setTocOpen(false);
+          setNotesOpen(false);
+        }
+        break;
     }
-  }, [panelIntent, bookId, isPhone, requestChatFocus, setNotesOpen, setTocOpen]);
+  }, [panelIntent, bookId, isPhone, requestChatFocus, requestSearchFocus, setNotesOpen, setSearchOpen, setTocOpen]);
 
   const askAiRequest = useAtomValue(askAiRequestAtom);
   const handledAskAiIdRef = useRef<string | null>(null);
@@ -402,6 +455,26 @@ export function ReaderShellOverlay({
                 }
               />
             </Tooltip>
+            {/* In-book search. Fixed-layout books (PDF, comics) have no text to
+                search, so the entry is hidden there entirely. */}
+            {!fixedLayout && (
+              <Tooltip content={t("search.label")} side="bottom" className="pointer-events-auto">
+                <IconButton
+                  size="sm"
+                  label={t("search.label")}
+                  aria-pressed={searchOpen}
+                  onClick={toggleSearch}
+                  className={cn(searchOpen && "text-fg")}
+                  icon={
+                    <MagnifyingGlass
+                      size={18}
+                      weight={searchOpen ? "bold" : "regular"}
+                      aria-hidden="true"
+                    />
+                  }
+                />
+              </Tooltip>
+            )}
             <ReaderNotesPopover
               annotations={annotations}
               tocEntries={tocEntries}
@@ -549,6 +622,42 @@ export function ReaderShellOverlay({
               edge="right"
               ariaLabel={t("resizeContents")}
               onResize={(delta) => adjustPanel("toc", delta)}
+              onCommit={persistPanelSizes}
+            />
+          )}
+        </section>
+
+        {/* In-book search (left, beside the contents) */}
+        <section
+          aria-label={t("search.label")}
+          inert={!(visible && searchOpen)}
+          className={cn(
+            "flex min-h-0 flex-col transition-[transform,opacity] duration-200 ease-out",
+            isPhone
+              ? // Full-screen sheet below the top bar; no divider, no resize.
+                "absolute inset-0"
+              : "relative h-full shrink-0 border-r border-border-strong/70",
+            visible && searchOpen
+              ? "pointer-events-auto translate-x-0 opacity-100"
+              : "-translate-x-full opacity-0 pointer-events-none",
+          )}
+          style={{
+            width: isPhone ? undefined : sizes.search,
+            backgroundColor: "var(--ra-main-surface-color)",
+          }}
+        >
+          <ReaderSearchPanel
+            open={searchOpen}
+            search={search}
+            focusRequestId={searchFocusRequestId}
+            onSelect={(cfi) => onSearchResultSelect?.(cfi)}
+            onClose={() => setSearchOpen(false)}
+          />
+          {!isPhone && (
+            <ReaderResizeHandle
+              edge="right"
+              ariaLabel={t("resizeSearch")}
+              onResize={(delta) => adjustPanel("search", delta)}
               onCommit={persistPanelSizes}
             />
           )}

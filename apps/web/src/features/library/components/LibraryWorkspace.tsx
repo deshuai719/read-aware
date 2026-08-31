@@ -1,14 +1,16 @@
-import { useCallback, useEffect, useMemo, useState, type DragEvent } from "react";
+import { useCallback, useEffect, useMemo, useState, type DragEvent, type MouseEvent } from "react";
 import { useAtom, useAtomValue } from "jotai";
-import { Books, LockSimple } from "@phosphor-icons/react";
-import { Body, Button, EmptyState, Skeleton, useToast } from "@read-aware/ui";
+import { Books, FolderOpen, LockOpen, LockSimple, PencilSimple, Trash } from "@phosphor-icons/react";
+import { Body, Button, DropdownMenu, EmptyState, Skeleton, useToast } from "@read-aware/ui";
 import { cn } from "@read-aware/ui/cn";
 import { useTranslation } from "../../../i18n";
+import { userDomain } from "../../../domain";
 import { Shelf } from "../../shelf/components/Shelf";
 import { CollectionHeader } from "../../shelf/components/CollectionHeader";
 import { AddToCollectionDialog } from "../../shelf/components/AddToCollectionDialog";
 import { CollectionUngroupDropZone } from "../../shelf/components/CollectionUngroupDropZone";
 import type { CollectionTileData } from "../../shelf/components/CollectionTile";
+import { CollectionDeleteDialog, CollectionRenameDialog } from "../../shelf/components/CollectionMenuDialogs";
 import { ShelfSelectionToolbar } from "../../shelf/components/ShelfSelectionToolbar";
 import { deriveShelfView } from "../../shelf/lib/derive-shelf-view";
 import { useShelfSelection } from "../../shelf/hooks/useShelfSelection";
@@ -23,6 +25,7 @@ import {
   verifyCollectionPassword,
 } from "../lib/collection-lock";
 import { setCollectionPassword } from "../lib/library-db";
+import { formatLibraryError } from "../lib/format-library-error";
 import { BOOK_DRAG_MIME } from "../lib/book-drag";
 
 type LibraryWorkspaceProps = {
@@ -73,8 +76,17 @@ export function LibraryWorkspace({
   const [lockTarget, setLockTarget] = useState<{ mode: CollectionLockMode; collection: Collection } | null>(null);
   // In-flight book drag (ids being dragged); non-null only during our own drags.
   const [dragBookIds, setDragBookIds] = useState<string[] | null>(null);
-  // Drop-onto-book merge: ids waiting to be named as a new collection.
-  const [createFromDropIds, setCreateFromDropIds] = useState<string[] | null>(null);
+  // Books waiting to be assigned to a collection: from a drop-onto-book merge
+  // or the shelf context menu's "Add to collection…".
+  const [assignDialogIds, setAssignDialogIds] = useState<string[] | null>(null);
+  // Collection context menu (tile right-click): viewport anchor plus the tile.
+  const [collectionMenu, setCollectionMenu] = useState<{
+    x: number;
+    y: number;
+    data: CollectionTileData;
+  } | null>(null);
+  const [renameTarget, setRenameTarget] = useState<CollectionTileData | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<CollectionTileData | null>(null);
   const dragActive = dragBookIds !== null;
   const { toast } = useToast();
 
@@ -262,7 +274,37 @@ export function LibraryWorkspace({
       const ids = [...new Set([...dragBookIds, targetBookId])];
       setDragBookIds(null);
       if (ids.length < 2) return; // dropping a book onto itself — nothing to merge
-      setCreateFromDropIds(ids);
+      setAssignDialogIds(ids);
+    },
+    [dragBookIds],
+  );
+
+  /**
+   * Mark a single book finished/unread from the shelf context menu. The
+   * reading domain emits `library-changed` after the write, so the list
+   * refreshes through the same reload path as every other library mutation —
+   * books arrive via props, so there is no local state to flip optimistically.
+   */
+  const handleToggleFinished = useCallback(
+    (book: LibraryBook) => {
+      const nextFinished = book.readingStatus !== "finished";
+      void userDomain.reading.commands.setFinished(book.id, nextFinished).catch((error: unknown) => {
+        toast({
+          variant: "destructive",
+          title: t("workspace.errorTitle"),
+          description: formatLibraryError(error, t),
+        });
+      });
+    },
+    [toast, t],
+  );
+
+  /** Right-click on a collection tile opens the menu (ignored mid-drag). */
+  const handleCollectionContextMenu = useCallback(
+    (event: MouseEvent<HTMLElement>, data: CollectionTileData) => {
+      if (dragBookIds !== null) return;
+      event.preventDefault();
+      setCollectionMenu({ x: event.clientX, y: event.clientY, data });
     },
     [dragBookIds],
   );
@@ -380,19 +422,23 @@ export function LibraryWorkspace({
               onToggleStar={onToggleStar}
               onUpdateMetadata={onUpdateBookMetadata}
               onToggleSelect={(book) => toggle(book.id)}
+              onToggleFinished={handleToggleFinished}
+              onAddToCollection={(ids) => setAssignDialogIds(ids)}
+              onBulkRemove={onBulkRemove}
+              onCollectionContextMenu={handleCollectionContextMenu}
             />
           )}
         </div>
       )}
-      {createFromDropIds && (
+      {assignDialogIds && (
         <AddToCollectionDialog
           open
-          count={createFromDropIds.length}
+          count={assignDialogIds.length}
           collections={collections}
-          onClose={() => setCreateFromDropIds(null)}
+          onClose={() => setAssignDialogIds(null)}
           onAssign={(collectionId) => {
-            onSetBooksCollection(createFromDropIds, collectionId);
-            setCreateFromDropIds(null);
+            onSetBooksCollection(assignDialogIds, collectionId);
+            setAssignDialogIds(null);
           }}
           onCreate={onCreateCollection}
         />
@@ -406,6 +452,78 @@ export function LibraryWorkspace({
           onUnlock={handleUnlock}
           onSetPassword={handleSetPassword}
           onClearPassword={handleClearPassword}
+        />
+      )}
+      {collectionMenu && (
+        <DropdownMenu
+          open
+          onOpenChange={(open) => {
+            if (!open) setCollectionMenu(null);
+          }}
+          position={{ x: collectionMenu.x, y: collectionMenu.y }}
+          items={[
+            {
+              label: t("collection.menu.open"),
+              icon: <FolderOpen size={14} weight="regular" aria-hidden="true" />,
+              onClick: () => handleOpenCollection(collectionMenu.data.id),
+            },
+            {
+              label: t("collection.menu.rename"),
+              icon: <PencilSimple size={14} weight="regular" aria-hidden="true" />,
+              onClick: () => {
+                setRenameTarget(collectionMenu.data);
+                setCollectionMenu(null);
+              },
+            },
+            collectionMenu.data.locked
+              ? {
+                  label: t("collection.menu.unlock"),
+                  icon: <LockOpen size={14} weight="regular" aria-hidden="true" />,
+                  onClick: () => {
+                    const collection = collections.find((c) => c.id === collectionMenu.data.id);
+                    if (collection) setLockTarget({ mode: "unlock", collection });
+                    setCollectionMenu(null);
+                  },
+                }
+              : {
+                  label: t("collection.menu.manageLock"),
+                  icon: <LockSimple size={14} weight="regular" aria-hidden="true" />,
+                  onClick: () => {
+                    const collection = collections.find((c) => c.id === collectionMenu.data.id);
+                    if (collection) setLockTarget({ mode: "manage", collection });
+                    setCollectionMenu(null);
+                  },
+                },
+            {
+              label: t("collection.menu.delete"),
+              icon: <Trash size={14} weight="regular" aria-hidden="true" />,
+              onClick: () => {
+                setDeleteTarget(collectionMenu.data);
+                setCollectionMenu(null);
+              },
+              destructive: true,
+            },
+          ]}
+        />
+      )}
+      {renameTarget && (
+        <CollectionRenameDialog
+          collection={renameTarget}
+          onClose={() => setRenameTarget(null)}
+          onRename={(name) => {
+            onRenameCollection(renameTarget.id, name);
+            setRenameTarget(null);
+          }}
+        />
+      )}
+      {deleteTarget && (
+        <CollectionDeleteDialog
+          collection={deleteTarget}
+          onClose={() => setDeleteTarget(null)}
+          onConfirm={() => {
+            onDeleteCollection(deleteTarget.id);
+            setDeleteTarget(null);
+          }}
         />
       )}
     </div>

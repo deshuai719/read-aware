@@ -1,6 +1,8 @@
-import { type DragEvent } from "react";
-import { Eyebrow, Skeleton } from "@read-aware/ui";
+import { useCallback, useMemo, useState, type DragEvent, type MouseEvent } from "react";
+import { BookOpen, CheckCircle, FolderPlus, Info, Star, Trash } from "@phosphor-icons/react";
+import { DropdownMenu, Eyebrow, Skeleton } from "@read-aware/ui";
 import { cn } from "@read-aware/ui/cn";
+import { useTranslation } from "../../../i18n";
 import type {
   BookMetadataPatch,
   LibraryBook,
@@ -10,6 +12,7 @@ import type { ShelfLayout } from "../lib/shelf-view";
 import { BookCover } from "./BookCover";
 import { BookRow } from "./BookRow";
 import { CollectionTile, type CollectionTileData } from "./CollectionTile";
+import { BookDetailsDialog, BookRemoveDialog, BooksRemoveDialog } from "./BookDialogs";
 
 type SectionBodyProps = {
   books: LibraryBook[];
@@ -35,6 +38,10 @@ type SectionBodyProps = {
   onBookDragEnd?: () => void;
   /** Drop the dragged books onto this book to create a new collection. */
   onDropOnBook?: (bookId: string) => void;
+  /** Right-click on a book tile (menu state lives in the shelf). */
+  onBookContextMenu?: (event: MouseEvent<HTMLElement>, book: LibraryBook) => void;
+  /** Right-click on a collection tile (menu state lives in the workspace). */
+  onCollectionContextMenu?: (event: MouseEvent<HTMLElement>, data: CollectionTileData) => void;
 };
 
 function PendingBookPlaceholder({ layout }: { layout: ShelfLayout }) {
@@ -80,6 +87,8 @@ function SectionBody({
   onBookDragStart,
   onBookDragEnd,
   onDropOnBook,
+  onBookContextMenu,
+  onCollectionContextMenu,
 }: SectionBodyProps) {
   const tiles = collections.map((data) => (
     <CollectionTile
@@ -87,6 +96,7 @@ function SectionBody({
       data={data}
       layout={layout}
       onOpen={() => onOpenCollection?.(data.id)}
+      onContextMenu={onCollectionContextMenu ? (event) => onCollectionContextMenu(event, data) : undefined}
       dragActive={dragActive}
       onDropBooks={onDropOnCollection}
     />
@@ -123,6 +133,7 @@ function SectionBody({
               onToggleStar={() => onToggleStar?.(book)}
               onUpdateMetadata={(patch) => onUpdateMetadata?.(book, patch)}
               onToggleSelect={() => onToggleSelect?.(book)}
+              onContextMenu={(event) => onBookContextMenu?.(event, book)}
               {...dragProps(book, selectedIds?.has(book.id) ?? false)}
               dragActive={dragActive}
               onDropOnBook={() => onDropOnBook?.(book.id)}
@@ -153,6 +164,7 @@ function SectionBody({
             onToggleStar={() => onToggleStar?.(book)}
             onUpdateMetadata={(patch) => onUpdateMetadata?.(book, patch)}
             onToggleSelect={() => onToggleSelect?.(book)}
+            onContextMenu={(event) => onBookContextMenu?.(event, book)}
             {...dragProps(book, selectedIds?.has(book.id) ?? false)}
             dragActive={dragActive}
             onDropOnBook={() => onDropOnBook?.(book.id)}
@@ -188,6 +200,14 @@ type ShelfProps = {
   onBookDragEnd?: () => void;
   /** Drop the dragged books onto this book to create a new collection. */
   onDropOnBook?: (bookId: string) => void;
+  /** Toggle a single book's finished state (context menu). */
+  onToggleFinished?: (book: LibraryBook) => void;
+  /** Open the add-to-collection flow for these books (context menu). */
+  onAddToCollection?: (ids: string[]) => void;
+  /** Bulk remove with the batch confirmation (multi-select context menu). */
+  onBulkRemove?: (ids: string[]) => void;
+  /** Right-click on a collection tile (menu state lives in the workspace). */
+  onCollectionContextMenu?: (event: MouseEvent<HTMLElement>, data: CollectionTileData) => void;
   className?: string;
 };
 
@@ -210,8 +230,85 @@ export function Shelf({
   onBookDragStart,
   onBookDragEnd,
   onDropOnBook,
+  onToggleFinished,
+  onAddToCollection,
+  onBulkRemove,
+  onCollectionContextMenu,
   className,
 }: ShelfProps) {
+  const { t } = useTranslation("shelf");
+  // Right-click menu state: the viewport anchor plus the book the menu targets.
+  const [bookMenu, setBookMenu] = useState<{
+    x: number;
+    y: number;
+    book: LibraryBook;
+  } | null>(null);
+  // Dialogs opened from the menu (the per-tile dialogs inside BookCover/BookRow
+  // stay reachable through their hover buttons; these are separate instances).
+  const [detailsBook, setDetailsBook] = useState<LibraryBook | null>(null);
+  const [removeBook, setRemoveBook] = useState<LibraryBook | null>(null);
+  const [removeIds, setRemoveIds] = useState<string[] | null>(null);
+
+  const handleBookContextMenu = useCallback(
+    (event: MouseEvent<HTMLElement>, book: LibraryBook) => {
+      if (dragActive) return; // ignore right-clicks mid-drag
+      event.preventDefault();
+      setBookMenu({ x: event.clientX, y: event.clientY, book });
+    },
+    [dragActive],
+  );
+
+  // Menu target: right-clicked book alone, or — in selection mode — the whole
+  // selection plus the right-clicked book (same semantics as dragging).
+  const targets = useMemo(() => {
+    if (!bookMenu) return null;
+    if (!selecting || !selectedIds || selectedIds.size === 0) return [bookMenu.book.id];
+    return [...new Set([...selectedIds, bookMenu.book.id])];
+  }, [bookMenu, selecting, selectedIds]);
+
+  const bookMenuItems = useMemo(() => {
+    if (!bookMenu || !targets) return [];
+    const { book } = bookMenu;
+    const multi = targets.length > 1;
+    const finished = book.readingStatus === "finished";
+    return [
+      !multi && {
+        label: t("book.menu.open"),
+        icon: <BookOpen size={14} weight="regular" aria-hidden="true" />,
+        onClick: () => onSelect?.(book),
+      },
+      !multi && {
+        label: book.starred ? t("book.menu.unstar") : t("book.menu.star"),
+        icon: <Star size={14} weight={book.starred ? "fill" : "regular"} aria-hidden="true" />,
+        onClick: () => onToggleStar?.(book),
+      },
+      !multi && {
+        label: finished ? t("book.menu.markUnfinished") : t("book.menu.markFinished"),
+        icon: <CheckCircle size={14} weight="regular" aria-hidden="true" />,
+        onClick: () => onToggleFinished?.(book),
+      },
+      {
+        label: t("book.menu.addToCollection"),
+        icon: <FolderPlus size={14} weight="regular" aria-hidden="true" />,
+        onClick: () => onAddToCollection?.(targets),
+      },
+      !multi && {
+        label: t("book.menu.info"),
+        icon: <Info size={14} weight="regular" aria-hidden="true" />,
+        onClick: () => setDetailsBook(book),
+      },
+      {
+        label: t("book.menu.remove"),
+        icon: <Trash size={14} weight="regular" aria-hidden="true" />,
+        onClick: () => {
+          if (multi) setRemoveIds(targets);
+          else setRemoveBook(book);
+        },
+        destructive: true,
+      },
+    ].filter((item): item is Exclude<typeof item, false> => Boolean(item));
+  }, [bookMenu, targets, t, onSelect, onToggleStar, onToggleFinished, onAddToCollection, onRemove]);
+
   // Collections lead the first section so they sit in the same grid as the books;
   // when there are no book sections they get a section of their own.
   const effectiveSections =
@@ -248,9 +345,52 @@ export function Shelf({
             onBookDragStart={onBookDragStart}
             onBookDragEnd={onBookDragEnd}
             onDropOnBook={onDropOnBook}
+            onBookContextMenu={handleBookContextMenu}
+            onCollectionContextMenu={onCollectionContextMenu}
           />
         </section>
       ))}
+
+      {bookMenu && (
+        <DropdownMenu
+          open
+          onOpenChange={(open) => {
+            if (!open) setBookMenu(null);
+          }}
+          position={{ x: bookMenu.x, y: bookMenu.y }}
+          items={bookMenuItems}
+        />
+      )}
+      {detailsBook && (
+        <BookDetailsDialog
+          book={detailsBook}
+          open
+          onClose={() => setDetailsBook(null)}
+          onUpdateMetadata={(patch) => onUpdateMetadata?.(detailsBook, patch)}
+        />
+      )}
+      {removeBook && (
+        <BookRemoveDialog
+          book={removeBook}
+          open
+          onClose={() => setRemoveBook(null)}
+          onConfirm={() => {
+            setRemoveBook(null);
+            onRemove?.(removeBook);
+          }}
+        />
+      )}
+      {removeIds && (
+        <BooksRemoveDialog
+          count={removeIds.length}
+          open
+          onClose={() => setRemoveIds(null)}
+          onConfirm={() => {
+            setRemoveIds(null);
+            onBulkRemove?.(removeIds);
+          }}
+        />
+      )}
     </div>
   );
 }

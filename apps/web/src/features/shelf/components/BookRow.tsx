@@ -2,7 +2,7 @@ import { Check, Info, Star, Trash } from "@phosphor-icons/react";
 import { IconButton, Progress, Spinner } from "@read-aware/ui";
 import { cn } from "@read-aware/ui/cn";
 import { useLocalAtom } from "@read-aware/ui/state";
-import { type DragEvent, useState } from "react";
+import { type DragEvent, type MouseEvent, useState } from "react";
 import { formatPercent, useTranslation } from "../../../i18n";
 import type { BookMetadataPatch, LibraryBook } from "../../library/lib/library-types";
 import { BookCoverPlaceholder } from "./BookCoverPlaceholder";
@@ -29,6 +29,8 @@ type BookRowProps = {
   dragActive?: boolean;
   /** Merge the dragged books with this one into a new collection. */
   onDropOnBook?: () => void;
+  /** Right-click on the row (context menu handled by the shelf). */
+  onContextMenu?: (event: MouseEvent<HTMLElement>) => void;
 };
 
 export function BookRow({
@@ -46,6 +48,7 @@ export function BookRow({
   onDragEnd,
   dragActive = false,
   onDropOnBook,
+  onContextMenu,
   className,
 }: BookRowProps) {
   const { t } = useTranslation("shelf");
@@ -78,6 +81,7 @@ export function BookRow({
 
   return (
     <div
+      onContextMenu={onContextMenu}
       className={cn(
         "group flex items-center gap-4 rounded-sm px-2 py-2 transition-colors",
         selected ? "bg-fg/[0.06]" : "hover:bg-fg/5",

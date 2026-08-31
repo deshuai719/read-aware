@@ -5,7 +5,7 @@ import { useLocalAtom } from "@read-aware/ui/state";
 import { formatPercent, useTranslation } from "../../../i18n";
 import type { BookMetadataPatch, LibraryBook } from "../../library/lib/library-types";
 import { useLongPress } from "../hooks/useLongPress";
-import { type DragEvent, useState } from "react";
+import { type DragEvent, type MouseEvent, useState } from "react";
 import { BookCoverPlaceholder } from "./BookCoverPlaceholder";
 import { BookDetailsDialog, BookRemoveDialog } from "./BookDialogs";
 
@@ -29,6 +29,8 @@ type BookCoverProps = {
   dragActive?: boolean;
   /** Merge the dragged books with this one into a new collection. */
   onDropOnBook?: () => void;
+  /** Right-click on the cover (context menu handled by the shelf). */
+  onContextMenu?: (event: MouseEvent<HTMLElement>) => void;
   className?: string;
 };
 
@@ -46,6 +48,7 @@ export function BookCover({
   dragActive = false,
   onDropOnBook,
   onToggleSelect,
+  onContextMenu,
   opening = false,
   className,
 }: BookCoverProps) {
@@ -86,6 +89,7 @@ export function BookCover({
 
   return (
     <div
+      onContextMenu={onContextMenu}
       className={cn(
         "group relative flex w-full max-w-32 justify-self-start flex-col text-left sm:max-w-36 lg:max-w-44",
         className,

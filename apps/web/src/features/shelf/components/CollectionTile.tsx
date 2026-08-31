@@ -1,5 +1,5 @@
 import { CaretRight, FolderSimple, LockSimple } from "@phosphor-icons/react";
-import { useState, type DragEvent } from "react";
+import { useState, type DragEvent, type MouseEvent } from "react";
 import { cn } from "@read-aware/ui/cn";
 import { useTranslation } from "../../../i18n";
 import type { ShelfLayout } from "../lib/shelf-view";
@@ -22,6 +22,8 @@ type CollectionTileProps = {
   dragActive?: boolean;
   /** Assign the dragged books to this collection on drop. */
   onDropBooks?: (collectionId: string) => void;
+  /** Right-click on the tile (context menu handled by the workspace). */
+  onContextMenu?: (event: MouseEvent<HTMLElement>, data: CollectionTileData) => void;
 };
 
 /** A 2×2 montage of member covers, padded with blanks; a folder glyph when empty. */
@@ -66,7 +68,7 @@ function Montage({
  * its covers, and an always-on name/count label so it reads as a folder. Opens
  * the collection on click, and accepts dragged books as a drop target.
  */
-export function CollectionTile({ data, layout, onOpen, dragActive = false, onDropBooks }: CollectionTileProps) {
+export function CollectionTile({ data, layout, onOpen, dragActive = false, onDropBooks, onContextMenu }: CollectionTileProps) {
   const { t } = useTranslation("shelf");
   const [dragOver, setDragOver] = useState(false);
 
@@ -103,6 +105,7 @@ export function CollectionTile({ data, layout, onOpen, dragActive = false, onDro
       <button
         type="button"
         onClick={onOpen}
+        onContextMenu={onContextMenu ? (event) => onContextMenu(event, data) : undefined}
         {...dropHandlers}
         aria-label={lockLabel ?? data.name}
         className={cn(
@@ -133,6 +136,7 @@ export function CollectionTile({ data, layout, onOpen, dragActive = false, onDro
     <button
       type="button"
       onClick={onOpen}
+      onContextMenu={onContextMenu ? (event) => onContextMenu(event, data) : undefined}
       {...dropHandlers}
       aria-label={lockLabel ?? data.name}
       className={cn(

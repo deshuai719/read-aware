@@ -69,6 +69,9 @@ const ROAMING_POLICIES: Record<string, RoamingPolicy> = {
   // The Context page's active thread: cross-device continuation — pick up on
   // the phone in the conversation the desktop was in.
   "read-aware-active-global-thread": { deviceLocalFields: [] },
+  // Collection description / chosen cover / manual shelf order. Presentation
+  // data about the user's own shelf, so it follows them like a theme does.
+  "read-aware-collection-profiles": { deviceLocalFields: [] },
 };
 
 /**

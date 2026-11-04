@@ -154,6 +154,7 @@ html[data-motion="reduced"] .ra-motion-tab-panel-in-forward,
 html[data-motion="reduced"] .ra-motion-tab-panel-in-backward,
 html[data-motion="reduced"] .ra-motion-page-counter,
 html[data-motion="reduced"] .ra-motion-overlay-pop,
+html[data-motion="reduced"] .ra-motion-overlay-pop-up,
 html[data-motion="reduced"] .ra-motion-fade-in,
 html[data-motion="reduced"] .ra-dialog::backdrop {
   animation: none !important;
@@ -330,6 +331,13 @@ html[data-tauri="true"][data-os="ios"] #root {
     will-change: transform, opacity;
   }
 
+  /* Panel opening upward (Popover side="top", or "auto" flipped): the
+     entrance travels the other way so it grows out of the trigger above it. */
+  .ra-motion-overlay-pop-up {
+    animation: ra-overlay-pop-up 150ms var(--ra-ease-out-quint);
+    will-change: transform, opacity;
+  }
+
   /* Outgoing surface (the shelf while a book opens, or the reader while it
      closes): kept mounted briefly as a fixed overlay and dissolved over the
      incoming surface, so the old view fades away instead of vanishing in a
@@ -415,6 +423,17 @@ html[data-tauri="true"][data-os="ios"] #root {
   }
 }
 
+@keyframes ra-overlay-pop-up {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
 @keyframes ra-surface-exit {
   from {
     opacity: 1;
@@ -439,6 +458,7 @@ html[data-tauri="true"][data-os="ios"] #root {
   .ra-motion-tab-panel-in-backward,
   .ra-motion-page-counter,
   .ra-motion-overlay-pop,
+  .ra-motion-overlay-pop-up,
   .ra-motion-fade-in,
   .ra-dialog::backdrop {
     animation: none !important;

@@ -69,7 +69,15 @@ jobs:
           distribution: temurin
           java-version: "21"
 
-      - uses: android-actions/setup-android@40fd30fb8d7440372e1316f5d1809ec01dcd3699 # v4.0.1
+      # The runner image already ships the Android SDK and cmdline-tools.
+      # android-actions/setup-android@v4 runs `sdkmanager tools`, and Google has
+      # removed the legacy `tools` package from the SDK repository, so the step
+      # fails before anything is built. Export what the image already has.
+      - name: Use the preinstalled Android SDK
+        run: |
+          test -x "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager"
+          echo "ANDROID_HOME=$ANDROID_SDK_ROOT" >> "$GITHUB_ENV"
+          echo "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
 
       - name: Install NDK
         run: sdkmanager "ndk;${{ env.NDK_VERSION }}"

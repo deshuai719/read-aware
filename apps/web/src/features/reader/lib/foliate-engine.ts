@@ -34,6 +34,7 @@ export type FoliateTocItem = {
 export type FoliateBook = {
   metadata?: FoliateMetadata;
   toc?: FoliateTocItem[] | null;
+  splitTOCHref?: (href: string) => [unknown, unknown];
   sections?: unknown[];
   rendition?: { layout?: string };
   dir?: string;
@@ -138,8 +139,11 @@ export type FoliateSearchSubitem = { cfi: string; excerpt: FoliateSearchExcerpt 
  */
 export type FoliateSearchYield =
   | { progress: number }
-  | { label: string; subitems: FoliateSearchSubitem[] }
-  | string;
+  | { label: string; index?: number; subitems: FoliateSearchSubitem[] }
+  | { warning: "timeout" | "unavailable"; index: number }
+  | "done";
+
+export type FoliateSearchScopeSpan={startIndex:number;endIndex:number|null;startAnchor?:(doc:Document)=>unknown;endAnchor?:(doc:Document)=>unknown};
 
 export type FoliateView = HTMLElement & {
   open: (book: BookFileSource | string | FoliateBook) => Promise<void>;
@@ -163,6 +167,7 @@ export type FoliateView = HTMLElement & {
   goLeft: () => Promise<void> | void;
   goRight: () => Promise<void> | void;
   getCFI: (index: number, range: Range) => string;
+  lastLocation?: FoliateRelocateDetail | null;
   addAnnotation: (
     annotation: FoliateAnnotation,
     remove?: boolean,
@@ -176,11 +181,23 @@ export type FoliateView = HTMLElement & {
     matchCase?: boolean;
     matchDiacritics?: boolean;
     matchWholeWords?: boolean;
+    queryTerms?: string[];
+    signal?: AbortSignal;
+    maxResults?: number;
+    scopeIndex?: number;
+    scopeSpan?: FoliateSearchScopeSpan;
+    batchSize?: number;
+    sectionTimeoutMs?: number;
+    draw?: FoliateHighlightFn;
+    drawOptions?: { color?: string; activeColor?: string };
   }) => AsyncGenerator<FoliateSearchYield, void, unknown>;
   /** Jump to a CFI and select the passage there (true selection, copyable). */
   select: (target: string) => Promise<void>;
   /** Remove every outline highlight drawn by `search()`. */
   clearSearch: () => void;
+  restoreSearchResults?: (items:{index:number;cfi:string}[],opts:{draw?:FoliateHighlightFn;drawOptions?:{color?:string;activeColor?:string};activeCfi?:string|null;signal?:AbortSignal}) => Promise<void>;
+  /** Retint the active find hit without creating a text selection. */
+  setSearchActive?: (cfi: string | null) => Promise<void>;
 };
 
 export type FoliateHighlightFn = unknown;

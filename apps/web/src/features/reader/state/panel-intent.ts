@@ -16,6 +16,11 @@ export type ReaderPanelIntent = {
 
 export const readerPanelIntentAtom = atom<ReaderPanelIntent | null>(null);
 
+/** Find floats independently; opening it must not reveal the full reader toolbar. */
+export function panelRevealsReaderChrome(panel: ReaderPanelKind): boolean {
+  return panel !== "search";
+}
+
 export function createReaderPanelIntent(
   bookId: string,
   panel: ReaderPanelKind,

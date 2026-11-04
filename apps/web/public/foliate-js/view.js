@@ -1,7 +1,8 @@
 import * as CFI from './epubcfi.js'
 import { TOCProgress, SectionProgress } from './progress.js'
 import { Overlayer } from './overlayer.js'
-import { textWalker } from './text-walker.js'
+import { textWalker, blockTextWalker } from './text-walker.js'
+import { readSearchDocument, yieldSearchControl, chapterSearchRange } from './search-section.js'
 
 const SEARCH_PREFIX = 'foliate-search:'
 
@@ -218,6 +219,8 @@ export class View extends HTMLElement {
     #searchResults = new Map()
     #searchDraw
     #searchDrawOptions
+    #searchEpoch = 0
+    #searchActive = null
     #cursorAutohider = new CursorAutohider(this, () =>
         this.hasAttribute('autohide-cursor'))
     isFixedLayout = false
@@ -372,7 +375,9 @@ export class View extends HTMLElement {
         const { value, overlayKey = value } = annotation
         if (value.startsWith(SEARCH_PREFIX)) {
             const cfi = value.replace(SEARCH_PREFIX, '')
+            const epoch = this.#searchEpoch
             const { index, anchor } = await this.resolveNavigation(cfi)
+            if (!remove && epoch !== this.#searchEpoch) return
             const obj = this.#getOverlayer(index)
             if (obj) {
                 const { overlayer, doc } = obj
@@ -382,7 +387,10 @@ export class View extends HTMLElement {
                 }
                 const range = doc ? anchor(doc) : anchor
                 overlayer.add(
-                    overlayKey, range, this.#searchDraw, this.#searchDrawOptions, value)
+                    overlayKey, range, this.#searchDraw,
+                    cfi === this.#searchActive && this.#searchDrawOptions?.activeColor
+                        ? { ...this.#searchDrawOptions, color: this.#searchDrawOptions.activeColor }
+                        : this.#searchDrawOptions, value)
             }
             return
         }
@@ -551,41 +559,79 @@ export class View extends HTMLElement {
         for (const { range, excerpt } of matcher(doc, query))
             yield { cfi: this.getCFI(index, range), excerpt }
     }
-    async * #searchBook(matcher, query) {
-        const { sections } = this.book
-        for (const [index, { createDocument }] of sections.entries()) {
-            if (!createDocument) continue
-            const doc = await createDocument()
-            const subitems = Array.from(matcher(doc, query), ({ range, excerpt }) =>
-                ({ cfi: this.getCFI(index, range), excerpt }))
-            const progress = (index + 1) / sections.length
-            yield { progress }
-            if (subitems.length) yield { index, subitems }
+    async * #searchBook(matcher, query, { signal, maxResults = Infinity, scopeIndex, scopeSpan, batchSize = 50, sectionTimeoutMs } = {}) {
+        const sections = this.book.sections
+        if (scopeSpan && (scopeSpan.endIndex ?? sections.length-1) < scopeSpan.startIndex)
+            throw new RangeError('Invalid chapter search span')
+        const indices = scopeSpan ? Array.from({length:(scopeSpan.endIndex ?? sections.length-1)-scopeSpan.startIndex+1},(_,i)=>scopeSpan.startIndex+i)
+            : scopeIndex == null ? sections.map((_, index) => index) : [scopeIndex]
+        if (indices.some(index => !Number.isInteger(index) || index < 0 || index >= sections.length))
+            throw new RangeError('The current search chapter is unavailable')
+        let count = 0
+        const size = Math.max(1, Math.min(100, batchSize))
+        for (let ordinal = 0; ordinal < indices.length; ordinal++) {
+            if (signal?.aborted) return
+            const index = indices[ordinal]
+            yield { progress: ordinal / indices.length }
+            try {
+                const doc = await readSearchDocument(sections[index], {signal,timeoutMs:sectionTimeoutMs})
+                if (signal?.aborted) return
+                let subitems = []
+                let blocks = 0
+                const root = chapterSearchRange(doc,index,scopeSpan)
+                for (const result of matcher(root, query)) {
+                    if (signal?.aborted) return
+                    if (!result.range) {
+                        if (++blocks % 50 === 0) await yieldSearchControl()
+                        continue
+                    }
+                    subitems.push({ cfi: this.getCFI(index, result.range), excerpt: result.excerpt })
+                    count++
+                    if (subitems.length >= size || count >= maxResults) {
+                        yield {index,subitems}
+                        subitems = []
+                        if (count >= maxResults) return
+                        await yieldSearchControl()
+                    }
+                }
+                if (subitems.length) yield {index,subitems}
+            } catch (cause) {
+                if (signal?.aborted || cause?.name === 'AbortError') return
+                yield { warning: cause?.code === 'SEARCH_SECTION_TIMEOUT' ? 'timeout' : 'unavailable', index }
+            }
+            yield { progress: (ordinal + 1) / indices.length }
         }
     }
     async * search(opts) {
+        if (opts.signal?.aborted) return
         this.clearSearch()
-        this.#searchDraw = opts.draw ?? Overlayer.outline
-        this.#searchDrawOptions = opts.drawOptions
+        const epoch = this.#searchEpoch
+        this.#searchDraw = opts.draw ?? Overlayer.highlight
+        this.#searchDrawOptions = { color: '#f4d35e', activeColor: '#dfac45', ...opts.drawOptions }
         const { searchMatcher } = await import('./search.js')
         const { query, index } = opts
-        const matcher = searchMatcher(textWalker,
-            { defaultLocale: this.language, ...opts })
+        const matcher = searchMatcher(blockTextWalker,
+            { defaultLocale: this.language?.canonical, ...opts, reportProgress: true })
         const iter = index != null
             ? this.#searchSection(matcher, query, index)
-            : this.#searchBook(matcher, query)
+            : this.#searchBook(matcher, query, opts)
 
         const list = []
         this.#searchResults.set(index, list)
 
         for await (const result of iter) {
+            if (opts.signal?.aborted || epoch !== this.#searchEpoch) return
             if (result.subitems){
                 const list = result.subitems
                     .map(({ cfi }) => ({ value: SEARCH_PREFIX + cfi }))
-                this.#searchResults.set(result.index, list)
-                for (const item of list) this.addAnnotation(item)
+                this.#searchResults.set(result.index, [...(this.#searchResults.get(result.index) ?? []), ...list])
+                for (const item of list) {
+                    if (opts.signal?.aborted || epoch !== this.#searchEpoch) return
+                    await this.addAnnotation(item)
+                }
                 yield {
-                    label: this.#tocProgress.getProgress(result.index)?.label ?? '',
+                    index: result.index,
+                    label: this.#tocProgress?.getProgress(result.index)?.label ?? '',
                     subitems: result.subitems,
                 }
             }
@@ -593,7 +639,7 @@ export class View extends HTMLElement {
                 if (result.cfi) {
                     const item = { value: SEARCH_PREFIX + result.cfi }
                     list.push(item)
-                    this.addAnnotation(item)
+                    await this.addAnnotation(item)
                 }
                 yield result
             }
@@ -601,9 +647,47 @@ export class View extends HTMLElement {
         yield 'done'
     }
     clearSearch() {
-        for (const list of this.#searchResults.values())
-            for (const item of list) this.deleteAnnotation(item)
+        // Clear synchronously and invalidate in-flight CFI paints; resolving a CFI
+        // to delete later could race the next search and leave/re-delete markers.
+        this.#searchEpoch++
+        this.#searchActive = null
+        const values = new Set(Array.from(this.#searchResults.values()).flat().map(item => item.value))
+        for (const content of this.renderer?.getContents?.() ?? [])
+            for (const value of values) content.overlayer?.remove(value)
         this.#searchResults.clear()
+    }
+    async restoreSearchResults(items, { draw = Overlayer.highlight, drawOptions, activeCfi = null, signal } = {}) {
+        this.clearSearch()
+        const epoch = this.#searchEpoch
+        this.#searchDraw = draw
+        this.#searchDrawOptions = { color: '#f4d35e', activeColor: '#dfac45', ...drawOptions }
+        this.#searchActive = activeCfi
+        for (const {index,cfi} of items) {
+            const list = this.#searchResults.get(index) ?? []
+            list.push({value:SEARCH_PREFIX+cfi})
+            this.#searchResults.set(index,list)
+        }
+        const visible = new Set((this.renderer?.getContents?.() ?? []).map(content=>content.index))
+        let paints = 0
+        for (const [index,list] of this.#searchResults) {
+            if (!visible.has(index)) continue
+            for (const item of list) {
+                if (epoch !== this.#searchEpoch || signal?.aborted) return
+                await this.addAnnotation(item)
+                if (++paints % 50 === 0) await yieldSearchControl()
+            }
+        }
+    }
+    async setSearchActive(cfi) {
+        if (this.#searchActive === cfi) return
+        const previous = this.#searchActive
+        this.#searchActive = cfi
+        for (const target of [previous, cfi]) {
+            if (!target) continue
+            const value = SEARCH_PREFIX + target
+            if (Array.from(this.#searchResults.values()).some(list => list.some(item => item.value === value)))
+                await this.addAnnotation({ value })
+        }
     }
     async initTTS(granularity = 'word', highlight) {
         const doc = this.renderer.getContents()[0].doc

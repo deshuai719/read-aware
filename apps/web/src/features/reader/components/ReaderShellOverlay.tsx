@@ -1,3 +1,4 @@
+import { onAppEvent } from "../../../platform/app-events";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAtomValue } from "jotai";
 import { CaretLeft, ChatCircle, ListBullets, MagnifyingGlass } from "@phosphor-icons/react";
@@ -36,7 +37,7 @@ import { ReaderNotesPopover } from "./ReaderNotesPopover";
 import { ReaderProgressScrubber } from "./ReaderProgressScrubber";
 import { ReaderResizeHandle } from "./ReaderResizeHandle";
 import { ReaderAppearanceMenu } from "./ReaderAppearanceMenu";
-import { ReaderSearchPanel } from "./ReaderSearchPanel";
+import { ReaderSearchBar } from "./ReaderSearchBar";
 import { contributionText } from "../../plugins/lib/plugin-i18n";
 
 type ReaderShellOverlayProps = {
@@ -52,7 +53,10 @@ type ReaderShellOverlayProps = {
   onChapterSelect?: (href: string) => void;
   onAnnotationSelect?: (cfiRange: string) => void;
   /** Jump to a search hit (lands + selects; the session owns the channel). */
-  onSearchResultSelect?: (cfi: string) => void;
+  /** The search panel closed: end the session (clear hits, restore the origin). */
+  onSearchClosed?: () => void;
+  findOpen?: boolean;
+  onFindOpenChange?: (open: boolean) => void;
   /** In-book search state + actions, owned by the workspace's useReaderSearch. */
   search: ReaderSearchApi;
   /** Jump to a position in the book, 0..1 — the progress bar's drag target. */
@@ -81,7 +85,9 @@ export function ReaderShellOverlay({
   readingCursor = null,
   onChapterSelect,
   onAnnotationSelect,
-  onSearchResultSelect,
+  onSearchClosed,
+  findOpen,
+  onFindOpenChange,
   search,
   onSeek,
   textUnitMode = null,
@@ -114,8 +120,14 @@ export function ReaderShellOverlay({
 
   // TOC + chat + search panels persist per book (restored when the book
   // reopens); the appearance popover is transient and resets each session.
-  const { tocOpen, notesOpen, searchOpen, setTocOpen, setNotesOpen, setSearchOpen } =
+  const { tocOpen, notesOpen, setTocOpen, setNotesOpen } =
     useReaderPanelLayout(bookId);
+  const [localSearchOpen, setLocalSearchOpen] = useState(false);
+  const searchOpen = findOpen ?? localSearchOpen;
+  const setSearchOpen = useCallback((open: boolean) => {
+    if (onFindOpenChange) onFindOpenChange(open); else setLocalSearchOpen(open);
+  }, [onFindOpenChange]);
+  useEffect(() => { setSearchOpen(false); }, [bookId]);
   const { sizes, adjust: adjustPanel, persist: persistPanelSizes } = useReaderPanelSizes();
   const [appearanceOpen, setAppearanceOpen] = useState(false);
   const [annotationsOpen, setAnnotationsOpen] = useState(false);
@@ -160,18 +172,31 @@ export function ReaderShellOverlay({
     }
   };
 
-  // Closing the search panel ends the search session: cancel any running scan
-  // and clear the engine's result highlights. `clear` is a stable callback, so
-  // this only fires on actual open-state changes.
+  // Closing the panel ends the search NAVIGATION, not the search itself: the
+  // hits and their outline highlights stay, so reopening is instant — but the
+  // reader returns to where the search started and progress persists again.
+  // Driving this from the open-state transition (not only the panel's own
+  // close button) covers the phone sheet switches and the Android back gesture
+  // too; missing those left the origin captured and progress suspended.
+  // Stable identity: the find bar subscribes its outside-click listener to this
+  // callback, and a per-render arrow would re-bind it on every keystroke.
+  const closeSearch = useCallback(() => setSearchOpen(false), [setSearchOpen]);
+  useEffect(() => onAppEvent("reader-content-pressed", (event) => {
+    if (event.bookId === bookId) closeSearch();
+  }), [bookId, closeSearch]);
+
+  const wasSearchOpenRef = useRef(searchOpen);
   useEffect(() => {
-    if (!searchOpen) search.clear();
-  }, [search.clear, searchOpen]);
+    if (wasSearchOpenRef.current && !searchOpen) onSearchClosed?.();
+    wasSearchOpenRef.current = searchOpen;
+  }, [onSearchClosed, searchOpen]);
 
   // Android back gesture: a phone full-screen sheet is a deeper layer, so back
   // closes it (chat first — it renders on top) instead of unwinding the whole
   // reader back to the shelf. Docked desktop/tablet panels don't occlude the
   // page, so there back keeps its usual close-the-book meaning.
   useBackInterceptor(() => {
+    if (searchOpen) { setSearchOpen(false); return true; }
     if (!visible || !isPhone) return false;
     if (notesOpen) {
       setNotesOpen(false);
@@ -462,7 +487,8 @@ export function ReaderShellOverlay({
                 <IconButton
                   size="sm"
                   label={t("search.label")}
-                  aria-pressed={searchOpen}
+                  data-reader-search-toggle
+              aria-pressed={searchOpen}
                   onClick={toggleSearch}
                   className={cn(searchOpen && "text-fg")}
                   icon={
@@ -627,41 +653,18 @@ export function ReaderShellOverlay({
           )}
         </section>
 
-        {/* In-book search (left, beside the contents) */}
-        <section
-          aria-label={t("search.label")}
-          inert={!(visible && searchOpen)}
-          className={cn(
-            "flex min-h-0 flex-col transition-[transform,opacity] duration-200 ease-out",
-            isPhone
-              ? // Full-screen sheet below the top bar; no divider, no resize.
-                "absolute inset-0"
-              : "relative h-full shrink-0 border-r border-border-strong/70",
-            visible && searchOpen
-              ? "pointer-events-auto translate-x-0 opacity-100"
-              : "-translate-x-full opacity-0 pointer-events-none",
-          )}
-          style={{
-            width: isPhone ? undefined : sizes.search,
-            backgroundColor: "var(--ra-main-surface-color)",
-          }}
-        >
-          <ReaderSearchPanel
+        {/* In-book search: a floating find bar over the page, not a panel. It
+            never takes the layout away from the book, and every column keeps
+            its own width (there is no search column to resize). */}
+        {searchOpen && (
+          <ReaderSearchBar
             open={searchOpen}
+            belowChrome={visible}
             search={search}
             focusRequestId={searchFocusRequestId}
-            onSelect={(cfi) => onSearchResultSelect?.(cfi)}
-            onClose={() => setSearchOpen(false)}
+            onClose={closeSearch}
           />
-          {!isPhone && (
-            <ReaderResizeHandle
-              edge="right"
-              ariaLabel={t("resizeSearch")}
-              onResize={(delta) => adjustPanel("search", delta)}
-              onCommit={persistPanelSizes}
-            />
-          )}
-        </section>
+        )}
 
         {/* AI conversation (right) */}
         <section

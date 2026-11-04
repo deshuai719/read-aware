@@ -17,6 +17,8 @@ export type AppEventMap = {
   "book-closed": { bookId: string };
   "chapter-changed": { bookId: string; chapterHref: string | null };
   "reading-progress": { bookId: string; fraction: number };
+  /** Pointer interaction inside the engine iframe (does not bubble to host document). */
+  "reader-content-pressed": { bookId: string };
   /** A book row was deleted (any path — shelf UI included). */
   "book-removed": { bookId: string };
   /** Library contents changed outside the controller (e.g. plugin import). */

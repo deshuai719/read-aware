@@ -1,3 +1,5 @@
+import { readerFindDirection } from "../lib/reader-find-keys";
+import { emitAppEvent } from "../../../platform/app-events";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode, RefObject } from "react";
 import type { TFunction } from "i18next";
@@ -130,6 +132,9 @@ type FoliateReaderViewProps = {
   onCurrentChapterChange?: (href: string | null) => void;
   /** Current viewport text + chapter-relative location for the in-book agent. */
   onReadingCursorChange?: (cursor: ReadingCursor) => void;
+  onNavigationSettled?: (target: string | number, error: string | null) => void;
+  findOpen?: boolean;
+  onFindStep?: (direction: -1 | 1) => void;
   /** Parsed foliate book, shared with lazy metadata/text enrichment. */
   onBookReady?: (book: FoliateBook) => void;
   /** Fixed-layout books (PDF/CBZ) can't host annotations or text-unit modes;
@@ -349,6 +354,9 @@ export function FoliateReaderView({
   onTocChange,
   onCurrentChapterChange,
   onReadingCursorChange,
+  onNavigationSettled,
+  findOpen = false,
+  onFindStep,
   onBookReady,
   onFixedLayoutChange,
   textUnitModeActive = false,
@@ -424,10 +432,21 @@ export function FoliateReaderView({
   const onReadingActivityRef = useRef(onReadingActivity);
   const onPageChangeRef = useRef(onPageChange);
   const onProgressChangeRef = useRef(onProgressChange);
+  const selectedBookIdRef = useRef(selectedBook?.id);
+  selectedBookIdRef.current = selectedBook?.id;
   const onFractionChangeRef = useRef(onFractionChange);
   const onTocChangeRef = useRef(onTocChange);
   const onCurrentChapterChangeRef = useRef(onCurrentChapterChange);
   const onReadingCursorChangeRef = useRef(onReadingCursorChange);
+  const onFindStepRef = useRef(onFindStep);
+  onFindStepRef.current = onFindStep;
+  const findOpenRef = useRef(findOpen);
+  findOpenRef.current = findOpen;
+  const dismissedFindPointerRef = useRef(false);
+  const onNavigationSettledRef = useRef(onNavigationSettled);
+  onNavigationSettledRef.current = onNavigationSettled;
+  const searchNavigationTailRef = useRef<Promise<void>>(Promise.resolve());
+  const latestSearchRequestRef = useRef<number | null>(null);
   const onBookReadyRef = useRef(onBookReady);
 
   useEffect(() => { onContentClickRef.current = onContentClick; }, [onContentClick]);
@@ -1196,6 +1215,16 @@ export function FoliateReaderView({
       if (event.defaultPrevented) return;
     }
     if (!loadedBookRef.current) return;
+    const findDirection = readerFindDirection(event);
+    if (findDirection !== null && !isEditableKeyTarget(event.target)) {
+      event.preventDefault(); onFindStepRef.current?.(findDirection); return;
+    }
+    if (event.key === "Escape" && findOpenRef.current) {
+      event.preventDefault();
+      const bookId = selectedBookIdRef.current;
+      if (bookId) emitAppEvent("reader-content-pressed", { bookId });
+      return;
+    }
     if (isEditableKeyTarget(event.target)) return;
 
     // Configurable reader shortcuts, checked before the modifier guard so a
@@ -1428,6 +1457,11 @@ export function FoliateReaderView({
     const activityOptions = { passive: true, capture: true } as const;
     doc.addEventListener("pointermove", bumpReadingActivity, activityOptions);
     doc.addEventListener("pointerdown", bumpReadingActivity, activityOptions);
+    doc.addEventListener("pointerdown", () => {
+      dismissedFindPointerRef.current = findOpenRef.current;
+      const bookId = selectedBookIdRef.current;
+      if (bookId) emitAppEvent("reader-content-pressed", { bookId });
+    }, activityOptions);
     doc.addEventListener("keydown", bumpReadingActivity, activityOptions);
     doc.addEventListener("wheel", bumpReadingActivity, activityOptions);
     doc.addEventListener("scroll", bumpReadingActivity, activityOptions);
@@ -1634,6 +1668,10 @@ export function FoliateReaderView({
     );
 
     doc.addEventListener("click", (event) => {
+      if (dismissedFindPointerRef.current) {
+        dismissedFindPointerRef.current = false;
+        cancelPendingShellToggle(); cancelPendingShellOpen(); return;
+      }
       // Tapping an existing mark opens its recolor menu (via `show-annotation`);
       // skip the tap-to-toggle-shell handling so the two don't fight.
       const hit = viewRef.current?.renderer
@@ -1832,8 +1870,12 @@ export function FoliateReaderView({
     };
     const onTouchEnd = () => touchNav.onTouchEnd();
 
+    const onPointerDown = (event: PointerEvent) => {
+      if (insideViewport(event)) dismissedFindPointerRef.current = findOpenRef.current;
+    };
     const onClick = (event: MouseEvent) => {
       if (!insideViewport(event)) return;
+      if (dismissedFindPointerRef.current) { dismissedFindPointerRef.current = false; return; }
       if (selectionRef.current) {
         clearSelection();
         return;
@@ -1855,12 +1897,14 @@ export function FoliateReaderView({
     root.addEventListener("touchstart", onTouchStart, { passive: true });
     root.addEventListener("touchmove", onTouchMove, { passive: false });
     root.addEventListener("touchend", onTouchEnd);
+    root.addEventListener("pointerdown", onPointerDown, true);
     root.addEventListener("click", onClick);
     return () => {
       root.removeEventListener("wheel", onWheel);
       root.removeEventListener("touchstart", onTouchStart);
       root.removeEventListener("touchmove", onTouchMove);
       root.removeEventListener("touchend", onTouchEnd);
+      root.removeEventListener("pointerdown", onPointerDown, true);
       root.removeEventListener("click", onClick);
     };
   }, [clearSelection, createTouchNavHandlers]);
@@ -2224,19 +2268,28 @@ export function FoliateReaderView({
 
   useEffect(() => {
     const cfi = searchNavigationRequest?.cfi;
-    if (!cfi) return;
-    // `select`, not `goTo`: lands on the passage AND selects it — the hit is
-    // visibly marked and immediately copyable, which is the point of "jump to
-    // the search result".
-    void viewRef.current?.select(cfi);
+    const id = searchNavigationRequest?.requestId;
+    if (!cfi || id == null) return;
+    latestSearchRequestRef.current = id;
+    const view = viewRef.current;
+    if (!view) return;
+    searchNavigationTailRef.current = searchNavigationTailRef.current.catch(() => {}).then(async () => {
+      if (latestSearchRequestRef.current !== id || viewRef.current !== view) return;
+      try {
+        const resolved = await view.goTo(cfi);
+        if (!resolved) throw new Error("Search position could not be resolved.");
+        if (latestSearchRequestRef.current === id) onNavigationSettledRef.current?.(cfi, null);
+      } catch (cause) {
+        if (latestSearchRequestRef.current === id) onNavigationSettledRef.current?.(cfi, cause instanceof Error ? cause.message : String(cause));
+      }
+    });
   }, [searchNavigationRequest?.cfi, searchNavigationRequest?.requestId]);
 
   useEffect(() => {
     const fraction = fractionNavigationRequest?.fraction;
     if (fraction == null) return;
-    void goToFraction(fraction);
-    // requestId, not the fraction alone: scrubbing back to the same spot is
-    // still a new jump to make.
+    void goToFraction(fraction).then(() => onNavigationSettledRef.current?.(fraction, null))
+      .catch(cause => onNavigationSettledRef.current?.(fraction, cause instanceof Error ? cause.message : String(cause)));
   }, [fractionNavigationRequest?.fraction, fractionNavigationRequest?.requestId, goToFraction]);
 
   // Paginated layouts turn by explicit controls; scroll mode uses the native

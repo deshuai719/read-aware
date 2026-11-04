@@ -4,6 +4,7 @@ import type { RegisteredReaderMode } from "../../plugins/lib/plugin-types";
 import type { TocEntry } from "../lib/reader-types";
 import { BUILTIN_READER_PALETTES } from "../../settings/lib/reader-theme";
 import { ReaderShellOverlay } from "./ReaderShellOverlay";
+import type { ReaderSearchApi } from "../hooks/useReaderSearch";
 
 /** The book page's own colour, from the default reading theme — the reader
     takes its palette from the reading theme, never from an app token. */
@@ -46,15 +47,30 @@ const textUnitMode = {
 } as unknown as RegisteredReaderMode;
 
 /** Inert search state for the shell stories — the engine lives elsewhere. */
-const emptySearch = {
+const emptySearch: ReaderSearchApi = {
   query: "",
+  resultsQuery: "",
+  error: null,
   results: [],
   progress: null,
   running: false,
   truncated: false,
+  activeIndex: -1,
+  options: { matchCase: false, matchWholeWords: false, mode: "phrase", scope: "book" },
+  complete: false, hasMore: false, limitReached: false, warningIndices: [],
+  phase: "idle", visible: false, navRevision: 0, intentRevision: 0, scopeIndex: null,
+  dismiss: () => {}, resume: async () => {}, loadMore: async () => {}, notifyReady: () => {},
+  getSnapshot: () => emptySearch, isReady: () => true, step: () => {}, wrappedDirection: null,
+  terms: [],
+  missingTerm: null,
   setQuery: () => {},
-  runSearch: () => {},
+  runSearch: async () => {},
+  setActiveIndex: () => {},
+  setOptions: () => {},
   clear: () => {},
+  jumpTo: () => {},
+  canReturn: false,
+  returnToPosition: () => {},
 };
 
 /**
@@ -82,7 +98,6 @@ const meta = {
     onBack: () => {},
     onChapterSelect: () => {},
     onAnnotationSelect: () => {},
-    onSearchResultSelect: () => {},
     search: emptySearch,
     onSeek: () => {},
     onToggleTextUnitMode: () => {},
@@ -179,3 +194,9 @@ export const LongTitle: Story = {
     },
   },
 };
+/** Find stays independently visible while the full reader chrome is hidden. */
+export const FindOnly: Story = {args:{visible:false,findOpen:true}};
+export const FindWithCachedHits: Story = {args:{visible:false,findOpen:true,search:{...emptySearch,
+  query:"lantern",resultsQuery:"lantern",activeIndex:0,complete:true,phase:"done",visible:true,
+  results:[{cfi:"story-hit",pre:"A blue ",match:"lantern",post:" beside the window.",sectionIndex:0,chapter:"Example chapter",fraction:null}],
+}}};

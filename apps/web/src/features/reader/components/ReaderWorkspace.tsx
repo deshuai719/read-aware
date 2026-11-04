@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAtomValue } from "jotai";
 import { Body, Button, Spinner } from "@read-aware/ui";
 import { useTranslation } from "../../../i18n";
 import type { BookFormat, LibraryBook, ReaderProgress } from "../../library/lib/library-types";
 import type { ReaderLoadError } from "../hooks/useReaderSession";
-import { useReaderSearch } from "../hooks/useReaderSearch";
+import { useReaderSearch, type ReaderSearchApi } from "../hooks/useReaderSearch";
+import { useReaderFindNavigation } from "../hooks/useReaderFindNavigation";
 import { useReaderPalette } from "../../settings/hooks/useReaderPalette";
 import { useDelayedFlag } from "../hooks/useDelayedFlag";
 import { readTextUnitModeState } from "../lib/text-unit-mode-state";
@@ -62,6 +63,8 @@ type ReaderWorkspaceProps = {
   onChapterSelect: (href: string) => void;
   onAnnotationSelect: (cfiRange: string) => void;
   onSearchResultSelect: (cfi: string) => void;
+  /** Pause/resume persisting reading progress (search jumps must not rewrite it). */
+  onProgressSuspendedChange?: (suspended: boolean) => void;
 };
 
 export function ReaderWorkspace({
@@ -95,6 +98,7 @@ export function ReaderWorkspace({
   onChapterSelect,
   onAnnotationSelect,
   onSearchResultSelect,
+  onProgressSuspendedChange,
 }: ReaderWorkspaceProps) {
   const { t } = useTranslation("reader");
   const { effective: readerSettings } = useReaderAppearance(selectedBook.id);
@@ -107,6 +111,79 @@ export function ReaderWorkspace({
   // the shell's search panel drives the search lifecycle through the same ref.
   const viewRef = useRef<FoliateView | null>(null);
   const search = useReaderSearch({ viewRef, bookId: selectedBook.id });
+
+  // Search navigation. A jump is not reading: the origin is captured on the
+  // first jump and progress persistence is paused until the reader either
+  // returns or closes the panel, so a search never overwrites the place the
+  // reader actually was.
+  const searchOriginFractionRef = useRef<number | null>(null);
+  const originAnchorRef = useRef<string | null>(null);
+  const lastAnchorRef = useRef<string | null>(null);
+  const returningRef = useRef<string | number | null>(null);
+  const lastFractionRef = useRef<number | null>(null);
+  const [searchCanReturn, setSearchCanReturn] = useState(false);
+  const [findOpen, setFindOpen] = useState(false);
+
+  const handleFractionChange = useCallback(
+    (fraction: number) => {
+      lastFractionRef.current = fraction;
+      onReaderFractionChange(fraction);
+    },
+    [onReaderFractionChange],
+  );
+
+  const jumpToSearchResult = useCallback(
+    (cfi: string) => {
+      if (searchOriginFractionRef.current === null && lastFractionRef.current !== null) {
+        searchOriginFractionRef.current = lastFractionRef.current;
+        originAnchorRef.current = lastAnchorRef.current;
+        setSearchCanReturn(true);
+      }
+      onProgressSuspendedChange?.(true);
+      void viewRef.current?.setSearchActive?.(cfi);
+      onSearchResultSelect(cfi);
+    },
+    [onProgressSuspendedChange, onSearchResultSelect],
+  );
+
+  const returnToSearchOrigin = useCallback(() => {
+    const origin = searchOriginFractionRef.current;
+    if (origin == null) return;
+    onProgressSuspendedChange?.(true);
+    const anchor = originAnchorRef.current;
+    returningRef.current = anchor ?? origin;
+    if (anchor) onSearchResultSelect(anchor); else onSeek(origin);
+  }, [onProgressSuspendedChange, onSearchResultSelect, onSeek]);
+
+  const navigation = useReaderFindNavigation(search, jumpToSearchResult);
+  const handleFindOpenChange = useCallback((open: boolean) => { setFindOpen(open); if (open) onHideShell(); }, [onHideShell]);
+  const handleFindStep = useCallback((direction: -1 | 1) => { setFindOpen(true); onHideShell(); navigation.step(direction); }, [onHideShell, navigation.step]);
+  const searchApi = useMemo<ReaderSearchApi>(() => ({
+    ...search, ...navigation, canReturn: searchCanReturn, returnToPosition: returnToSearchOrigin,
+  }), [search, navigation, searchCanReturn, returnToSearchOrigin]);
+  // Closing accepts the current landing, removes marks, and ends THIS return origin.
+  // A later find starts from the later reading position rather than stale history.
+  const handleSearchClosed = useCallback(() => {
+    search.dismiss();
+    if (returningRef.current !== null) return;
+    searchOriginFractionRef.current = null; originAnchorRef.current = null; setSearchCanReturn(false);
+    onProgressSuspendedChange?.(false);
+  }, [onProgressSuspendedChange, search.dismiss]);
+
+  const handleNavigationSettled = useCallback((target: string | number, error: string | null) => {
+    if (returningRef.current !== null && target === returningRef.current) {
+      if (error && typeof target === "string" && searchOriginFractionRef.current !== null) {
+        returningRef.current = searchOriginFractionRef.current;
+        onSeek(searchOriginFractionRef.current); return;
+      }
+      returningRef.current = null; searchOriginFractionRef.current = null; originAnchorRef.current = null;
+      setSearchCanReturn(false); onProgressSuspendedChange?.(false);
+    } else if (error) onProgressSuspendedChange?.(false);
+  }, [onProgressSuspendedChange, onSeek]);
+  useEffect(() => {
+    searchOriginFractionRef.current = null; originAnchorRef.current = null; lastAnchorRef.current = null;
+    lastFractionRef.current = null; returningRef.current = null; setSearchCanReturn(false);
+  }, [selectedBook.id]);
 
   const headerVisible = !isReaderLoading && overlayVisible;
   // Hide the native traffic lights only during true immersive reading (book
@@ -181,11 +258,14 @@ export function ReaderWorkspace({
           onReadingActivity={recordActivity}
           onPageChange={handlePageChange}
           onProgressChange={handleProgressChange}
-          onFractionChange={onReaderFractionChange}
+          onFractionChange={handleFractionChange}
           onTocChange={onTocChange}
           onCurrentChapterChange={onCurrentChapterChange}
-          onReadingCursorChange={setReadingCursor}
-          onBookReady={(foliateBook) => onBookReady(selectedBook, foliateBook)}
+          onReadingCursorChange={(cursor) => { lastAnchorRef.current = cursor.anchor ?? null; setReadingCursor(cursor); }}
+          onNavigationSettled={handleNavigationSettled}
+          findOpen={findOpen}
+          onFindStep={handleFindStep}
+          onBookReady={(foliateBook) => { onBookReady(selectedBook, foliateBook); search.notifyReady(); }}
           onFixedLayoutChange={setIsFixedLayout}
           textUnitModeActive={textUnitModeActive}
           textUnitMode={textUnitMode}
@@ -256,8 +336,10 @@ export function ReaderWorkspace({
         }
         onChapterSelect={onChapterSelect}
         onAnnotationSelect={onAnnotationSelect}
-        onSearchResultSelect={onSearchResultSelect}
-        search={search}
+        search={searchApi}
+        onSearchClosed={handleSearchClosed}
+      findOpen={findOpen}
+      onFindOpenChange={handleFindOpenChange}
         onSeek={onSeek}
         textUnitMode={textUnitMode}
         textUnitModeActive={textUnitModeActive}

@@ -3,49 +3,65 @@ const CONTEXT_LENGTH = 50
 
 const normalizeWhitespace = str => str.replace(/\s+/g, ' ')
 
+const toRange = (strs, start, end) => {
+    let startIndex = 0, startBase = 0
+    while (startIndex < strs.length - 1 && startBase + strs[startIndex].length <= start)
+        startBase += strs[startIndex++].length
+    let endIndex = startIndex, endBase = startBase
+    while (endIndex < strs.length - 1 && endBase + strs[endIndex].length < end)
+        endBase += strs[endIndex++].length
+    return { startIndex, startOffset: start - startBase, endIndex, endOffset: end - endBase }
+}
 const makeExcerpt = (strs, { startIndex, startOffset, endIndex, endOffset }) => {
-    const start = strs[startIndex]
-    const end = strs[endIndex]
-    const match = start === end
-        ? start.slice(startOffset, endOffset)
-        : start.slice(startOffset)
-            + strs.slice(start + 1, end).join('')
-            + end.slice(0, endOffset)
-    const trimmedStart = normalizeWhitespace(start.slice(0, startOffset)).trimStart()
-    const trimmedEnd = normalizeWhitespace(end.slice(endOffset)).trimEnd()
-    const ellipsisPre = trimmedStart.length < CONTEXT_LENGTH ? '' : '…'
-    const ellipsisPost = trimmedEnd.length < CONTEXT_LENGTH ? '' : '…'
-    const pre = `${ellipsisPre}${trimmedStart.slice(-CONTEXT_LENGTH)}`
-    const post = `${trimmedEnd.slice(0, CONTEXT_LENGTH)}${ellipsisPost}`
-    return { pre, match, post }
+    let pre = strs[startIndex].slice(0, startOffset).slice(-50)
+    for (let i = startIndex - 1; i >= 0 && pre.length < 50; i--)
+        pre = strs[i].slice(-(50 - pre.length)) + pre
+    let post = strs[endIndex].slice(endOffset, endOffset + 50)
+    for (let i = endIndex + 1; i < strs.length && post.length < 50; i++)
+        post += strs[i].slice(0, 50 - post.length)
+    const match = startIndex === endIndex ? strs[startIndex].slice(startOffset, endOffset)
+        : strs[startIndex].slice(startOffset) + strs.slice(startIndex + 1, endIndex).join('') + strs[endIndex].slice(0, endOffset)
+    return { pre: (pre.length >= 50 ? '…' : '') + pre, match, post: post + (post.length >= 50 ? '…' : '') }
 }
-
-const simpleSearch = function* (strs, query, options = {}) {
-    const { locales = 'en', sensitivity } = options
-    const matchCase = sensitivity === 'variant'
+const wordChar = char => !!char && /[\p{L}\p{N}\p{M}_]/u.test(char)
+const simpleSearch = function* (strs, query, { locales, sensitivity, granularity }) {
     const haystack = strs.join('')
-    const lowerHaystack = matchCase ? haystack : haystack.toLocaleLowerCase(locales)
-    const needle = matchCase ? query : query.toLocaleLowerCase(locales)
-    const needleLength = needle.length
-    let index = -1
-    let strIndex = -1
-    let sum = 0
-    do {
-        index = lowerHaystack.indexOf(needle, index + 1)
-        if (index > -1) {
-            while (sum <= index) sum += strs[++strIndex].length
-            const startIndex = strIndex
-            const startOffset = index - (sum - strs[strIndex].length)
-            const end = index + needleLength
-            while (sum <= end) sum += strs[++strIndex].length
-            const endIndex = strIndex
-            const endOffset = end - (sum - strs[strIndex].length)
-            const range = { startIndex, startOffset, endIndex, endOffset }
-            yield { range, excerpt: makeExcerpt(strs, range) }
+    if (!query || !haystack) return
+    const whole = granularity === 'word'
+    const emit = (start, end) => {
+        if (whole && (wordChar(haystack.slice(0, start).at(-1)) || wordChar(haystack[end]))) return null
+        const range = toRange(strs, start, end)
+        return { range, excerpt: makeExcerpt(strs, range) }
+    }
+    if (sensitivity === 'variant') {
+        for (let from = 0; from <= haystack.length - query.length;) {
+            const start = haystack.indexOf(query, from)
+            if (start < 0) break
+            const found = emit(start, start + query.length)
+            if (found) yield found
+            from = start + query.length
         }
-    } while (index > -1)
+        return
+    }
+    // A conservative grapheme fallback retains ORIGINAL offsets even when case
+    // folding expands characters (for example İ). Do not index into a folded string.
+    const units = []
+    let offset = 0
+    for (const char of haystack) {
+        if (/[\p{M}]/u.test(char) && units.length) {
+            const last = units.at(-1); last.text += char; last.end += char.length
+        } else units.push({text:char,start:offset,end:offset+char.length})
+        offset += char.length
+    }
+    const queryLength = Array.from(query).filter(char => !/[\p{M}]/u.test(char)).length
+    const collator = new Intl.Collator(locales, {sensitivity,usage:'search'})
+    for (let i = 0; queryLength && i + queryLength <= units.length; i++) {
+        const start = units[i].start, end = units[i + queryLength - 1].end
+        if (collator.compare(query, haystack.slice(start,end)) !== 0) continue
+        const found = emit(start,end)
+        if (found) { yield found; i += queryLength - 1 }
+    }
 }
-
 const segmenterSearch = function* (strs, query, options = {}) {
     const { locales = 'en', granularity = 'word', sensitivity = 'base' } = options
     let segmenter, collator
@@ -108,23 +124,30 @@ export const search = (strs, query, options) => {
     return segmenterSearch(strs, query, options)
 }
 
+// ReadAware patch: all query terms must occur in the same leaf text block.
+// Ranges are still real character ranges; never intersect different terms by CFI.
 export const searchMatcher = (textWalker, opts) => {
-    const { defaultLocale, matchCase, matchDiacritics, matchWholeWords, acceptNode } = opts
+    const { defaultLocale, matchCase, matchDiacritics, matchWholeWords, acceptNode, queryTerms } = opts
     return function* (doc, query) {
-        const iter = textWalker(doc, function* (strs, makeRange) {
-            for (const result of search(strs, query, {
-                locales: doc.body.lang || doc.documentElement.lang || defaultLocale || 'en',
-                granularity: matchWholeWords ? 'word' : 'grapheme',
-                sensitivity: matchDiacritics && matchCase ? 'variant'
+        const terms = queryTerms?.length ? queryTerms : [query]
+        const options = {
+            locales: (doc.commonAncestorContainer?.ownerDocument ?? doc).body?.lang || (doc.commonAncestorContainer?.ownerDocument ?? doc).documentElement?.lang || defaultLocale || 'en',
+            granularity: matchWholeWords ? 'word' : 'grapheme',
+            sensitivity: matchDiacritics && matchCase ? 'variant'
                 : matchDiacritics && !matchCase ? 'accent'
-                : !matchDiacritics && matchCase ? 'case'
-                : 'base',
-            })) {
+                : !matchDiacritics && matchCase ? 'case' : 'base',
+        }
+        for (const result of textWalker(doc, function* (strs, makeRange) {
+            for (const term of terms.slice(1)) if (search(strs, term, options).next().done) {
+                if (options.reportProgress) yield { type: 'block' }
+                return
+            }
+            for (const result of search(strs, terms[0], options)) {
                 const { startIndex, startOffset, endIndex, endOffset } = result.range
                 result.range = makeRange(startIndex, startOffset, endIndex, endOffset)
                 yield result
             }
-        }, acceptNode)
-        for (const result of iter) yield result
+            if (options.reportProgress) yield { type: 'block' }
+        }, acceptNode)) yield result
     }
 }

@@ -129,3 +129,15 @@ Re-clone upstream at the desired commit, copy the top-level `*.js` modules (minu
 demo/config) and `vendor/`, replace the PDF.js modern build with the same version's
 official legacy build, include its `wasm/` assets, drop the `.map` files, and update
 the pinned commit above.
+
+## Fork patch: reader search (2026-11-03)
+
+`search.js` checks all query terms within one leaf text block while returning real match ranges. `view.js` caps collected engine hits, aborts stale scans before annotations, and reports spine indices. `useReaderSearch` serializes calls so a cancelled asynchronous document load cannot overwrite the newer search highlights. These changes intentionally patch the vendor boundary; retain or upstream them when re-vendoring.
+
+## Fork patch: transient find markers (2026-11-03)
+
+Search uses the existing filled highlight painter with subdued yellow and a slightly deeper active-hit tint, never the default red outline. `clearSearch` removes only tracked search keys synchronously and invalidates a search epoch; pending CFI resolutions cannot repaint after close. `setSearchActive` retints current/previous hits without a true DOM text selection. Keep these changes when re-vendoring.
+
+## Fork patch: search maturity (2026-11-03)
+
+Search uses contiguous nearest-block text runs, preserves inline-node excerpts and original offsets, and emits small batches. Scope may follow TOC anchors across spine files. Section reads are abortable/time-bounded; warnings identify partial coverage. Iterators pause for pagination; cache restoration registers only search keys for synchronous cleanup. The normal TTS/global walker retains its existing behavior. Keep these patches and real-DOM tests when re-vendoring.

@@ -1,9 +1,10 @@
+import { createSearchProgressPreview } from "../lib/search-progress-preview";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useAtomValue } from "jotai";
 import { useTranslation } from "../../../i18n";
 import { useLocalAtom } from "@read-aware/ui/state";
 import { askAiRequestAtom } from "../../ai/state/chat-intent";
-import { readerPanelIntentAtom } from "../state/panel-intent";
+import { readerPanelIntentAtom, panelRevealsReaderChrome } from "../state/panel-intent";
 import {
   markLibraryBookOpened,
   resolveStoredBookFile,
@@ -121,7 +122,7 @@ export function useReaderSession({
     if (!panelIntent || panelIntent.bookId !== selectedBook?.id) return;
     if (panelIntent.id === handledPanelIntentIdRef.current) return;
     handledPanelIntentIdRef.current = panelIntent.id;
-    setShellVisible(true);
+    if (panelRevealsReaderChrome(panelIntent.panel)) setShellVisible(true);
   }, [panelIntent, selectedBook?.id, setShellVisible]);
 
   useEffect(() => {
@@ -156,22 +157,37 @@ export function useReaderSession({
     setSearchNavigationRequest,
   ]);
 
+  // In-book search jumps around the book without reading it. Persisting those
+  // positions would overwrite where the reader actually was — the complaint
+  // that searching loses your place is exactly this write. Suspending the
+  // queue keeps the on-screen position live while the stored one stays put.
+  const progressPreviewRef = useRef(createSearchProgressPreview<BookProgress>());
   const queueProgressSave = useCallback((bookId: string, progress: BookProgress) => {
     latestProgressHandlersRef.current = { replaceBookInState, reportError };
     progressThrottleRef.current.queue(bookId, progress);
   }, [replaceBookInState, reportError]);
-
   const applyReaderProgress = useCallback((bookId: string, progress: BookProgress) => {
+    // Preview must not update the library book object either; only live reader UI moves.
+    if (progressPreviewRef.current.capture(bookId, progress)) return;
     applyOptimisticProgress(bookId, progress);
-    setSelectedBook((currentBook) => (
-      currentBook?.id === bookId
-        ? createProgressPatch(currentBook, progress)
-        : currentBook
-    ));
+    setSelectedBook(current => current?.id === bookId ? createProgressPatch(current, progress) : current);
     queueProgressSave(bookId, progress);
   }, [applyOptimisticProgress, queueProgressSave]);
+  const setProgressSuspended = useCallback((suspended: boolean) => {
+    if (suspended) {
+      progressThrottleRef.current.flushAll(); // persist the origin BEFORE leaving it
+      progressPreviewRef.current.begin();
+    } else {
+      const latest = progressPreviewRef.current.finish();
+      if (latest) applyReaderProgress(latest.bookId, latest.progress);
+      progressThrottleRef.current.flushAll();
+    }
+  }, [applyReaderProgress]);
 
   const openReader = useCallback((book: LibraryBook) => {
+    // A search left the previous book's progress suspended only until its panel
+    // closed; opening another book must not inherit that state.
+    progressPreviewRef.current.reset();
     const requestId = readerLoadRequestIdRef.current + 1;
     readerLoadRequestIdRef.current = requestId;
 
@@ -235,6 +251,9 @@ export function useReaderSession({
 
   const closeReader = useCallback(() => {
     readerLoadRequestIdRef.current += 1;
+    // Leaving the reader ends any search suspension; a suspended queue would
+    // otherwise drop the next book's progress on the floor.
+    progressPreviewRef.current.reset();
     setSelectedBook(null);
     setShellVisible(false);
     resetReaderState();
@@ -298,8 +317,7 @@ export function useReaderSession({
       cfi,
       requestId: (previous?.requestId ?? 0) + 1,
     }));
-    setShellVisible(false);
-  }, [setSearchNavigationRequest, setShellVisible]);
+  }, [setSearchNavigationRequest]);
 
   const overlayVisible = shellVisible;
   const selectedEpubProgress = selectedBook?.progress ?? null;
@@ -339,5 +357,6 @@ export function useReaderSession({
     handleSearchResultSelect,
     setReaderToc,
     setCurrentChapterHref,
+    setProgressSuspended,
   };
 }

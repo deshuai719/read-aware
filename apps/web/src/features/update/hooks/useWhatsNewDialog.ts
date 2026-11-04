@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from "react";
 import { useLocale } from "../../../i18n";
 import { getGeneralSettings } from "../../settings/lib/general-settings";
 import { fetchWhatsNewEntry, type WhatsNewEntry } from "../lib/changelog-feed";
+import { fetchReleaseNotes } from "../lib/release-notes";
+import { bundledReleaseNotes } from "../lib/bundled-release-notes";
 import { readCurrentAppVersion } from "../lib/software-update";
 import { dismissWhatsNew, reconcileWhatsNew } from "../lib/whats-new";
 import { versionCodename } from "../lib/version-codename";
@@ -11,8 +13,9 @@ import { versionCodename } from "../lib/version-codename";
  * reconcile/TTL state machine the old header chip used — see lib/whats-new).
  * The dialog opens IMMEDIATELY with a loading body — the changelog entry is
  * fetched on the fly from the landing site (lib/changelog-feed) and fills in
- * when it lands (stable releases), or gives way to the one-line fallback
- * when it doesn't (pre-releases are deliberately not curated on the site).
+ * when it lands (stable releases); a version the site doesn't curate falls
+ * back to its GitHub release body (see lib/release-notes), and only a release
+ * with no notes at all shows the one-line fallback.
  * A bounded timeout caps the wait, so the skeleton can never hang; closing
  * the dialog — any button, Escape, the backdrop — dismisses the notice for
  * good. When the user turned the dialog off in Settings the notice is
@@ -46,7 +49,14 @@ export function useWhatsNewDialog(): {
         }
         // Open first, load after — the dialog must never wait on the network.
         setState({ version: notice.version, entry: null, loading: true });
-        const entry = await fetchWhatsNewEntry(notice.version, locale);
+        // Two sources, richest first: the site's curated registry (stable
+        // releases, translated) and then the GitHub release body for this
+        // exact tag (what this fork publishes — scripts/release-notes.ts
+        // writes it from the commit log). A body-less release falls through
+        // to the dialog's one-line fallback.
+        const local = bundledReleaseNotes(notice.version, locale);
+        const curated = local ? null : await fetchWhatsNewEntry(notice.version, locale);
+        const entry = local ?? curated ?? (await fetchReleaseNotes(notice.version));
         if (cancelled) return;
         setState({ version: notice.version, entry, loading: false });
       })

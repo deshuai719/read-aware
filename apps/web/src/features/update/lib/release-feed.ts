@@ -9,7 +9,7 @@
  * against the minisign pubkey baked into tauri.conf.json.
  */
 
-const RELEASES_API_URL = "https://api.github.com/repos/ahpxex/read-aware/releases?per_page=30";
+const RELEASES_API_URL = "https://api.github.com/repos/deshuai719/read-aware/releases?per_page=30";
 
 /** The per-platform updater manifest asset name. */
 export type UpdateManifestAsset = "latest.json" | "latest-android.json";

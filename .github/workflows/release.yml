@@ -48,7 +48,12 @@ jobs:
   android:
     runs-on: ubuntu-latest
     steps:
+      # Full history + tags: the release body is written from the commits
+      # since the previous tag, so a shallow clone would leave it empty.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          fetch-tags: true
 
       - name: Require signing secrets
         run: |
@@ -121,14 +126,21 @@ jobs:
             > latest-android.json
           cp "$APK" ReadAware-android-arm64.apk
 
+      # `generate_release_notes` only lists merged pull requests — on a fork
+      # that pushes straight to main it yields nothing but a compare link,
+      # which the app then shows as an empty "what's new". Write the notes
+      # from the commit log instead.
+      - name: Write release notes
+        run: bun scripts/release-notes.ts --out release-notes.md
+
       - name: Attach to release
         uses: softprops/action-gh-release@3d0d9888cb7fd7b750713d6e236d1fcb99157228 # v3.0.2
         with:
           name: ReadAware ${{ github.ref_name }}
+          body_path: release-notes.md
           files: |
             ReadAware-*android-arm64.apk
             latest-android.json
-          generate_release_notes: true
           prerelease: false
 
   desktop:
@@ -150,7 +162,12 @@ jobs:
             platform: windows-x64
     runs-on: ${{ matrix.os }}
     steps:
+      # Full history + tags: the release body is written from the commits
+      # since the previous tag, so a shallow clone would leave it empty.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          fetch-tags: true
 
       - name: Require signing secrets
         shell: bash
@@ -273,12 +290,16 @@ jobs:
           esac
           ls -la release-assets
 
+      - name: Write release notes
+        shell: bash
+        run: bun scripts/release-notes.ts --out release-notes.md
+
       - name: Attach to release
         uses: softprops/action-gh-release@3d0d9888cb7fd7b750713d6e236d1fcb99157228 # v3.0.2
         with:
           name: ReadAware ${{ github.ref_name }}
+          body_path: release-notes.md
           files: release-assets/*
-          generate_release_notes: true
           prerelease: false
 
   # latest.json must exist once, after every desktop artifact is uploaded —

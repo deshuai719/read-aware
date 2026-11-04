@@ -83,6 +83,7 @@ const meta = {
     onRenameCollection: () => {},
     onDeleteCollection: () => {},
     onSetBooksCollection: () => {},
+    onMergeCollections: async () => {},
   },
 } satisfies Meta<typeof LibraryWorkspace>;
 

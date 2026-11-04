@@ -1,6 +1,16 @@
 import { useCallback, useEffect, useMemo, useState, type DragEvent, type MouseEvent } from "react";
 import { useAtom, useAtomValue } from "jotai";
-import { Books, FolderOpen, LockOpen, LockSimple, PencilSimple, Trash } from "@phosphor-icons/react";
+import {
+  ArrowDown,
+  ArrowUp,
+  Books,
+  DownloadSimple,
+  FolderOpen,
+  LockOpen,
+  LockSimple,
+  PencilSimple,
+  Trash,
+} from "@phosphor-icons/react";
 import { Body, Button, DropdownMenu, EmptyState, Skeleton, useToast } from "@read-aware/ui";
 import { cn } from "@read-aware/ui/cn";
 import { useTranslation } from "../../../i18n";
@@ -11,6 +21,20 @@ import { AddToCollectionDialog } from "../../shelf/components/AddToCollectionDia
 import { CollectionUngroupDropZone } from "../../shelf/components/CollectionUngroupDropZone";
 import type { CollectionTileData } from "../../shelf/components/CollectionTile";
 import { CollectionDeleteDialog, CollectionRenameDialog } from "../../shelf/components/CollectionMenuDialogs";
+import { CollectionProfileDialog } from "../../shelf/components/CollectionProfileDialog";
+import { CollectionMergeDialog } from "../../shelf/components/CollectionMergeDialog";
+import {
+  moveCollectionProfile,
+  readCollectionProfiles,
+  sortCollectionsByProfile,
+  updateCollectionProfile,
+  type CollectionProfiles,
+} from "../lib/collection-profiles";
+import { exportTextFile } from "../../../platform/export-file";
+import { onAppEvent } from "../../../platform/app-events";
+import { onLocalKVWrite } from "../../../platform/local-store";
+import { assertCollectionAccess } from "../lib/collection-operations";
+import { COLLECTION_PROFILES_KEY } from "../lib/collection-profiles";
 import { ShelfSelectionToolbar } from "../../shelf/components/ShelfSelectionToolbar";
 import { deriveShelfView } from "../../shelf/lib/derive-shelf-view";
 import { useShelfSelection } from "../../shelf/hooks/useShelfSelection";
@@ -48,6 +72,7 @@ type LibraryWorkspaceProps = {
   onRenameCollection: (id: string, name: string) => void;
   onDeleteCollection: (id: string) => void;
   onSetBooksCollection: (ids: string[], collectionId: string | null) => void;
+  onMergeCollections: (sourceId: string, targetId: string) => Promise<void>;
 };
 
 export function LibraryWorkspace({
@@ -67,6 +92,7 @@ export function LibraryWorkspace({
   onRenameCollection,
   onDeleteCollection,
   onSetBooksCollection,
+  onMergeCollections,
 }: LibraryWorkspaceProps) {
   const { t } = useTranslation("shelf");
   const shelfView = useAtomValue(shelfViewAtom);
@@ -86,6 +112,17 @@ export function LibraryWorkspace({
     data: CollectionTileData;
   } | null>(null);
   const [renameTarget, setRenameTarget] = useState<CollectionTileData | null>(null);
+  // Description / chosen cover / manual order for collections (a roaming
+  // preference, not an event — see lib/collection-profiles).
+  const [profiles, setProfiles] = useState<CollectionProfiles>(() => readCollectionProfiles());
+  useEffect(() => {
+    const refresh = () => setProfiles(readCollectionProfiles());
+    const offRemote = onAppEvent("roaming-preferences-changed", ({ keys }) => { if (keys.includes(COLLECTION_PROFILES_KEY)) refresh(); });
+    const offLocal = onLocalKVWrite((key) => { if (key === COLLECTION_PROFILES_KEY) refresh(); });
+    return () => { offRemote(); offLocal(); };
+  }, []);
+  const [profileTarget, setProfileTarget] = useState<CollectionTileData | null>(null);
+  const [mergeTarget, setMergeTarget] = useState<CollectionTileData | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<CollectionTileData | null>(null);
   const dragActive = dragBookIds !== null;
   const { toast } = useToast();
@@ -137,19 +174,11 @@ export function LibraryWorkspace({
     if (active && books.length === 0) exit();
   }, [active, books.length, exit]);
 
-  const visible = useMemo(
-    () =>
-      activeCollection
-        ? activeCollectionLocked
-          ? []
-          : shelfBooks.filter((b) => b.collectionId === activeCollection.id)
-        : shelfBooks.filter((b) => !b.collectionId),
-    [activeCollection, activeCollectionLocked, shelfBooks],
-  );
-
+  const visible = useMemo(() => activeCollection
+    ? activeCollectionLocked ? [] : shelfBooks.filter((book) => book.collectionId === activeCollection.id)
+    : shelfBooks.filter((book) => !book.collectionId), [activeCollection, activeCollectionLocked, shelfBooks]);
   const sections = deriveShelfView(visible, shelfView, t);
 
-  // Collection tiles (top level only): true member counts and a cover montage.
   const collectionTiles: CollectionTileData[] = useMemo(() => {
     if (activeCollectionId) return [];
     const members = new Map<string, LibraryBook[]>();
@@ -159,20 +188,27 @@ export function LibraryWorkspace({
       list.push(book);
       members.set(book.collectionId, list);
     }
-    return collections.map((collection) => {
+    return sortCollectionsByProfile(collections, profiles).map((collection) => {
       const inside = members.get(collection.id) ?? [];
+      const profile = profiles[collection.id];
+      const chosen = profile?.coverBookId
+        ? inside.find((book) => book.id === profile.coverBookId)?.coverUrl
+        : null;
       return {
         id: collection.id,
         name: collection.name,
         count: inside.length,
         locked: isCollectionLocked(collection),
+        // A hand-picked cover stands for the folder; otherwise the montage.
+        coverUrl: profile?.coverDataUrl ?? chosen ?? null,
+        description: profile?.description,
         coverUrls: inside
           .map((b) => b.coverUrl)
           .filter((url): url is string => Boolean(url))
           .slice(0, 4),
       };
     });
-  }, [activeCollectionId, books, collections]);
+  }, [activeCollectionId, books, collections, profiles]);
 
   const collectionCount =
     activeCollection && !activeCollectionLocked
@@ -276,7 +312,7 @@ export function LibraryWorkspace({
       if (ids.length < 2) return; // dropping a book onto itself — nothing to merge
       setAssignDialogIds(ids);
     },
-    [dragBookIds],
+    [dragBookIds, collections],
   );
 
   /**
@@ -299,18 +335,94 @@ export function LibraryWorkspace({
     [toast, t],
   );
 
+  /** Description + cover of a collection — a preference, saved the moment it is set. */
+  const handleSaveProfile = useCallback(
+    (id: string, patch: { description: string; coverBookId: string | null; coverDataUrl: string | null }) => {
+      try { assertCollectionAccess(collections, [id]); setProfiles(updateCollectionProfile(id, patch)); }
+      catch (error) { toast({ variant: "destructive", description: formatLibraryError(error, t) }); }
+    },
+    [collections, toast, t],
+  );
+
+  /**
+   * Fold collection `id` into `targetId`: every member moves, then the emptied
+   * collection is removed (its name, lock and profile go with it).
+   */
+  const [merging, setMerging] = useState(false);
+  const handleMergeCollection = useCallback(async (id: string, targetId: string) => {
+    if (merging) return;
+    setMerging(true);
+    try {
+      assertCollectionAccess(collections, [id, targetId]);
+      const count = books.filter((book) => book.collectionId === id).length;
+      await onMergeCollections(id, targetId);
+      setProfiles(readCollectionProfiles());
+      setMergeTarget(null);
+      if (activeCollectionId === id) setActiveCollectionId(targetId);
+      toast({ description: t("collection.merged", { count }) });
+    } catch (error) {
+      toast({ variant: "destructive", title: t("workspace.errorTitle"), description: formatLibraryError(error, t) });
+    } finally { setMerging(false); }
+  }, [merging, collections, books, onMergeCollections, activeCollectionId, setActiveCollectionId, t, toast]);
+
+  /** Export a collection as a reading list (title, author, progress). */
+  const handleExportCollection = useCallback(
+    async (id: string) => {
+      const collection = collections.find((entry) => entry.id === id);
+      if (!collection || isCollectionLocked(collection)) return;
+      const members = books.filter((book) => book.collectionId === id);
+      if (!collection || members.length === 0) return;
+      const lines = [`# ${collection.name}`, ""];
+      for (const book of members) {
+        const author = book.author && book.author !== "Unknown author" ? ` — ${book.author}` : "";
+        lines.push(`- ${book.title}${author} (${Math.round(book.progressPercent)}%)`);
+      }
+      lines.push("", t("collection.exportFooter", { count: members.length }));
+      try {
+        await exportTextFile({
+          filename: `${collection.name}.md`,
+          content: lines.join("\n") + "\n",
+          mimeType: "text/markdown;charset=utf-8",
+        });
+      } catch (error) {
+        toast({
+          variant: "destructive",
+          title: t("workspace.errorTitle"),
+          description: formatLibraryError(error, t),
+        });
+      }
+    },
+    [books, collections, t, toast],
+  );
+
   /** Right-click on a collection tile opens the menu (ignored mid-drag). */
   const handleCollectionContextMenu = useCallback(
     (event: MouseEvent<HTMLElement>, data: CollectionTileData) => {
       if (dragBookIds !== null) return;
       event.preventDefault();
+      const collection = collections.find((entry) => entry.id === data.id);
+      if (collection && isCollectionLocked(collection)) {
+        setLockTarget({ mode: "unlock", collection });
+        return;
+      }
       setCollectionMenu({ x: event.clientX, y: event.clientY, data });
     },
     [dragBookIds],
   );
 
+  // An open collection is itself a file-drop target: dropping a book anywhere
+  // inside it files the book there (useDropBookImport reads the attribute).
+  const dropCollectionProps =
+    activeCollection && !activeCollectionLocked
+      ? {
+          "data-drop-collection": activeCollection.id,
+          "data-drop-collection-name": activeCollection.name,
+        }
+      : {};
+
   return (
     <div
+      {...dropCollectionProps}
       className={cn(
         "ra-motion-page-enter mx-auto flex min-h-full w-full flex-col px-6 pt-5 sm:pt-6",
         // The cover grid flows to fill any window; list rows keep a readable
@@ -372,6 +484,7 @@ export function LibraryWorkspace({
               key={activeCollection.id}
               collection={activeCollection}
               count={collectionCount}
+              description={profiles[activeCollection.id]?.description}
               onRename={(name) => onRenameCollection(activeCollection.id, name)}
               onManageLock={() => setLockTarget({ mode: "manage", collection: activeCollection })}
               onDelete={() => {
@@ -475,6 +588,47 @@ export function LibraryWorkspace({
                 setCollectionMenu(null);
               },
             },
+            {
+              // Description + cover: what the folder looks like, not what it is.
+              label: t("collection.menu.editProfile"),
+              icon: <PencilSimple size={14} weight="regular" aria-hidden="true" />,
+              onClick: () => {
+                setProfileTarget(collectionMenu.data);
+                setCollectionMenu(null);
+              },
+            },
+            {
+              label: t("collection.menu.moveUp"),
+              icon: <ArrowUp size={14} weight="regular" aria-hidden="true" />,
+              onClick: () => {
+                setProfiles(moveCollectionProfile(collections, profiles, collectionMenu.data.id, -1));
+                setCollectionMenu(null);
+              },
+            },
+            {
+              label: t("collection.menu.moveDown"),
+              icon: <ArrowDown size={14} weight="regular" aria-hidden="true" />,
+              onClick: () => {
+                setProfiles(moveCollectionProfile(collections, profiles, collectionMenu.data.id, 1));
+                setCollectionMenu(null);
+              },
+            },
+            {
+              label: t("collection.menu.merge"),
+              icon: <FolderOpen size={14} weight="regular" aria-hidden="true" />,
+              onClick: () => {
+                setMergeTarget(collectionMenu.data);
+                setCollectionMenu(null);
+              },
+            },
+            {
+              label: t("collection.menu.export"),
+              icon: <DownloadSimple size={14} weight="regular" aria-hidden="true" />,
+              onClick: () => {
+                void handleExportCollection(collectionMenu.data.id);
+                setCollectionMenu(null);
+              },
+            },
             collectionMenu.data.locked
               ? {
                   label: t("collection.menu.unlock"),
@@ -514,6 +668,37 @@ export function LibraryWorkspace({
             onRenameCollection(renameTarget.id, name);
             setRenameTarget(null);
           }}
+        />
+      )}
+      {profileTarget && (
+        <CollectionProfileDialog
+          collection={profileTarget}
+          members={books
+            .filter((book) => book.collectionId === profileTarget.id)
+            .map((book) => ({ id: book.id, title: book.title, coverUrl: book.coverUrl }))}
+          description={profiles[profileTarget.id]?.description ?? ""}
+          coverBookId={profiles[profileTarget.id]?.coverBookId ?? null}
+          coverDataUrl={profiles[profileTarget.id]?.coverDataUrl ?? null}
+          onClose={() => setProfileTarget(null)}
+          onSave={(patch) => {
+            handleSaveProfile(profileTarget.id, patch);
+            setProfileTarget(null);
+          }}
+        />
+      )}
+      {mergeTarget && (
+        <CollectionMergeDialog
+          source={mergeTarget}
+          targets={collections
+            .filter((collection) => collection.id !== mergeTarget.id && !isCollectionLocked(collection))
+            .map((collection) => ({
+              id: collection.id,
+              name: collection.name,
+              count: books.filter((book) => book.collectionId === collection.id).length,
+            }))}
+          onClose={() => setMergeTarget(null)}
+          busy={merging}
+          onMerge={(targetId) => { void handleMergeCollection(mergeTarget.id, targetId); }}
         />
       )}
       {deleteTarget && (

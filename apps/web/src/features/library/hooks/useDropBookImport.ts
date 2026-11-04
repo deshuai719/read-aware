@@ -10,6 +10,23 @@ function isBookFile(file: File): boolean {
   return (BOOK_FILE_EXTENSIONS as readonly string[]).includes(ext);
 }
 
+/** A drop target that files should be filed into, found under the pointer. */
+type DropCollection = { id: string; name: string | null };
+
+/**
+ * The collection under a screen point, if any. Collection tiles and an open
+ * collection both carry `data-drop-collection`, so dropping a file onto one
+ * imports it there instead of onto the shelf root.
+ */
+function collectionAt(x: number, y: number): DropCollection | null {
+  const element = document.elementFromPoint(x, y);
+  const host = element?.closest("[data-drop-collection]") as HTMLElement | null;
+  if (host?.dataset.dropCollectionLocked === "true") return null;
+  const id = host?.dataset.dropCollection;
+  if (!id) return null;
+  return { id, name: host?.dataset.dropCollectionName ?? null };
+}
+
 /**
  * Window-wide drag-and-drop book import. Works because the Tauri window has
  * `dragDropEnabled: false` (native interception off for the menus feature's
@@ -17,15 +34,24 @@ function isBookFile(file: File): boolean {
  * events. Only OS file drags carry the "Files" type, so in-app HTML5 drags
  * never trigger the overlay or the importer.
  *
- * Returns whether a file drag is currently hovering the window (drives the
- * drop overlay).
+ * Files dropped onto a collection tile (or anywhere inside an open
+ * collection) are imported into that collection; anywhere else goes to the
+ * shelf. The overlay names the target so the destination is visible before
+ * the drop.
+ *
+ * Returns whether a file drag is hovering the window (drives the overlay) and
+ * the name of the collection it would land in.
  */
 export function useDropBookImport(
-  importSources: (sources: BookImportSource[]) => Promise<unknown>,
-): boolean {
+  importSources: (
+    sources: BookImportSource[],
+    options?: { collectionId?: string | null },
+  ) => Promise<unknown>,
+): { active: boolean; targetName: string | null } {
   const importRef = useRef(importSources);
   importRef.current = importSources;
   const [dragActive, setDragActive] = useState(false);
+  const [targetName, setTargetName] = useState<string | null>(null);
 
   useEffect(() => {
     // enter/leave fire per DOM node crossed; the counter nets them out so the
@@ -38,36 +64,53 @@ export function useDropBookImport(
       (event.dataTransfer?.types.includes("Files") ?? false) &&
       !(event.dataTransfer?.types.includes(BOOK_DRAG_MIME) ?? false);
 
+    /** Track the collection under the pointer, re-rendering only on change. */
+    const track = (event: DragEvent) => {
+      const under = collectionAt(event.clientX, event.clientY);
+      setTargetName((current) => (current === (under?.name ?? null) ? current : (under?.name ?? null)));
+    };
+
     function onDragEnter(event: DragEvent) {
       if (!hasFiles(event)) return;
       depth += 1;
       setDragActive(true);
+      track(event);
     }
     function onDragOver(event: DragEvent) {
       if (!hasFiles(event)) return;
       // Without this the webview navigates to the dropped file.
       event.preventDefault();
       if (event.dataTransfer) event.dataTransfer.dropEffect = "copy";
+      track(event);
     }
     function onDragLeave(event: DragEvent) {
       if (!hasFiles(event)) return;
       depth = Math.max(0, depth - 1);
-      if (depth === 0) setDragActive(false);
+      if (depth === 0) {
+        setDragActive(false);
+        setTargetName(null);
+      }
     }
     function onDrop(event: DragEvent) {
       if (!hasFiles(event)) return;
       event.preventDefault();
+      const collection = collectionAt(event.clientX, event.clientY);
       depth = 0;
       setDragActive(false);
+      setTargetName(null);
       const files = Array.from(event.dataTransfer?.files ?? []).filter(isBookFile);
       if (files.length === 0) return;
-      void importRef.current(files.map((file) => ({ kind: "file" as const, file })));
+      void importRef.current(
+        files.map((file) => ({ kind: "file" as const, file })),
+        { collectionId: collection?.id ?? null },
+      );
     }
     // Any drag that ends resets the counter, so a missed dragleave can never
     // leave the import overlay stuck on screen.
     function onDragEnd() {
       depth = 0;
       setDragActive(false);
+      setTargetName(null);
     }
 
     window.addEventListener("dragenter", onDragEnter);
@@ -84,5 +127,5 @@ export function useDropBookImport(
     };
   }, []);
 
-  return dragActive;
+  return { active: dragActive, targetName };
 }

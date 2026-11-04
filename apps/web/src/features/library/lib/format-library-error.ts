@@ -7,6 +7,8 @@ import type { TFunction } from "i18next";
  */
 export function formatLibraryError(error: unknown, t?: TFunction<"shelf">) {
   if (error instanceof Error && error.message) {
+    if (t && error.message === "collection-locked") return t("collection.lockedEmpty");
+    if (t && error.message === "collection-not-found") return t("errors.generic");
     return error.message;
   }
 

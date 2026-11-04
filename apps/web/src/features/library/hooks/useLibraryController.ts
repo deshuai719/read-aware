@@ -26,6 +26,7 @@ import type {
 import type { FoliateBook } from "../../reader/lib/foliate-engine";
 import { onAppEvent } from "../../../platform/app-events";
 import { createLogger } from "../../../platform/logger";
+import { removeCollectionProfile } from "../lib/collection-profiles";
 
 const log = createLogger("library");
 
@@ -167,16 +168,19 @@ export function useLibraryController() {
     });
   }, [loadLibrary, reportError]);
 
-  const handleDeleteCollection = useCallback((id: string) => {
-    setCollections((current) => current.filter((c) => c.id !== id));
-    setBooks((current) =>
-      current.map((book) => (book.collectionId === id ? { ...book, collectionId: null } : book)),
-    );
-    void userDomain.library.commands.collections.remove(id).catch((error) => {
-      void loadLibrary();
-      reportError(error);
-    });
+  const handleDeleteCollection = useCallback(async (id: string) => {
+    try {
+      await userDomain.library.commands.collections.remove(id);
+      removeCollectionProfile(id);
+      await loadLibrary();
+    } catch (error) { reportError(error); }
   }, [loadLibrary, reportError]);
+
+  const handleMergeCollections = useCallback(async (sourceId: string, targetId: string) => {
+    await userDomain.library.commands.collections.merge(sourceId, targetId);
+    removeCollectionProfile(sourceId);
+    await loadLibrary();
+  }, [loadLibrary]);
 
   const handleSetBooksCollection = useCallback(
     (ids: string[], collectionId: string | null) => {
@@ -237,7 +241,15 @@ export function useLibraryController() {
       .finally(() => bookReadyPendingRef.current.delete(book.id));
   }, [toast]);
 
-  const importSources = useCallback(async (sources: BookImportSource[]): Promise<ImportOutcome[]> => {
+  /**
+   * Import picked or dropped files. `collectionId` files the new books
+   * straight into that collection — the drop was aimed at it, so landing
+   * them on the shelf first would make the user do the same gesture twice.
+   */
+  const importSources = useCallback(async (
+    sources: BookImportSource[],
+    options?: { collectionId?: string | null },
+  ): Promise<ImportOutcome[]> => {
     if (sources.length === 0) return [];
 
     setImportingCount(sources.length);
@@ -268,10 +280,20 @@ export function useLibraryController() {
               outcomes.push({ status: "duplicate", book: existing });
             } else {
               imported += 1;
-              outcomes.push({ status: "imported", book: result.book });
+              let filed = result.book;
+              if (options?.collectionId) {
+                try {
+                  await userDomain.library.commands.collections.assignBooks([result.book.id], options.collectionId);
+                  filed = { ...result.book, collectionId: options.collectionId };
+                } catch (error) {
+                  // The file was imported; membership was not. Do not invent a successful assignment.
+                  reportError(error);
+                }
+              }
+              outcomes.push({ status: "imported", book: filed });
               // Swap the pending entry for the durable book in one React batch.
               // The id and all sort fields stay identical, so its grid slot does not move.
-              setBooks((current) => [result.book, ...current]);
+              setBooks((current) => [filed, ...current]);
               knownBooks.unshift(result.book);
             }
           }
@@ -421,6 +443,7 @@ export function useLibraryController() {
     handleCreateCollection,
     handleRenameCollection,
     handleDeleteCollection,
+    handleMergeCollections,
     handleSetBooksCollection,
     replaceBookInState,
     applyOptimisticProgress,

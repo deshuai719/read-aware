@@ -57,11 +57,30 @@
       "open": "Открыть",
       "rename": "Переименовать",
       "unlock": "Разблокировать",
-      "label": "Действия с подборкой"
+      "label": "Действия с подборкой",
+      "editProfile": "Описание и обложка",
+      "moveUp": "Вверх",
+      "moveDown": "Вниз",
+      "merge": "Объединить с…",
+      "export": "Экспорт списка"
     },
     "nameLabel": "Название коллекции",
     "rename": "Переименовать",
-    "renameAction": "Переименовать коллекцию"
+    "renameAction": "Переименовать коллекцию",
+    "profileTitle": "Изменить «{{name}}»",
+    "descriptionLabel": "Описание",
+    "descriptionPlaceholder": "Для чего эта папка?",
+    "coverLabel": "Обложка",
+    "coverAuto": "Автоматически",
+    "coverNone": "Ни у одной книги пока нет обложки.",
+    "saveProfile": "Сохранить",
+    "mergeTitle": "Объединить «{{name}}»",
+    "mergeBody": "{{count}} книг перейдут в выбранную коллекцию, эта будет удалена.",
+    "mergeNoTargets": "Нет другой коллекции для объединения.",
+    "mergeConfirm": "Объединить",
+    "merged": "Объединено книг: {{count}}",
+    "exportFooter": "{{count}} книг · экспорт из ReadAware",
+    "coverUpload": "Загрузить обложку"
   },
   "collectionDialog": {
     "newLabel": "Новая коллекция",
@@ -92,7 +111,8 @@
     "ungrouped": ""
   },
   "dropImport": {
-    "hint": "Перетащите книги сюда для импорта"
+    "hint": "Перетащите книги сюда для импорта",
+    "intoCollection": "Отпустите, чтобы добавить в «{{collection}}»"
   },
   "dropZone": {
     "ungroupActive": "",
@@ -185,5 +205,11 @@
     "errorTitle": "Ошибка библиотеки",
     "importTitle": "Импорт",
     "nothingToShow": "Нечего показать."
+  },
+  "search": {
+    "label": "Поиск книг",
+    "placeholder": "Название, автор, имя файла",
+    "count": "{{count}} результатов",
+    "empty": "Книги не найдены."
   }
 }

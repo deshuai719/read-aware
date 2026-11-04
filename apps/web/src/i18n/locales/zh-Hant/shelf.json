@@ -54,11 +54,30 @@
       "open": "開啟",
       "rename": "重新命名",
       "unlock": "解鎖",
-      "label": "收藏夾操作"
+      "label": "收藏夾操作",
+      "editProfile": "簡介與封面",
+      "moveUp": "上移",
+      "moveDown": "下移",
+      "merge": "合併到…",
+      "export": "匯出書單"
     },
     "nameLabel": "收藏名稱",
     "rename": "重新命名",
-    "renameAction": "重新命名收藏"
+    "renameAction": "重新命名收藏",
+    "profileTitle": "編輯「{{name}}」",
+    "descriptionLabel": "簡介",
+    "descriptionPlaceholder": "這個合集是做什麼的？",
+    "coverLabel": "封面",
+    "coverAuto": "自動",
+    "coverNone": "這個合集還沒有帶封面的書。",
+    "saveProfile": "儲存",
+    "mergeTitle": "合併「{{name}}」",
+    "mergeBody": "{{count}} 本書會移入你選擇的合集，之後這個合集將被刪除。",
+    "mergeNoTargets": "沒有其他可合併的合集。",
+    "mergeConfirm": "合併",
+    "merged": "已合併 {{count}} 本書",
+    "exportFooter": "共 {{count}} 本 · 由 ReadAware 匯出",
+    "coverUpload": "上傳封面圖片"
   },
   "collectionDialog": {
     "newLabel": "新收藏",
@@ -86,7 +105,8 @@
     "ungrouped": ""
   },
   "dropImport": {
-    "hint": "鬆開以匯入書籍"
+    "hint": "鬆開以匯入書籍",
+    "intoCollection": "放開以匯入到「{{collection}}」"
   },
   "dropZone": {
     "ungroupActive": "",
@@ -164,5 +184,11 @@
     "errorTitle": "書庫錯誤",
     "importTitle": "匯入",
     "nothingToShow": "沒有可顯示的內容。"
+  },
+  "search": {
+    "label": "搜尋書籍",
+    "placeholder": "書名、作者、檔案名稱",
+    "count": "{{count}} 個結果",
+    "empty": "沒有找到符合的書籍。"
   }
 }

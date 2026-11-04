@@ -56,11 +56,30 @@
       "open": "Abrir",
       "rename": "Cambiar nombre",
       "unlock": "Desbloquear",
-      "label": "Acciones de colección"
+      "label": "Acciones de colección",
+      "editProfile": "Descripción y portada",
+      "moveUp": "Subir",
+      "moveDown": "Bajar",
+      "merge": "Combinar en…",
+      "export": "Exportar lista"
     },
     "nameLabel": "Nombre de la colección",
     "rename": "Cambiar nombre",
-    "renameAction": "Cambiar el nombre de la colección"
+    "renameAction": "Cambiar el nombre de la colección",
+    "profileTitle": "Editar «{{name}}»",
+    "descriptionLabel": "Descripción",
+    "descriptionPlaceholder": "¿Para qué es esta carpeta?",
+    "coverLabel": "Portada",
+    "coverAuto": "Automática",
+    "coverNone": "Ningún libro tiene portada todavía.",
+    "saveProfile": "Guardar",
+    "mergeTitle": "Combinar «{{name}}»",
+    "mergeBody": "{{count}} libros pasan a la colección elegida y esta se elimina.",
+    "mergeNoTargets": "No hay otra colección donde combinar.",
+    "mergeConfirm": "Combinar",
+    "merged": "{{count}} libros combinados",
+    "exportFooter": "{{count}} libros · exportado desde ReadAware",
+    "coverUpload": "Subir portada"
   },
   "collectionDialog": {
     "newLabel": "Nueva colección",
@@ -90,7 +109,8 @@
     "ungrouped": ""
   },
   "dropImport": {
-    "hint": "Suelta libros aquí para importarlos"
+    "hint": "Suelta libros aquí para importarlos",
+    "intoCollection": "Suelta para importar en «{{collection}}»"
   },
   "dropZone": {
     "ungroupActive": "",
@@ -178,5 +198,11 @@
     "errorTitle": "Error de la biblioteca",
     "importTitle": "Importar",
     "nothingToShow": "No hay nada que mostrar."
+  },
+  "search": {
+    "label": "Buscar libros",
+    "placeholder": "Título, autor, nombre de archivo",
+    "count": "{{count}} resultados",
+    "empty": "Ningún libro coincide."
   }
 }

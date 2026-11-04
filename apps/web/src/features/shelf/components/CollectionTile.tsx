@@ -10,6 +10,10 @@ export type CollectionTileData = {
   count: number;
   /** Up to four member cover URLs for the montage (may be fewer). */
   coverUrls: string[];
+  /** A hand-picked cover standing for the whole collection (null = montage). */
+  coverUrl?: string | null;
+  /** One line describing the folder, shown when it is opened. */
+  description?: string;
   /** Folder is password-locked and not yet unlocked this session. */
   locked?: boolean;
 };
@@ -29,10 +33,12 @@ type CollectionTileProps = {
 /** A 2×2 montage of member covers, padded with blanks; a folder glyph when empty. */
 function Montage({
   coverUrls,
+  coverUrl,
   locked,
   className,
 }: {
   coverUrls: string[];
+  coverUrl?: string | null;
   locked?: boolean;
   className?: string;
 }) {
@@ -41,6 +47,18 @@ function Montage({
       <div className={cn("flex items-center justify-center bg-fill-strong text-fg-muted", className)}>
         <LockSimple size={26} weight="fill" aria-hidden="true" />
       </div>
+    );
+  }
+  if (coverUrl) {
+    return (
+      <img
+        src={coverUrl}
+        alt=""
+        loading="lazy"
+        decoding="async"
+        draggable={false}
+        className={cn("h-full w-full object-cover", className)}
+      />
     );
   }
   if (coverUrls.length === 0) {
@@ -107,6 +125,11 @@ export function CollectionTile({ data, layout, onOpen, dragActive = false, onDro
         onClick={onOpen}
         onContextMenu={onContextMenu ? (event) => onContextMenu(event, data) : undefined}
         {...dropHandlers}
+        // Marks the tile for OS file drops: useDropBookImport reads this to
+        // import the files straight into this collection instead of the shelf.
+        data-drop-collection={data.id}
+        data-drop-collection-name={data.name}
+      data-drop-collection-locked={data.locked ? "true" : undefined}
         aria-label={lockLabel ?? data.name}
         className={cn(
           "group flex w-full items-center gap-4 rounded-sm px-2 py-2 text-left transition-colors hover:bg-fg/5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-fg",
@@ -114,7 +137,12 @@ export function CollectionTile({ data, layout, onOpen, dragActive = false, onDro
         )}
       >
         <div className="relative h-16 w-11 shrink-0 overflow-hidden rounded-sm border border-border bg-fill">
-          <Montage coverUrls={data.coverUrls} locked={data.locked} className="h-full w-full" />
+          <Montage
+            coverUrls={data.coverUrls}
+            coverUrl={data.coverUrl}
+            locked={data.locked}
+            className="h-full w-full"
+          />
         </div>
         <div className="min-w-0 flex-1">
           <span className="block truncate font-serif text-sm font-medium text-fg">
@@ -138,6 +166,9 @@ export function CollectionTile({ data, layout, onOpen, dragActive = false, onDro
       onClick={onOpen}
       onContextMenu={onContextMenu ? (event) => onContextMenu(event, data) : undefined}
       {...dropHandlers}
+      data-drop-collection={data.id}
+      data-drop-collection-name={data.name}
+      data-drop-collection-locked={data.locked ? "true" : undefined}
       aria-label={lockLabel ?? data.name}
       className={cn(
         "group flex w-full max-w-32 justify-self-start flex-col text-left focus-visible:outline-none sm:max-w-36 lg:max-w-44",
@@ -145,7 +176,7 @@ export function CollectionTile({ data, layout, onOpen, dragActive = false, onDro
       )}
     >
       <div className="relative aspect-[2/3] w-full overflow-hidden rounded-sm border border-border bg-fill transition-shadow group-hover:shadow-md group-focus-within:shadow-md">
-        <Montage coverUrls={data.coverUrls} locked={data.locked} className="h-full w-full" />
+        <Montage coverUrls={data.coverUrls} coverUrl={data.coverUrl} locked={data.locked} className="h-full w-full" />
         <div className="absolute inset-x-0 bottom-0 bg-stone-950/70 px-2 py-1.5">
           <span className="block truncate font-serif text-sm font-medium text-stone-50">
             {data.name}

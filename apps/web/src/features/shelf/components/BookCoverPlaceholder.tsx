@@ -1,6 +1,7 @@
 import { cn } from "@read-aware/ui/cn";
 import { useTranslation } from "../../../i18n";
 import type { BookFormat } from "../../library/lib/library-types";
+import { coverLabel } from "../lib/cover-label";
 
 type BookCoverPlaceholderProps = {
   title: string;
@@ -40,14 +41,20 @@ export function BookCoverPlaceholder({
   className,
 }: BookCoverPlaceholderProps) {
   const { t } = useTranslation("shelf");
-  const surface = surfaceForTitle(title || "Untitled");
+  // Printed metadata, not raw metadata: the title a dump carries (“《书名》
+  // （1-60）作者：某某”, brackets, serial tails) is reduced to the two things a
+  // cover shows. See lib/cover-label.
+  const label = coverLabel(title, author);
+  const surface = surfaceForTitle(label.title || "Untitled");
+  const titleSize =
+    label.title.length > 32 ? "text-[13px]" : label.title.length > 16 ? "text-sm" : "text-[15px]";
 
   return (
     <div
       role="img"
       aria-label={t("book.cover", { title })}
       className={cn(
-        "flex h-full w-full select-none flex-col justify-between p-4",
+        "flex h-full w-full select-none flex-col justify-between p-3.5 sm:p-4",
         surface.bg,
         className,
       )}
@@ -66,27 +73,28 @@ export function BookCoverPlaceholder({
       <div className="flex min-h-0 flex-1 items-center">
         <span
           className={cn(
-            "line-clamp-5 break-words font-serif font-medium leading-snug [text-wrap:balance]",
-            // A long title (an uncleaned file name at worst) steps down a
-            // size instead of shouting five clipped lines.
-            title.length > 48 ? "text-sm" : "text-base",
+            // Two lines, no more: a placeholder reads as a cover when the
+            // title sits in the upper third with air under it, not when it
+            // fills the tile with clipped text.
+            "line-clamp-2 break-words font-serif font-medium leading-tight [text-wrap:balance]",
+            titleSize,
             surface.title,
           )}
         >
-          {title}
+          {label.title}
         </span>
       </div>
 
-      {author && (
-        <div className="space-y-2">
+      {label.author && (
+        <div className="space-y-1.5">
           <div className={cn("h-px w-8", surface.rule)} />
           <span
             className={cn(
-              "line-clamp-2 block font-sans text-[11px] leading-tight",
+              "line-clamp-1 block font-sans text-[11px] leading-tight",
               surface.meta,
             )}
           >
-            {author}
+            {label.author}
           </span>
         </div>
       )}

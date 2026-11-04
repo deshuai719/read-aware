@@ -20,6 +20,7 @@ import {
   deleteCollection,
   listCollections,
   listLibraryBooks,
+  mergeCollections,
   prepareBookImport,
   removeLibraryBook,
   removeLibraryBooks,
@@ -111,6 +112,7 @@ export type LibraryCommands = {
     rename(collectionId: string, name: string): Promise<void>;
     remove(collectionId: string): Promise<void>;
     assignBooks(bookIds: string[], collectionId: string | null): Promise<void>;
+    merge(sourceId: string, targetId: string): Promise<void>;
   };
 };
 
@@ -216,6 +218,10 @@ export function createLibraryDomain(origin: EventOrigin): LibraryDomain {
       },
       remove: async (collectionId) => {
         await deleteCollection(String(collectionId), origin);
+        notifyLibraryChanged();
+      },
+      merge: async (sourceId, targetId) => {
+        await mergeCollections(String(sourceId), String(targetId), origin);
         notifyLibraryChanged();
       },
       assignBooks: async (bookIds, collectionId) => {

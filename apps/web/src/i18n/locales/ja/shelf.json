@@ -54,11 +54,30 @@
       "open": "開く",
       "rename": "名前を変更",
       "unlock": "ロック解除",
-      "label": "コレクション操作"
+      "label": "コレクション操作",
+      "editProfile": "説明と表紙",
+      "moveUp": "上へ",
+      "moveDown": "下へ",
+      "merge": "統合先…",
+      "export": "読書リストを書き出す"
     },
     "nameLabel": "コレクション名",
     "rename": "名前を変更",
-    "renameAction": "コレクションの名前を変更"
+    "renameAction": "コレクションの名前を変更",
+    "profileTitle": "「{{name}}」を編集",
+    "descriptionLabel": "説明",
+    "descriptionPlaceholder": "このフォルダは何のため？",
+    "coverLabel": "表紙",
+    "coverAuto": "自動",
+    "coverNone": "表紙のある本がまだありません。",
+    "saveProfile": "保存",
+    "mergeTitle": "「{{name}}」を統合",
+    "mergeBody": "{{count}} 冊が選択したコレクションへ移動し、このコレクションは削除されます。",
+    "mergeNoTargets": "統合できる別のコレクションがありません。",
+    "mergeConfirm": "統合",
+    "merged": "{{count}} 冊を統合しました",
+    "exportFooter": "{{count}} 冊 · ReadAware から書き出し",
+    "coverUpload": "表紙画像を選ぶ"
   },
   "collectionDialog": {
     "newLabel": "新しいコレクション",
@@ -86,7 +105,8 @@
     "ungrouped": ""
   },
   "dropImport": {
-    "hint": "ここにドロップしてインポート"
+    "hint": "ここにドロップしてインポート",
+    "intoCollection": "離して「{{collection}}」に追加"
   },
   "dropZone": {
     "ungroupActive": "",
@@ -164,5 +184,11 @@
     "errorTitle": "ライブラリエラー",
     "importTitle": "インポート",
     "nothingToShow": "表示するものがありません。"
+  },
+  "search": {
+    "label": "書籍を検索",
+    "placeholder": "タイトル・著者・ファイル名",
+    "count": "{{count}} 件",
+    "empty": "一致する書籍がありません。"
   }
 }

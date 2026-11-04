@@ -55,11 +55,30 @@
       "manageLock": "Manage password",
       "open": "Open",
       "rename": "Rename",
-      "unlock": "Unlock"
+      "unlock": "Unlock",
+      "editProfile": "Description & cover",
+      "moveUp": "Move up",
+      "moveDown": "Move down",
+      "merge": "Merge into…",
+      "export": "Export reading list"
     },
     "nameLabel": "Collection name",
     "rename": "Rename",
-    "renameAction": "Rename collection"
+    "renameAction": "Rename collection",
+    "profileTitle": "Edit “{{name}}”",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "What is this folder for?",
+    "coverLabel": "Cover",
+    "coverAuto": "Automatic",
+    "coverNone": "No member book has a cover yet.",
+    "saveProfile": "Save",
+    "mergeTitle": "Merge “{{name}}”",
+    "mergeBody": "{{count}} books move into the collection you pick; this one is then removed.",
+    "mergeNoTargets": "There is no other collection to merge into.",
+    "mergeConfirm": "Merge",
+    "merged": "Merged {{count}} books",
+    "exportFooter": "{{count}} books · exported from ReadAware",
+    "coverUpload": "Upload cover"
   },
   "collectionDialog": {
     "newLabel": "New collection",
@@ -88,7 +107,8 @@
     "ungrouped": "Moved out of collections"
   },
   "dropImport": {
-    "hint": "Drop books here to import"
+    "hint": "Drop books here to import",
+    "intoCollection": "Drop to import into “{{collection}}”"
   },
   "dropZone": {
     "ungroupActive": "Release to ungroup",
@@ -171,5 +191,11 @@
     "errorTitle": "Library error",
     "importTitle": "Import",
     "nothingToShow": "Nothing to show."
+  },
+  "search": {
+    "label": "Search books",
+    "placeholder": "Title, author, file name",
+    "count": "{{count}} results",
+    "empty": "No books match that search."
   }
 }

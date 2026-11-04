@@ -7,6 +7,8 @@ import type { Collection } from "../../library/lib/library-types";
 type CollectionHeaderProps = {
   collection: Collection;
   count: number;
+  /** One line describing the folder (a collection profile, not an event). */
+  description?: string;
   onRename: (name: string) => void;
   onDelete: () => void;
   /** Open the folder-lock (password) management dialog. */
@@ -18,7 +20,14 @@ type CollectionHeaderProps = {
  * book count, and a delete action. Back to the shelf lives in the app header.
  * Mount with a `key` of the collection id so the inline draft resets per group.
  */
-export function CollectionHeader({ collection, count, onRename, onDelete, onManageLock }: CollectionHeaderProps) {
+export function CollectionHeader({
+  collection,
+  count,
+  description,
+  onRename,
+  onDelete,
+  onManageLock,
+}: CollectionHeaderProps) {
   const { t } = useTranslation("shelf");
   const [editing, setEditing] = useLocalAtom(false);
   const [draft, setDraft] = useLocalAtom(collection.name);
@@ -88,6 +97,12 @@ export function CollectionHeader({ collection, count, onRename, onDelete, onMana
       <Body className="mt-1 text-sm tabular-nums text-fg-muted">
         {t("books", { count })}
       </Body>
+
+      {description && (
+        <Body className="mt-2 max-w-prose text-sm leading-relaxed text-fg-muted">
+          {description}
+        </Body>
+      )}
 
       <Dialog open={deleteOpen} onClose={() => setDeleteOpen(false)} title={t("collection.deleteTitle")}>
         <div className="space-y-4">

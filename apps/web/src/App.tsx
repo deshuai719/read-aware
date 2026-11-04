@@ -262,10 +262,11 @@ function App() {
   );
   const handleOpenBook = useCallback(
     (book: LibraryBook) => {
+      if (isBookInLockedCollection(book, library.collections)) { library.reportError(new Error("collection-locked")); return; }
       setHeldShelfBooks(library.books);
       openBook(book);
     },
-    [library.books, openBook],
+    [library.books, library.collections, library.reportError, openBook],
   );
   useEffect(() => {
     if (shelfHandoff === "idle") setHeldShelfBooks(null);
@@ -445,7 +446,7 @@ function App() {
     openBook: handleCommandOpenBook,
     reportError: library.reportError,
   });
-  const dropImportActive = useDropBookImport(library.importSources);
+  const dropImport = useDropBookImport(library.importSources);
 
   const commandContext: CommandContext = {
     activeTopNav,
@@ -545,6 +546,7 @@ function App() {
                 onChapterSelect={reader.handleChapterSelect}
                 onAnnotationSelect={reader.handleAnnotationSelect}
                 onSearchResultSelect={reader.handleSearchResultSelect}
+                onProgressSuspendedChange={reader.setProgressSuspended}
               />
             </Suspense>
           </FeatureErrorBoundary>
@@ -607,6 +609,7 @@ function App() {
                 onRenameCollection={library.handleRenameCollection}
                 onDeleteCollection={library.handleDeleteCollection}
                 onSetBooksCollection={library.handleSetBooksCollection}
+                onMergeCollections={library.handleMergeCollections}
               />
             ) : activeTopNav === "agent" ? (
               <FeatureErrorBoundary surface="agent" resetKey={activeTopNav}>
@@ -651,7 +654,7 @@ function App() {
         </Suspense>
       )}
 
-      {dropImportActive && <DropImportOverlay />}
+      {dropImport.active && <DropImportOverlay target={dropImport.targetName} />}
 
       <WhatsNewDialog />
 

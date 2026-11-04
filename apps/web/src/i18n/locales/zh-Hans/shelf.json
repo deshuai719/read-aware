@@ -54,11 +54,30 @@
       "open": "打开",
       "rename": "重命名",
       "unlock": "解锁",
-      "label": "收藏夹操作"
+      "label": "收藏夹操作",
+      "editProfile": "简介与封面",
+      "moveUp": "上移",
+      "moveDown": "下移",
+      "merge": "合并到…",
+      "export": "导出书单"
     },
     "nameLabel": "收藏集名称",
     "rename": "重命名",
-    "renameAction": "重命名收藏集"
+    "renameAction": "重命名收藏集",
+    "profileTitle": "编辑「{{name}}」",
+    "descriptionLabel": "简介",
+    "descriptionPlaceholder": "这个合集是做什么的？",
+    "coverLabel": "封面",
+    "coverAuto": "自动",
+    "coverNone": "这个合集还没有带封面的书。",
+    "saveProfile": "保存",
+    "mergeTitle": "合并「{{name}}」",
+    "mergeBody": "{{count}} 本书会移入你选择的合集，之后这个合集将被删除。",
+    "mergeNoTargets": "没有其他可合并的合集。",
+    "mergeConfirm": "合并",
+    "merged": "已合并 {{count}} 本书",
+    "exportFooter": "共 {{count}} 本 · 由 ReadAware 导出",
+    "coverUpload": "上传封面图片"
   },
   "collectionDialog": {
     "newLabel": "新建收藏集",
@@ -86,7 +105,8 @@
     "ungrouped": "已移出收藏夹"
   },
   "dropImport": {
-    "hint": "松开以导入书籍"
+    "hint": "松开以导入书籍",
+    "intoCollection": "松开以导入到「{{collection}}」"
   },
   "dropZone": {
     "ungroupActive": "松开以移出收藏夹",
@@ -164,5 +184,11 @@
     "errorTitle": "书库错误",
     "importTitle": "导入",
     "nothingToShow": "暂无内容。"
+  },
+  "search": {
+    "label": "搜索书籍",
+    "placeholder": "书名、作者、文件名",
+    "count": "{{count}} 个结果",
+    "empty": "没有找到匹配的书籍。"
   }
 }

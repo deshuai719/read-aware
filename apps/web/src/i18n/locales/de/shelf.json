@@ -55,11 +55,30 @@
       "open": "Öffnen",
       "rename": "Umbenennen",
       "unlock": "Entsperren",
-      "label": "Sammlungsaktionen"
+      "label": "Sammlungsaktionen",
+      "editProfile": "Beschreibung & Cover",
+      "moveUp": "Nach oben",
+      "moveDown": "Nach unten",
+      "merge": "Zusammenführen mit…",
+      "export": "Leseliste exportieren"
     },
     "nameLabel": "Sammlungsname",
     "rename": "Umbenennen",
-    "renameAction": "Sammlung umbenennen"
+    "renameAction": "Sammlung umbenennen",
+    "profileTitle": "„{{name}}“ bearbeiten",
+    "descriptionLabel": "Beschreibung",
+    "descriptionPlaceholder": "Wofür ist dieser Ordner?",
+    "coverLabel": "Cover",
+    "coverAuto": "Automatisch",
+    "coverNone": "Kein Buch hat bisher ein Cover.",
+    "saveProfile": "Speichern",
+    "mergeTitle": "„{{name}}“ zusammenführen",
+    "mergeBody": "{{count}} Bücher wechseln in die gewählte Sammlung, diese wird danach entfernt.",
+    "mergeNoTargets": "Keine andere Sammlung zum Zusammenführen.",
+    "mergeConfirm": "Zusammenführen",
+    "merged": "{{count}} Bücher zusammengeführt",
+    "exportFooter": "{{count}} Bücher · exportiert aus ReadAware",
+    "coverUpload": "Cover hochladen"
   },
   "collectionDialog": {
     "newLabel": "Neue Sammlung",
@@ -88,7 +107,8 @@
     "ungrouped": ""
   },
   "dropImport": {
-    "hint": "Bücher hier ablegen zum Importieren"
+    "hint": "Bücher hier ablegen zum Importieren",
+    "intoCollection": "Loslassen, um in „{{collection}}“ zu importieren"
   },
   "dropZone": {
     "ungroupActive": "",
@@ -171,5 +191,11 @@
     "errorTitle": "Bibliotheksfehler",
     "importTitle": "Importieren",
     "nothingToShow": "Nichts anzuzeigen."
+  },
+  "search": {
+    "label": "Bücher suchen",
+    "placeholder": "Titel, Autor, Dateiname",
+    "count": "{{count}} Treffer",
+    "empty": "Keine Bücher gefunden."
   }
 }

@@ -56,11 +56,30 @@
       "open": "Ouvrir",
       "rename": "Renommer",
       "unlock": "Déverrouiller",
-      "label": "Actions de collection"
+      "label": "Actions de collection",
+      "editProfile": "Description et couverture",
+      "moveUp": "Monter",
+      "moveDown": "Descendre",
+      "merge": "Fusionner dans…",
+      "export": "Exporter la liste"
     },
     "nameLabel": "Nom de la collection",
     "rename": "Renommer",
-    "renameAction": "Renommer la collection"
+    "renameAction": "Renommer la collection",
+    "profileTitle": "Modifier « {{name}} »",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "À quoi sert ce dossier ?",
+    "coverLabel": "Couverture",
+    "coverAuto": "Automatique",
+    "coverNone": "Aucun livre de ce dossier n'a de couverture.",
+    "saveProfile": "Enregistrer",
+    "mergeTitle": "Fusionner « {{name}} »",
+    "mergeBody": "{{count}} livres rejoignent la collection choisie, puis celle-ci est supprimée.",
+    "mergeNoTargets": "Aucune autre collection à fusionner.",
+    "mergeConfirm": "Fusionner",
+    "merged": "{{count}} livres fusionnés",
+    "exportFooter": "{{count}} livres · exporté depuis ReadAware",
+    "coverUpload": "Importer une couverture"
   },
   "collectionDialog": {
     "newLabel": "Nouvelle collection",
@@ -90,7 +109,8 @@
     "ungrouped": ""
   },
   "dropImport": {
-    "hint": "Déposez des livres ici pour les importer"
+    "hint": "Déposez des livres ici pour les importer",
+    "intoCollection": "Déposez pour importer dans « {{collection}} »"
   },
   "dropZone": {
     "ungroupActive": "",
@@ -178,5 +198,11 @@
     "errorTitle": "Erreur de bibliothèque",
     "importTitle": "Importer",
     "nothingToShow": "Rien à afficher."
+  },
+  "search": {
+    "label": "Rechercher des livres",
+    "placeholder": "Titre, auteur, nom de fichier",
+    "count": "{{count}} résultats",
+    "empty": "Aucun livre ne correspond."
   }
 }

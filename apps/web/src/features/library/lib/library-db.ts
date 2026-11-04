@@ -11,6 +11,7 @@ import {
   putDesktopBlobFromPath,
 } from "../../../platform/blob-store";
 import { commitDomainEvents } from "../../../platform/domain-events";
+import { assertBookCollectionAccess, assertCollectionAccess, collectionMergeEvents } from "./collection-operations";
 import { fetchRemoteBlob } from "../../../platform/sync/sync-scheduler";
 import type {
   BookFormat,
@@ -779,6 +780,7 @@ export async function setCollectionPassword(
 }
 export async function deleteCollection(id: string, origin?: EventOrigin) {
   assertDesktop("Deleting a collection");
+  assertCollectionAccess(await getAllCollectionRecords(), [id]);
   await commitDomainEvents({
     type: "collection.removed",
     payload: { collectionId: id },
@@ -796,6 +798,9 @@ export async function setBooksCollection(
   const idSet = new Set(bookIds);
   const all = await getAllBookRecords();
   const affected = all.filter((book) => idSet.has(book.id) && book.collectionId !== collectionId);
+  const collections = await getAllCollectionRecords();
+  assertCollectionAccess(collections, [collectionId]);
+  assertBookCollectionAccess(affected, collections);
   await commitDomainEvents(
     ...affected.map((book) =>
       collectionId
@@ -812,6 +817,12 @@ export async function setBooksCollection(
           },
     ),
   );
+}
+
+export async function mergeCollections(sourceId: string, targetId: string, origin?: EventOrigin): Promise<void> {
+  assertDesktop("Merging collections");
+  const [books, collections] = await Promise.all([getAllBookRecords(), getAllCollectionRecords()]);
+  await commitDomainEvents(...collectionMergeEvents(books, collections, sourceId, targetId).map(event => ({ ...event, origin })));
 }
 
 export async function removeLibraryBooks(bookIds: string[], origin?: EventOrigin) {

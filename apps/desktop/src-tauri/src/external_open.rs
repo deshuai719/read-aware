@@ -6,6 +6,7 @@
 //! again on every `external-open-request` ping, so no ordering between the two
 //! sides can drop a request.
 
+use std::ffi::OsStr;
 use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 
@@ -35,15 +36,20 @@ pub fn is_book_path(path: &Path) -> bool {
 /// Book files among raw launch/relaunch args. Skips flags and anything that is
 /// not an existing file; relative paths resolve against `cwd` (the SECOND
 /// instance's working directory when relayed by single-instance, not ours).
+/// Takes `OsStr`, not `str`: `std::env::args` panics when any argv element is
+/// not valid Unicode, so a book file with a lone-surrogate name would kill the
+/// app at cold start. Flag detection reads the encoded bytes (every flag is
+/// ASCII), and a non-Unicode name still parks as a lossy path whose import
+/// fails with an error instead of crashing the process.
 pub fn collect_book_paths<I, S>(args: I, cwd: Option<&Path>) -> Vec<String>
 where
     I: IntoIterator<Item = S>,
-    S: AsRef<str>,
+    S: AsRef<OsStr>,
 {
     args.into_iter()
         .filter_map(|arg| {
             let arg = arg.as_ref();
-            if arg.is_empty() || arg.starts_with('-') {
+            if arg.is_empty() || arg.as_encoded_bytes().starts_with(b"-") {
                 return None;
             }
             let raw = PathBuf::from(arg);

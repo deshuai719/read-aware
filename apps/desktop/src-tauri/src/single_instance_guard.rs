@@ -29,7 +29,9 @@ use windows::Win32::UI::WindowsAndMessaging::{
 
 /// App-owned singleton name, deliberately independent of the plugin's
 /// `{identifier}-sim` mutex so a broken plugin state never blocks the guard.
-const GUARD_MUTEX_NAME: &str = "com.readaware.app-singleton";
+fn guard_mutex_name(identifier: &str) -> String {
+    format!("{identifier}-singleton")
+}
 /// How long a losing launch waits for the winner's main window to appear.
 const WINNER_WAIT_MS: u64 = 3_000;
 const POLL_INTERVAL_MS: u64 = 100;
@@ -60,7 +62,7 @@ pub struct GuardState(pub Mutex<Option<GuardHandle>>);
 /// and exits, so this call never returns), or when guarding failed and
 /// startup should continue without it.
 pub fn acquire(app: &AppHandle) -> Option<GuardHandle> {
-    let name: Vec<u16> = GUARD_MUTEX_NAME
+    let name: Vec<u16> = guard_mutex_name(&app.config().identifier)
         .encode_utf16()
         .chain(std::iter::once(0))
         .collect();
@@ -183,4 +185,25 @@ fn is_read_aware_process(pid: u32) -> bool {
     }
     let exe = String::from_utf16_lossy(&path[..size as usize]);
     exe.to_ascii_lowercase().ends_with(DESKTOP_EXE_NAME)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::guard_mutex_name;
+
+    #[test]
+    fn shipping_guard_name_remains_backward_compatible() {
+        assert_eq!(
+            guard_mutex_name("com.readaware.app"),
+            "com.readaware.app-singleton"
+        );
+    }
+
+    #[test]
+    fn isolated_application_identifiers_have_separate_guards() {
+        assert_ne!(
+            guard_mutex_name("com.readaware.app"),
+            guard_mutex_name("com.readaware.searchqa")
+        );
+    }
 }

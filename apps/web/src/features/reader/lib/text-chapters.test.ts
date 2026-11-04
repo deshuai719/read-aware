@@ -58,6 +58,66 @@ describe("marked headings", () => {
   });
 });
 
+describe("serial-fiction markers and embedded lists", () => {
+  test("案 / 幕 markers segment a serial that never says 章", () => {
+    const body = (n: string) => ["正文，".repeat(40) + n];
+    const text = [
+      "第一案：旧宅谜案#1初次线索",
+      ...body("a"),
+      "第一案：旧宅谜案#2后续线索",
+      ...body("b"),
+      "第二案：旧城调查#1失踪案",
+      ...body("c"),
+    ].join("\n");
+    expect(titles(text)).toEqual([
+      "第一案：旧宅谜案#1初次线索",
+      "第一案：旧宅谜案#2后续线索",
+      "第二案：旧城调查#1失踪案",
+    ]);
+  });
+
+  test("a numbered list of steps inside the prose is not a chapter when the book has marked headings", () => {
+    // Reproduces a real serial: chapters are 第X章, but the body contains a
+    // numbered course of instructions that used to become five "chapters".
+    const steps = [
+      "1. 准备纸张和笔，记录当前调查线索。",
+      "2. 把资料按日期排列，检查遗漏的记录。",
+      "3. 比较两份资料，标出相同的关键词。",
+      "4. 汇总本次调查，保存所有整理结果。",
+    ];
+    const text = [
+      "第一章 起点",
+      "正文，" + "字".repeat(120),
+      ...steps,
+      "收束，" + "字".repeat(120),
+      "第二章 承接",
+      "正文，" + "字".repeat(120),
+      "第三章 转折",
+      "正文，" + "字".repeat(120),
+    ].join("\n");
+    expect(titles(text)).toEqual(["第一章 起点", "第二章 承接", "第三章 转折"]);
+  });
+
+  test("a packed repeated index is dropped without using later prose length", () => {
+    const body = () => ["正文，" + "字".repeat(200)];
+    const text = [
+      "第一章 甲",
+      "第二章 乙",
+      "第三章 丙",
+      ...body(),
+      "第一章 甲",
+      ...body(),
+      "第二章 乙",
+      ...body(),
+      "第三章 丙",
+    ].join("\n");
+    // The stack at the top is an index: the prose resumes right after it and
+    // dwarfs it. Its lines stay readable as the opening run, but they are no
+    // longer chapters.
+    expect(titles(text)).toEqual([undefined, "第一章 甲", "第二章 乙", "第三章 丙"]);
+  });
+});
+
 describe("numbered headings", () => {
   test("bare numbers, with or without a short title", () => {
     expect(titles(["01", "a", "02 初遇", "b", "03、别离", "c"].join("\n"))).toEqual([
@@ -168,4 +228,12 @@ describe("plain-text decoding", () => {
   test("keeps plain ASCII on the UTF-8 path", () => {
     expect(decodeTextBook(new TextEncoder().encode("hello world"))).toBe("hello world");
   });
+});
+
+test("real short chapters followed by longer prose are not a contents listing", () => {
+  const chapter = (n: number, body: string) => "第" + n + "章 正文" + n + "\n" + body + "\n";
+  const text = [chapter(1,"序场一。"), chapter(2,"序场二。"), chapter(3,"普通正文。".repeat(120)),
+    ...Array.from({length:12},(_,i)=>chapter(i+4,"后续长篇正文。".repeat(1200)))].join("\n");
+  expect(splitTextIntoChapters(text).filter(c=>c.title).map(c=>c.title)).toEqual(
+    Array.from({length:15},(_,i)=>"第"+(i+1)+"章 正文"+(i+1)));
 });

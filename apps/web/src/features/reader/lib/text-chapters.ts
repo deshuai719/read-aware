@@ -38,7 +38,10 @@ const SEPARATORS = String.raw`[\s　:：.。、,，·・\-—–~～]`;
 const MARKED_HEADING_PATTERNS = [
   // 第一章 / 第 12 节 / 第三十回 / 第二卷, with or without a trailing title,
   // and with or without punctuation between the two.
-  new RegExp(String.raw`^第\s*[0-9${CJK_DIGITS} ]+\s*[章節节回卷篇部集话話講讲折][\s　]*${SEPARATORS}*.*$`),
+  // 第一案 / 第二幕 — serial-fiction markers that are not literally "chapters"
+  // but segment the text the same way (a case in a detective serial, an act in
+  // a play). `#7` section numbers ride inside the title, so transitively fine.
+  new RegExp(String.raw`^第\s*[0-9${CJK_DIGITS} ]+\s*[章節节回卷篇部集话話講讲折案幕][\s　]*${SEPARATORS}*.*$`),
   // 卷一 / 上卷 / 下篇 — a volume marker that leads with the unit.
   new RegExp(String.raw`^[上中下]?[卷篇部]\s*[0-9${CJK_DIGITS}]+${SEPARATORS}*.*$`),
   // Chapter 1 / Part IV / Book Two / Act 3 / Volume 2
@@ -169,6 +172,7 @@ function dropContentsListing(candidates: Candidate[], lines: string[]): Candidat
       contentBetween(candidates[i - 1]!.line, candidates[i]!.line) <= LISTING_MAX_CONTENT_CHARS;
     if (packed) continue;
     if (i - runStart >= LISTING_MIN_RUN) {
+      // Length alone is not evidence of an index: short scenes are real chapters.
       for (let j = runStart; j < i; j++) {
         // The echo may be the very next entry: a listing often runs straight
         // into the heading it points at, with no prose in between.
@@ -198,9 +202,16 @@ export function splitTextIntoChapters(text: string): TextChapter[] {
   const candidates = dropContentsListing(found, lines);
 
   const numbered = candidates.filter((candidate) => candidate.value != null);
-  const accepted = numberingIsCredible(numbered.map((candidate) => candidate.value!))
-    ? candidates
-    : candidates.filter((candidate) => candidate.value == null);
+  const marked = candidates.filter((candidate) => candidate.value == null);
+  // Marked headings name themselves and are trusted on sight. When a book has
+  // them, a bare `1.`/`2.` line next to them is a list inside the prose — a
+  // course of steps, an author's note index — never a chapter.
+  const accepted =
+    marked.length >= MIN_HEADINGS
+      ? marked
+      : numberingIsCredible(numbered.map((candidate) => candidate.value!))
+        ? candidates
+        : marked;
 
   if (accepted.length < MIN_HEADINGS) return chunkLines(lines);
 

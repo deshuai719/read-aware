@@ -1,6 +1,23 @@
 import type { WhatsNewEntry } from "./changelog-feed";
 /** Local builds carry their notes even before a GitHub release exists. */
 export function bundledReleaseNotes(version: string, locale: string): WhatsNewEntry | null {
+  if (version.replace(/^v/, "") === "0.5.0-21") {
+    const chinese=locale.startsWith("zh");
+    return {version,codename:null,date:"2026-11-05",text:{
+      summary:chinese?"让结构不规范但内容完好的书也能打开，并把DRM说明清楚。":"Open books whose packaging is broken but whose content is fine.",
+      groups:[{kind:"improved",items:(chinese?[
+        "缺少 container.xml、或它指向不存在的文件时，自动找到真正的 book.opf。",
+        "压缩包里用反斜杠或百分号编码不一致的文件名，现在能正确对应到章节。",
+        "整本加密的书会明确提示“有 DRM 加密”，不再显示成空白或解析错误。",
+        "真正缺少书籍信息的文件会说明原因，而不是静默失败。"
+      ]:[
+        "A missing container.xml, or one naming a file the archive does not contain, no longer blocks the book — the package document is discovered.",
+        "Archive entries written with backslashes or mismatched percent-encoding now resolve to the chapter they mean.",
+        "Books encrypted with an unsupported scheme are reported as DRM instead of opening blank or showing a parser error.",
+        "A file with no package document says so instead of failing silently."
+      ]).map(body=>({body}))}]
+    }};
+  }
   if (version.replace(/^v/, "") === "0.5.0-20") {
     const chinese=locale.startsWith("zh");
     return {version,codename:null,date:"2026-11-05",text:{

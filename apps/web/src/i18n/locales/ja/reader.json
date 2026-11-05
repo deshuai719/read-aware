@@ -223,5 +223,7 @@
     "progress": "章内の位置",
     "sessionTime": "今回の経過時間"
   },
-  "tryAgain": "再試行"
+  "tryAgain": "再試行",
+  "errorDrm": "この本は暗号化（DRM）されているため開けません。",
+  "errorNoPackage": "このファイルには読み込める書籍パッケージ（book.opf）がありません。"
 }

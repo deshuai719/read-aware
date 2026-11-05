@@ -230,5 +230,7 @@
     "progress": "Posición en el capítulo",
     "sessionTime": "Tiempo de la sesión"
   },
-  "tryAgain": "Reintentar"
+  "tryAgain": "Reintentar",
+  "errorDrm": "Este libro está cifrado (DRM) y no se puede abrir.",
+  "errorNoPackage": "Este archivo no contiene un paquete de libro legible (book.opf)."
 }

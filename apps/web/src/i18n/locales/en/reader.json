@@ -226,5 +226,7 @@
     "progress": "Position in chapter",
     "sessionTime": "Time this session"
   },
-  "tryAgain": "Try again"
+  "tryAgain": "Try again",
+  "errorDrm": "This book is encrypted (DRM) and cannot be opened.",
+  "errorNoPackage": "This file has no readable book package (book.opf)."
 }

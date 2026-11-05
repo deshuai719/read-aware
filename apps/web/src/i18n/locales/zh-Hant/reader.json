@@ -223,5 +223,7 @@
     "progress": "本章位置",
     "sessionTime": "本次用時"
   },
-  "tryAgain": "重試"
+  "tryAgain": "重試",
+  "errorDrm": "這本書有 DRM 加密，暫時無法開啟。",
+  "errorNoPackage": "這個檔案裡沒有可讀取的書籍資訊（book.opf），可能不是完整的 EPUB。"
 }

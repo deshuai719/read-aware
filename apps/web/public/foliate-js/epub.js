@@ -1,5 +1,6 @@
 import * as CFI from './epubcfi.js'
 import { parseXML } from './xml.js'
+import { encryptsContent } from './drm.js'
 
 const NS = {
     CONTAINER: 'urn:oasis:names:tc:opendocument:xmlns:container',
@@ -600,6 +601,10 @@ const deobfuscators = (sha1 = WebCryptoSHA1) => ({
 class Encryption {
     #uris = new Map()
     #decoders = new Map()
+    #unknown = new Set()
+    get unknownEncryptions() {
+        return [...this.#unknown]
+    }
     #algorithms
     constructor(algorithms) {
         this.#algorithms = algorithms
@@ -617,7 +622,10 @@ class Encryption {
             if (!this.#decoders.has(algorithm)) {
                 const algo = this.#algorithms[algorithm]
                 if (!algo) {
+                    // Font obfuscation uses the two algorithms below; anything
+                    // else is a content DRM scheme this reader cannot undo.
                     console.warn('Unknown encryption algorithm')
+                    this.#unknown.add(uri)
                     continue
                 }
                 const key = await algo.key(opf)
@@ -934,10 +942,14 @@ export class EPUB {
     parser = new DOMParser()
     #loader
     #encryption
-    constructor({ loadText, loadBlob, getSize, sha1 }) {
+    // Archive entry names, when the loader can provide them. They let a book
+    // with a missing or wrong container file still find its package document.
+    names = []
+    constructor({ loadText, loadBlob, getSize, sha1, names }) {
         this.loadText = loadText
         this.loadBlob = loadBlob
         this.getSize = getSize
+        if (names?.length) this.names = names
         this.#encryption = new Encryption(deobfuscators(sha1))
     }
     async #loadXML(uri) {
@@ -949,19 +961,39 @@ export class EPUB {
 ${doc.querySelector('parsererror').innerText}`)
         return doc
     }
+    /**
+     * The container is a convention, not a guarantee: books converted by
+     * unknown tools ship without it, or name a package file the archive does
+     * not contain (wrong case, wrong folder). Find whatever package document
+     * actually exists before giving up.
+     */
+    async #findPackagePath($container) {
+        if ($container) {
+            const declared = Array.from(
+                $container.getElementsByTagNameNS(NS.CONTAINER, 'rootfile'),
+                el => el.getAttribute('full-path')).filter(Boolean)
+            for (const path of declared)
+                if (await this.loadText(path)) return path
+        }
+        const archived = this.names
+            .filter(name => /\.opf$/i.test(name))
+            .sort((a, b) => a.split('/').length - b.split('/').length
+                || a.length - b.length)
+        for (const name of archived) if (await this.loadText(name)) return name
+        for (const guess of ['book.opf', 'content.opf', 'package.opf',
+            'OEBPS/content.opf', 'OEBPS/book.opf', 'OPS/content.opf'])
+            if (await this.loadText(guess)) return guess
+        return null
+    }
+
     async init() {
         const $container = await this.#loadXML('META-INF/container.xml')
-        if (!$container) throw new Error('Failed to load container file')
-
-        const opfs = Array.from(
-            $container.getElementsByTagNameNS(NS.CONTAINER, 'rootfile'),
-            getAttributes('full-path', 'media-type'))
-            .filter(file => file.mediaType === 'application/oebps-package+xml')
-
-        if (!opfs.length) throw new Error('No package document defined in container')
-        const opfPath = opfs[0].fullPath
+        const opfPath = await this.#findPackagePath($container)
+        if (!opfPath) throw new Error(
+            'EPUB_NO_PACKAGE: this file has no package document (book.opf)')
         const opf = await this.#loadXML(opfPath)
-        if (!opf) throw new Error('Failed to load package document')
+        if (!opf) throw new Error(
+            `EPUB_NO_PACKAGE: ${opfPath} could not be read`)
 
         const $encryption = await this.#loadXML('META-INF/encryption.xml')
         await this.#encryption.init($encryption, opf)
@@ -970,6 +1002,10 @@ ${doc.querySelector('parsererror').innerText}`)
             opf,
             resolveHref: url => resolveURL(url, opfPath),
         })
+
+        if (encryptsContent(this.#encryption.unknownEncryptions,
+            this.resources.manifest)) throw new Error(
+            'EPUB_DRM: this book is encrypted and cannot be opened')
         this.#loader = new Loader({
             loadText: this.loadText,
             loadBlob: uri => Promise.resolve(this.loadBlob(uri))

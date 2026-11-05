@@ -226,5 +226,7 @@
     "progress": "Position im Kapitel",
     "sessionTime": "Zeit dieser Sitzung"
   },
-  "tryAgain": "Erneut versuchen"
+  "tryAgain": "Erneut versuchen",
+  "errorDrm": "Dieses Buch ist verschlüsselt (DRM) und kann nicht geöffnet werden.",
+  "errorNoPackage": "Diese Datei enthält kein gültiges Buchpaket (book.opf)."
 }

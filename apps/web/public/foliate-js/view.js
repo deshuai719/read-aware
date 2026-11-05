@@ -3,6 +3,7 @@ import { TOCProgress, SectionProgress } from './progress.js'
 import { Overlayer } from './overlayer.js'
 import { textWalker, blockTextWalker } from './text-walker.js'
 import { readSearchDocument, yieldSearchControl, chapterSearchRange } from './search-section.js'
+import { resolveEntry } from './archive-path.js'
 
 const SEARCH_PREFIX = 'foliate-search:'
 
@@ -35,12 +36,18 @@ const makeZipLoader = async file => {
     const reader = new ZipReader(new BlobReader(file))
     const entries = await reader.getEntries()
     const map = new Map(entries.map(entry => [entry.filename, entry]))
-    const load = f => (name, ...args) =>
-        map.has(name) ? f(map.get(name), ...args) : null
+    const resolve = name => resolveEntry(map, name)
+    const load = f => (name, ...args) => {
+        const entry = resolve(name)
+        return entry ? f(entry, ...args) : null
+    }
     const loadText = load(entry => entry.getData(new TextWriter()))
     const loadBlob = load((entry, type) => entry.getData(new BlobWriter(type)))
-    const getSize = name => map.get(name)?.uncompressedSize ?? 0
-    return { entries, loadText, loadBlob, getSize }
+    const getSize = name => resolve(name)?.uncompressedSize ?? 0
+    return {
+        entries, loadText, loadBlob, getSize,
+        names: entries.map(entry => entry.filename),
+    }
 }
 
 const getFileEntries = async entry => entry.isFile ? entry
@@ -59,11 +66,12 @@ const makeDirectoryLoader = async entry => {
         [path.replace(entry.fullPath + '/', ''), file]))
     const decoder = new TextDecoder()
     const decode = x => x ? decoder.decode(x) : null
-    const getBuffer = name => map.get(name)?.arrayBuffer() ?? null
+    const resolve = name => resolveEntry(map, name)
+    const getBuffer = name => resolve(name)?.arrayBuffer() ?? null
     const loadText = async name => decode(await getBuffer(name))
-    const loadBlob = name => map.get(name)
-    const getSize = name => map.get(name)?.size ?? 0
-    return { loadText, loadBlob, getSize }
+    const loadBlob = name => resolve(name)
+    const getSize = name => resolve(name)?.size ?? 0
+    return { loadText, loadBlob, getSize, names: [...map.keys()] }
 }
 
 export class ResponseError extends Error {}

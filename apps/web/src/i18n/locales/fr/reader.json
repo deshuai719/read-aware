@@ -230,5 +230,7 @@
     "progress": "Position dans le chapitre",
     "sessionTime": "Temps de la session"
   },
-  "tryAgain": "Réessayer"
+  "tryAgain": "Réessayer",
+  "errorDrm": "Ce livre est chiffré (DRM) et ne peut pas être ouvert.",
+  "errorNoPackage": "Ce fichier ne contient pas de paquet de livre lisible (book.opf)."
 }

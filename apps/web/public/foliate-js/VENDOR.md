@@ -141,3 +141,7 @@ Search uses the existing filled highlight painter with subdued yellow and a slig
 ## Fork patch: search maturity (2026-11-03)
 
 Search uses contiguous nearest-block text runs, preserves inline-node excerpts and original offsets, and emits small batches. Scope may follow TOC anchors across spine files. Section reads are abortable/time-bounded; warnings identify partial coverage. Iterators pause for pagination; cache restoration registers only search keys for synchronous cleanup. The normal TTS/global walker retains its existing behavior. Keep these patches and real-DOM tests when re-vendoring.
+
+## Fork patch: tolerant package XML (2026-11-05)
+
+`xml.js` retries container/OPF/NCX/media-overlay parsing once after escaping literal `&`, mapping HTML-only entities to numeric references, and dropping XML-forbidden control characters. A document that still fails keeps its original parser error, so the reader reports a real problem instead of an empty book. Keep this when re-vendoring; `epub-xml-recovery.test.ts` pins the behaviour.

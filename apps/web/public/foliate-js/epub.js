@@ -1,4 +1,5 @@
 import * as CFI from './epubcfi.js'
+import { parseXML } from './xml.js'
 
 const NS = {
     CONTAINER: 'urn:oasis:names:tc:opendocument:xmlns:container',
@@ -942,7 +943,7 @@ export class EPUB {
     async #loadXML(uri) {
         const str = await this.loadText(uri)
         if (!str) return null
-        const doc = this.parser.parseFromString(str, MIME.XML)
+        const doc = parseXML(this.parser, str)
         if (doc.querySelector('parsererror'))
             throw new Error(`XML parsing error: ${uri}
 ${doc.querySelector('parsererror').innerText}`)

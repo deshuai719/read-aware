@@ -1,6 +1,21 @@
 import type { WhatsNewEntry } from "./changelog-feed";
 /** Local builds carry their notes even before a GitHub release exists. */
 export function bundledReleaseNotes(version: string, locale: string): WhatsNewEntry | null {
+  if (version.replace(/^v/, "") === "0.5.0-20") {
+    const chinese=locale.startsWith("zh");
+    return {version,codename:null,date:"2026-11-05",text:{
+      summary:chinese?"修复部分EPUB因元数据不是合法XML而整本打不开的问题。":"Fix books that failed to open because their package metadata was not valid XML.",
+      groups:[{kind:"fixed",items:(chinese?[
+        "描述里出现未转义的“&”或&nbsp;这类HTML实体时，不再把整本书判为损坏。",
+        "目录与包信息同样走容错读取；确实无法解析的文件仍会如实报错，不会显示成空白书。",
+        "校验时用实际出错的书籍确认：章节、目录与正文都能正常打开。"
+      ]:[
+        "A bare \"&\" or an HTML-only entity inside the description no longer rejects the whole book.",
+        "TOC and package metadata use the same tolerant read; genuinely broken files still report an error instead of opening blank.",
+        "Verified against the book that reported the failure: chapters, TOC and prose all load."
+      ]).map(body=>({body}))}]
+    }};
+  }
   if (version.replace(/^v/, "") === "0.5.0-19") {
     const chinese=locale.startsWith("zh");
     return {version,codename:null,date:"2026-11-03",text:{

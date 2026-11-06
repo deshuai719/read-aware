@@ -11,9 +11,13 @@
  * family: they no-op for a family they don't own, and hooks cannot be called
  * conditionally.
  */
+import { useLocalFontFace } from "./useLocalFonts";
 import { useEffect } from "react";
 import { useAtomValue } from "jotai";
-import { contentTypographyAtom, readerPreferencesAtom } from "../../../state/ui";
+import {
+  contentTypographyAtom,
+  readerPreferencesAtom,
+} from "../../../state/ui";
 import { pluginFontsAtom } from "../../plugins/state/plugin-store";
 import { findRegisteredByRef } from "../../plugins/lib/plugin-theme";
 import { isPluginFont, type ReaderFontFamily } from "../lib/reader-settings";
@@ -36,6 +40,7 @@ export function useContentTypography(): void {
   const font = activeContentFont(settings, reader);
   useCuratedFontFace(font ?? NO_FONT);
   usePluginFontFace(font ?? NO_FONT);
+  useLocalFontFace(font ?? NO_FONT);
 
   const pluginFont =
     font && isPluginFont(font) ? findRegisteredByRef(font, pluginFonts) : null;

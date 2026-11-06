@@ -19,6 +19,7 @@ import type {
   Id,
   MemoryFeedbackSignal,
   ReadingStatus,
+  ReadingPositionContext,
 } from "./entities";
 
 /**
@@ -126,7 +127,12 @@ export type DomainEvent =
          * characters 的 name；确立章节即本事件的 chapterIndex——叙事图
          * 的剧透切片靠它。
          */
-        relations?: Array<{ from: string; kind: string; to: string; note?: string }>;
+        relations?: Array<{
+          from: string;
+          kind: string;
+          to: string;
+          note?: string;
+        }>;
         digestVersion: number;
         /**
          * 提炼口径（narrative 抽人物图 / expository 抽概念图）；缺省 =
@@ -167,11 +173,20 @@ export type DomainEvent =
   | DomainEventEnvelope<"book.finished", { bookId: Id; finished: boolean }>
   | DomainEventEnvelope<"book.removed", { bookId: Id }>
   // --- Collections (set semantics → reconstructable as many-to-many later) -
-  | DomainEventEnvelope<"collection.created", { collectionId: Id; name: string }>
-  | DomainEventEnvelope<"collection.renamed", { collectionId: Id; name: string }>
+  | DomainEventEnvelope<
+      "collection.created",
+      { collectionId: Id; name: string }
+    >
+  | DomainEventEnvelope<
+      "collection.renamed",
+      { collectionId: Id; name: string }
+    >
   | DomainEventEnvelope<"collection.removed", { collectionId: Id }>
   /** Collection folder lock: argon2id hash (or null to clear) syncs to every device. */
-  | DomainEventEnvelope<"collection.passwordChanged", { collectionId: Id; passwordHash: string | null }>
+  | DomainEventEnvelope<
+      "collection.passwordChanged",
+      { collectionId: Id; passwordHash: string | null }
+    >
   | DomainEventEnvelope<
       "book.addedToCollection",
       { bookId: Id; collectionId: Id }
@@ -192,6 +207,7 @@ export type DomainEvent =
         chapterHref?: string;
         currentLocation?: number;
         totalLocations?: number;
+        recovery?: ReadingPositionContext;
         progressPercent?: number;
         status?: ReadingStatus;
       }
@@ -215,6 +231,21 @@ export type DomainEvent =
       }
     >
   // --- Annotations -------------------------------------------------------
+  | DomainEventEnvelope<
+      "bookmark.created",
+      {
+        bookmarkId: Id;
+        bookId: Id;
+        anchor: string;
+        chapterHref?: string;
+        title: string;
+        excerpt: string;
+        fraction?: number;
+        sourceSha256?: string;
+      }
+    >
+  | DomainEventEnvelope<"bookmark.renamed", { bookmarkId: Id; title: string }>
+  | DomainEventEnvelope<"bookmark.removed", { bookmarkId: Id }>
   | DomainEventEnvelope<
       "highlight.created",
       {
@@ -254,7 +285,13 @@ export type DomainEvent =
    */
   | DomainEventEnvelope<
       "ask.recorded",
-      { askId: Id; bookId: Id; anchor?: string; chapterHref?: string; text: string }
+      {
+        askId: Id;
+        bookId: Id;
+        anchor?: string;
+        chapterHref?: string;
+        text: string;
+      }
     >
   | DomainEventEnvelope<"ask.removed", { askId: Id }>
   // --- AI conversation (book threads + user-created global threads) ------
@@ -359,9 +396,6 @@ export type DomainEvent =
    * device-local config (OS integration, shortcuts, secrets) never appears
    * here.
    */
-  | DomainEventEnvelope<
-      "preference.changed",
-      { key: string; value: unknown }
-    >;
+  | DomainEventEnvelope<"preference.changed", { key: string; value: unknown }>;
 
 export type DomainEventType = DomainEvent["type"];

@@ -180,7 +180,10 @@ row's historical timestamp while their HLC is stamped at synthesis time.
 | `book.addedToCollection` / `book.removedFromCollection` | `{ bookId, collectionId }` (set semantics → reconstructable as many-to-many later) |
 | `book.narrativityClassified` | `{ bookId, narrativity, model? }` — LLM classifies book as `narrative` or `expository`; drives digest flavor (character graph vs. concept graph) |
 | `book.chapterDigested` | `{ bookId, chapterIndex, chapterHref?, summary, characters[], digestVersion, model? }` — 章节读毕提炼（book_memory 投影原料）。LLM 产物不可确定性重算，所以像 `coverExtracted` 一样记录成事件；`chapter_digests` 投影可从日志整体重建，同章新事件整行覆盖 |
-| `book.progressed` | `{ bookId, locator, chapterHref?, currentLocation?, totalLocations?, progressPercent?, status? }` |
+| `bookmark.created` | `{ bookmarkId, bookId, anchor, chapterHref?, title, excerpt, fraction?, sourceSha256? }` → dedicated `reading_bookmarks` projection (desktop migration25) |
+| `bookmark.renamed` | `{ bookmarkId, title }` |
+| `bookmark.removed` | `{ bookmarkId }` |
+| `book.progressed` | `{ bookId, locator, chapterHref?, currentLocation?, totalLocations?, progressPercent?, status?, recovery?: { sourceSha256?, textEncoding?, sectionIndex?, quote?, fraction? } }` — accepted reading position only; optional recovery is bound to original source bytes and decoder |
 | `book.timeRecorded` | `{ bookId, ms, atEpochMs, localDay, localHour }` — day/hour buckets are stamped at **record** time in the recording device's timezone; deriving them at replay time would shift history across timezones |
 | `highlight.created` | `{ highlightId, bookId, anchor?, chapterHref?, text, color?, style? }` |
 | `highlight.recolored` | `{ highlightId, color, style? }` |
@@ -525,8 +528,12 @@ order within a transaction.
 - **Progress throttling** (v0.5.x): `book.progressed` throttles at commit time
   (`features/reader/lib/progress-throttle.ts`). Chapter boundaries and first
   position commit immediately (true landmarks); in-chapter page turns merge to
-  at most one event per 30 seconds (always the latest position); on close, flush
-  pending progress. No post-hoc compaction — the log stays immutable.
+  at most one event per 30 seconds (always the latest position). Close, switch,
+  and OS shutdown freeze late callbacks and await serialized durable writes;
+  failed writes remain retryable and prevent shutdown. An open find preview is
+  never accepted by closing or switching. Only explicit find dismissal/return
+  accepts that landing. Bookmarks are independent events with replay, merge,
+  delete-book cleanup and source-hash guards; navigation history is session-only.  No post-hoc compaction — the log stays immutable.
 - **Reader settings are device-local**, in the typed `settings` table (+ `app_kv`
   for experimental flags), not the event log — promote to a `settings.changed`
   event stream only if cross-device settings sync is ever wanted.

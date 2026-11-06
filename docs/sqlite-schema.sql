@@ -350,6 +350,16 @@ CREATE TABLE reading_time_hourly ( -- [projection] 每本书按本地小时聚�
   PRIMARY KEY (book_id, local_hour) -- 一本书一个小时只有一个聚合桶。
 ); -- reading_time_hourly 表结束。
 
+-- Desktop migration25: dedicated saved positions (not highlights or notes).
+CREATE TABLE reading_bookmarks (
+  id TEXT PRIMARY KEY, book_id TEXT NOT NULL, anchor TEXT NOT NULL, chapter_href TEXT,
+  title TEXT NOT NULL, excerpt TEXT NOT NULL, fraction REAL, source_sha256 TEXT,
+  created_at TEXT NOT NULL, updated_at TEXT NOT NULL
+);
+CREATE INDEX ix_reading_bookmarks_book ON reading_bookmarks(book_id);
+-- bookmark.created/renamed/removed own this projection. book.merged rehomes it;
+-- book.removed clears it. DERIVED_TABLES/DIFF_SPECS include it for replay/verify.
+
 CREATE TABLE highlights ( -- [projection] 文本高亮/下划线；由 highlight.created/highlight.recolored/highlight.removed 事件生成。
   id TEXT NOT NULL PRIMARY KEY, -- 标注 ID，对应当前 Highlight.id；reader overlay 和 context 列表都用它删除/更新。
   book_id TEXT NOT NULL REFERENCES books(id) ON DELETE CASCADE, -- 所属书籍 ID；用于打开书时加载该书所有标注。

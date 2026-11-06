@@ -164,4 +164,3 @@ pub fn annotations_search(
     let conn = db.0.lock().map_err(|e| e.to_string())?;
     annotations_search_inner(&conn, &query, book_id.as_deref(), kind.as_deref())
 }
-

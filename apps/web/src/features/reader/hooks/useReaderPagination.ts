@@ -11,8 +11,18 @@
  * listeners are attached once per `load` and must reach the latest closure
  * without being re-attached.
  */
-import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
-import { getScrollEdges, isAtEndOfBook, type FoliateView } from "../lib/foliate-engine";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type RefObject,
+} from "react";
+import {
+  getScrollEdges,
+  isAtEndOfBook,
+  type FoliateView,
+} from "../lib/foliate-engine";
 import type { ReadingMode } from "../../settings/lib/reader-settings";
 
 /** Cross-fade timings for a lazy section swap. */
@@ -26,6 +36,7 @@ const OVERSCROLL_RESET_MS = 220;
 const SHELL_DISMISS_SCROLL_PX = 90;
 
 type Options = {
+  allowsMotion?: () => boolean;
   viewRef: RefObject<FoliateView | null>;
   readingModeRef: RefObject<ReadingMode>;
   shellVisibleRef: RefObject<boolean>;
@@ -46,9 +57,13 @@ export type ReaderPagination = {
    *  hard swap would read as a glitch rather than a move. */
   crossTo: (navigate: () => Promise<unknown> | void) => Promise<void>;
   crossSection: (direction: -1 | 1, targetSection?: number) => Promise<void>;
-  crossSectionRef: RefObject<(direction: -1 | 1, targetSection?: number) => Promise<void>>;
+  crossSectionRef: RefObject<
+    (direction: -1 | 1, targetSection?: number) => Promise<void>
+  >;
   handleWheelCrossing: (deltaY: number, threshold?: number) => void;
-  handleWheelCrossingRef: RefObject<(deltaY: number, threshold?: number) => void>;
+  handleWheelCrossingRef: RefObject<
+    (deltaY: number, threshold?: number) => void
+  >;
   dismissShellOnScrollDistance: (deltaY: number) => void;
   dismissShellOnScrollDistanceRef: RefObject<(deltaY: number) => void>;
   enqueuePageTurn: (turn: () => Promise<unknown> | void) => void;
@@ -73,6 +88,7 @@ export function useReaderPagination({
   onContentScrollRef,
   clearSelection,
   onAdvancePastEnd,
+  allowsMotion,
 }: Options): ReaderPagination {
   const [isCrossing, setIsCrossing] = useState(false);
   const crossingSectionRef = useRef(false);
@@ -93,9 +109,13 @@ export function useReaderPagination({
       if (crossingSectionRef.current) return;
       if (!viewRef.current) return;
       crossingSectionRef.current = true;
-      setIsCrossing(true); // fade the current section out
+      const animate = allowsMotion?.() ?? true;
+      if (animate) setIsCrossing(true); // fade the current section out
       try {
-        await new Promise((resolve) => window.setTimeout(resolve, SECTION_CROSS_FADE_MS));
+        if (animate)
+          await new Promise((resolve) =>
+            window.setTimeout(resolve, SECTION_CROSS_FADE_MS),
+          );
         await navigate();
       } catch {
         // At the first/last section, or a teardown race — fall through to reveal.
@@ -103,10 +123,12 @@ export function useReaderPagination({
       // The destination has rendered while hidden; reveal it on the next frame,
       // then settle briefly so one push advances a single section.
       window.requestAnimationFrame(() => setIsCrossing(false));
-      await new Promise((resolve) => window.setTimeout(resolve, SECTION_CROSS_COOLDOWN_MS));
+      await new Promise((resolve) =>
+        window.setTimeout(resolve, SECTION_CROSS_COOLDOWN_MS),
+      );
       crossingSectionRef.current = false;
     },
-    [viewRef],
+    [viewRef, allowsMotion],
   );
 
   /**
@@ -184,7 +206,8 @@ export function useReaderPagination({
    */
   const dismissShellOnScrollDistance = useCallback(
     (deltaY: number) => {
-      if (!shellVisibleRef.current || readingModeRef.current !== "scroll") return;
+      if (!shellVisibleRef.current || readingModeRef.current !== "scroll")
+        return;
       shellScrollAccumRef.current += deltaY;
       if (Math.abs(shellScrollAccumRef.current) >= SHELL_DISMISS_SCROLL_PX) {
         shellScrollAccumRef.current = 0;
@@ -219,7 +242,9 @@ export function useReaderPagination({
       return;
     }
     queue.running = true;
-    const run = async (current: () => Promise<unknown> | void): Promise<void> => {
+    const run = async (
+      current: () => Promise<unknown> | void,
+    ): Promise<void> => {
       try {
         await current();
       } catch {
@@ -273,7 +298,10 @@ export function useReaderPagination({
       // pages directly.
       if (readingModeRef.current === "scroll") {
         const edges = getScrollEdges(view);
-        if ((direction === 1 && edges?.atBottom) || (direction === -1 && edges?.atTop)) {
+        if (
+          (direction === 1 && edges?.atBottom) ||
+          (direction === -1 && edges?.atTop)
+        ) {
           void crossSection(direction);
           return;
         }

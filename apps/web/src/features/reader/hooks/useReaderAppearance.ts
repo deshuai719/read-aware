@@ -1,3 +1,4 @@
+import { normalizeTextEncoding, type TextEncoding } from "../lib/decode-text";
 import { useCallback, useMemo } from "react";
 import { useAtom, useAtomValue } from "jotai";
 import {
@@ -21,6 +22,8 @@ type UseReaderAppearanceResult = {
   prefs: ReaderSettingsPreferences;
   /** Render-ready settings for this book, with `auto` page color resolved. */
   effective: ReaderSettings;
+  textEncoding: TextEncoding;
+  setTextEncoding: (encoding: TextEncoding) => void;
   setScope: (scope: ReaderAppearanceScope) => void;
   updatePrefs: (prefs: ReaderSettingsPreferences) => void;
 };
@@ -38,7 +41,8 @@ export function useReaderAppearance(bookId: string): UseReaderAppearanceResult {
   const appTheme = useAtomValue(resolvedAppThemeAtom);
 
   const override = overrides[bookId];
-  const scope: ReaderAppearanceScope = override?.scope === "book" ? "book" : "global";
+  const scope: ReaderAppearanceScope =
+    override?.scope === "book" ? "book" : "global";
   const prefs = scope === "book" && override ? override.settings : globalPrefs;
   // Keep a stable reference so consumers that key effects on the settings object
   // (e.g. the reader re-injecting CSS) only react to genuine changes, not to
@@ -50,30 +54,58 @@ export function useReaderAppearance(bookId: string): UseReaderAppearanceResult {
 
   const setScope = useCallback(
     (next: ReaderAppearanceScope) => {
-      const existing = overrides[bookId];
-      if (next === "book") {
-        // Seed from the stored snapshot if present, otherwise from current global.
-        const settings = existing?.settings ?? globalPrefs;
-        setOverrides({ ...overrides, [bookId]: { scope: "book", settings } });
-        return;
-      }
-      // Back to global — keep the snapshot so the book can be re-customized later.
-      if (!existing) return;
-      setOverrides({ ...overrides, [bookId]: { ...existing, scope: "global" } });
+      setOverrides((current) => {
+        const existing = current[bookId];
+        if (next === "global" && !existing) return current;
+        // Keep the snapshot and independent decoder/TTS fields from the
+        // latest state, including writes batched before this scope change.
+        return {
+          ...current,
+          [bookId]: {
+            ...existing,
+            settings: existing?.settings ?? globalPrefs,
+            scope: next,
+          },
+        };
+      });
     },
-    [bookId, globalPrefs, overrides, setOverrides],
+    [bookId, globalPrefs, setOverrides],
   );
 
   const updatePrefs = useCallback(
     (next: ReaderSettingsPreferences) => {
       if (scope === "book") {
-        setOverrides({ ...overrides, [bookId]: { scope: "book", settings: next } });
+        setOverrides((current) => ({
+          ...current,
+          [bookId]: { ...current[bookId], scope: "book", settings: next },
+        }));
         return;
       }
       setGlobalPrefs(next);
     },
-    [bookId, overrides, scope, setGlobalPrefs, setOverrides],
+    [bookId, scope, setGlobalPrefs, setOverrides],
   );
 
-  return { scope, prefs, effective, setScope, updatePrefs };
+  const setTextEncoding = useCallback(
+    (textEncoding: TextEncoding) =>
+      setOverrides((current) => ({
+        ...current,
+        [bookId]: {
+          ...current[bookId],
+          scope: current[bookId]?.scope ?? "global",
+          settings: current[bookId]?.settings ?? globalPrefs,
+          textEncoding,
+        },
+      })),
+    [bookId, globalPrefs, setOverrides],
+  );
+  return {
+    scope,
+    prefs,
+    effective,
+    setScope,
+    updatePrefs,
+    textEncoding: normalizeTextEncoding(override?.textEncoding),
+    setTextEncoding,
+  };
 }

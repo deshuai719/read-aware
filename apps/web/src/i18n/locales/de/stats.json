@@ -86,5 +86,14 @@
   "title": "Lesestatistik",
   "weekly": {
     "last7Days": "Letzte 7 Tage"
+  },
+  "goal": {
+    "title": "Tägliches Leseziel",
+    "target": "Tagesziel",
+    "off": "Aus",
+    "minutes": "{{count}} Min",
+    "achieved": "Ziel erreicht",
+    "remaining": "Noch {{count}} Min",
+    "read": "Heute {{count}} Min gelesen"
   }
 }

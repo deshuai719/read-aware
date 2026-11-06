@@ -452,7 +452,12 @@
     "label": "Police",
     "placeholderCurated": "Choisir une police sélectionnée",
     "placeholderCustom": "Choisir une police installée",
-    "retry": "Réessayer"
+    "retry": "Réessayer",
+    "importLocal": "Importer une police locale",
+    "removeLocal": "Supprimer la police locale",
+    "importFailed": "Import impossible (TTF, OTF, WOFF, WOFF2 ; 32 Mo maximum).",
+    "missingLocal": "Police importée indisponible",
+    "loadFailedLocal": "Impossible de charger la police."
   },
   "general": {
     "crashReports": {
@@ -509,7 +514,8 @@
       "stats": "Statistiques",
       "toc": "Sommaire",
       "underline": "Souligner",
-      "viewControl": "Vue"
+      "viewControl": "Vue",
+      "translate": "Traduire"
     },
     "more": "Plus",
     "overflow": "Menu de dépassement",

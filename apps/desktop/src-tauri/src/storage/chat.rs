@@ -215,4 +215,3 @@ pub fn ai_chat_clear(conversation_id: String, db: State<'_, Db>) -> Result<(), S
     .map_err(|e| e.to_string())?;
     Ok(())
 }
-

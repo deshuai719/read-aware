@@ -91,7 +91,10 @@ pub(crate) fn insert_event_row(
     Ok(inserted > 0)
 }
 
-pub(crate) fn append_events_inner(conn: &mut Connection, events: &[EventRow]) -> Result<(), String> {
+pub(crate) fn append_events_inner(
+    conn: &mut Connection,
+    events: &[EventRow],
+) -> Result<(), String> {
     let tx = conn.transaction().map_err(|e| e.to_string())?;
     for ev in events {
         insert_event_row(&tx, ev, EventSource::Local)?;
@@ -123,11 +126,47 @@ pub struct CommitReport {
     pub applied: usize,
 }
 
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CollectionPasswordPrecondition {
+    pub collection_id: String,
+    pub expected_hash: Option<String>,
+}
+
 pub(crate) fn commit_events_inner(
     conn: &mut Connection,
     events: &[EventRow],
 ) -> Result<CommitReport, String> {
+    commit_events_checked_inner(conn, events, None)
+}
+pub(crate) fn commit_events_checked_inner(
+    conn: &mut Connection,
+    events: &[EventRow],
+    precondition: Option<&CollectionPasswordPrecondition>,
+) -> Result<CommitReport, String> {
     let tx = conn.transaction().map_err(|e| e.to_string())?;
+    if let Some(check) = precondition {
+        let actual: Option<String> = tx
+            .query_row(
+                "SELECT password_hash FROM collections WHERE id=?1",
+                params![check.collection_id],
+                |r| r.get(0),
+            )
+            .map_err(|_| "collection-not-found".to_string())?;
+        if actual != check.expected_hash {
+            return Err("collection-password-changed".into());
+        }
+        if events.len() != 1
+            || events[0].event_type != "collection.passwordChanged"
+            || events[0]
+                .payload
+                .get("collectionId")
+                .and_then(Value::as_str)
+                != Some(check.collection_id.as_str())
+        {
+            return Err("collection-password-precondition-invalid".into());
+        }
+    }
     let mut report = CommitReport {
         appended: 0,
         applied: 0,
@@ -156,9 +195,16 @@ pub(crate) fn commit_events_inner(
 /// two disagreeing with nothing to detect or repair it. Now the log leads and
 /// the tables derive from it: both land, or neither does.
 #[tauri::command]
-pub fn commit_events(events: Vec<EventRow>, db: State<'_, Db>) -> Result<CommitReport, String> {
+pub fn commit_events(
+    events: Vec<EventRow>,
+    collection_password_precondition: Option<CollectionPasswordPrecondition>,
+    db: State<'_, Db>,
+) -> Result<CommitReport, String> {
     let mut conn = db.0.lock().map_err(|e| e.to_string())?;
-    commit_events_inner(&mut conn, &events)
+    match collection_password_precondition.as_ref() {
+        Some(check) => commit_events_checked_inner(&mut conn, &events, Some(check)),
+        None => commit_events_inner(&mut conn, &events),
+    }
 }
 
 /// What a `apply_remote_events` call did.
@@ -353,7 +399,10 @@ pub async fn finalize_staged_events(app: AppHandle) -> Result<Option<RebuildRepo
 /// (the pull loop) is responsible for `hlc.observe()`-ing every stamp BEFORE
 /// invoking this, and for advancing `sync_cursors` after it returns.
 #[tauri::command]
-pub async fn apply_remote_events(events: Vec<EventRow>, app: AppHandle) -> Result<MergeReport, String> {
+pub async fn apply_remote_events(
+    events: Vec<EventRow>,
+    app: AppHandle,
+) -> Result<MergeReport, String> {
     // Same threading note as `rebuild_projections`: the replay fallback is
     // unbounded work and must stay off the main thread.
     tauri::async_runtime::spawn_blocking(move || {
@@ -483,7 +532,9 @@ pub(crate) fn replay_into(tx: &Transaction<'_>) -> Result<RebuildReport, String>
                  ORDER BY hlc_wall_ms, hlc_counter, hlc_device",
             )
             .map_err(|e| e.to_string())?;
-        let iter = stmt.query_map([], row_to_event).map_err(|e| e.to_string())?;
+        let iter = stmt
+            .query_map([], row_to_event)
+            .map_err(|e| e.to_string())?;
         iter.collect::<rusqlite::Result<Vec<_>>>()
             .map_err(|e| e.to_string())?
     };
@@ -694,4 +745,3 @@ pub(crate) fn verify_inner(app: &AppHandle) -> Result<VerifyReport, String> {
         drift,
     })
 }
-

@@ -446,7 +446,12 @@
     "label": "Font",
     "placeholderCurated": "Choose a curated font",
     "placeholderCustom": "Choose an installed font",
-    "retry": "Retry"
+    "retry": "Retry",
+    "importLocal": "Import local font",
+    "removeLocal": "Remove local font",
+    "importFailed": "Could not import font. Choose a valid TTF, OTF, WOFF or WOFF2 (32 MB maximum).",
+    "missingLocal": "Imported font unavailable",
+    "loadFailedLocal": "Could not load imported font."
   },
   "general": {
     "crashReports": {
@@ -503,7 +508,8 @@
       "stats": "Reading stats",
       "toc": "Table of contents",
       "underline": "Underline",
-      "viewControl": "Shelf view"
+      "viewControl": "Shelf view",
+      "translate": "Translate"
     },
     "more": "More",
     "overflow": "Overflow menu",

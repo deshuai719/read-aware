@@ -81,5 +81,14 @@
   "title": "阅读统计",
   "weekly": {
     "last7Days": "最近 7 天"
+  },
+  "goal": {
+    "title": "每日阅读目标",
+    "target": "每日目标",
+    "off": "关闭",
+    "minutes": "{{count}} 分钟",
+    "achieved": "今日目标已达成",
+    "remaining": "还需 {{count}} 分钟",
+    "read": "今日已读 {{count}} 分钟"
   }
 }

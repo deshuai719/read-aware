@@ -1,81 +1,176 @@
-/**
- * Decode a plain-text book to a string.
- *
- * Text files carry no encoding declaration, and the ones people actually own
- * are not all UTF-8 — Chinese TXT books are routinely GB18030 or Big5, and
- * older Western ones are single-byte code pages. Guessing wrong does not fail
- * loudly; it produces a whole book of mojibake. So each candidate encoding is
- * tried in strict mode and the first one that decodes cleanly wins, with a
- * lossy Latin-1 pass as the last resort so a book always opens.
- */
-
-/** Byte-order marks decide the encoding outright — no guessing needed. */
-const BOMS: { bytes: number[]; encoding: string }[] = [
-  { bytes: [0xef, 0xbb, 0xbf], encoding: "utf-8" },
-  { bytes: [0xff, 0xfe], encoding: "utf-16le" },
-  { bytes: [0xfe, 0xff], encoding: "utf-16be" },
-];
-
-/**
- * GB18030 covers GBK and GB2312 (it is a strict superset), so one candidate
- * serves every mainland-Chinese file. Big5 follows for traditional Chinese,
- * then Shift_JIS and EUC-KR. Strict decoding rejects the wrong ones: these
- * multi-byte schemes have illegal byte sequences that a mismatched file hits
- * almost immediately.
- */
-const CANDIDATE_ENCODINGS = ["utf-8", "gb18030", "big5", "shift_jis", "euc-kr"];
-
-export function decodeTextBook(bytes: Uint8Array): string {
-  for (const { bytes: bom, encoding } of BOMS) {
-    if (bom.every((byte, index) => bytes[index] === byte)) {
-      return stripBom(decodeOrNull(bytes, encoding) ?? decodeLossy(bytes));
-    }
-  }
-
-  for (const encoding of CANDIDATE_ENCODINGS) {
-    const decoded = decodeOrNull(bytes, encoding);
-    if (decoded != null && !looksLikeMojibake(decoded)) return decoded;
-  }
-
-  return decodeLossy(bytes);
+/** Encoding detection is evidence, not certainty: ambiguous legacy files retain alternatives. */
+export const TEXT_ENCODINGS = [
+  "auto",
+  "utf-8",
+  "utf-16le",
+  "utf-16be",
+  "gb18030",
+  "big5",
+  "shift_jis",
+  "euc-kr",
+  "windows-1252",
+] as const;
+export type TextEncoding = (typeof TEXT_ENCODINGS)[number];
+export type TextDecoding = {
+  text: string;
+  encoding: Exclude<TextEncoding, "auto">;
+  confidence: "high" | "low";
+  reason:
+    | "override"
+    | "bom"
+    | "utf16-pattern"
+    | "declaration"
+    | "utf8"
+    | "legacy"
+    | "fallback";
+  candidates: string[];
+};
+export function normalizeTextEncoding(value: unknown): TextEncoding {
+  return typeof value === "string" &&
+    (TEXT_ENCODINGS as readonly string[]).includes(value)
+    ? (value as TextEncoding)
+    : "auto";
 }
-
-function decodeOrNull(bytes: Uint8Array, encoding: string): string | null {
+const BOMS: [number[], Exclude<TextEncoding, "auto">][] = [
+  [[239, 187, 191], "utf-8"],
+  [[255, 254], "utf-16le"],
+  [[254, 255], "utf-16be"],
+];
+function decode(bytes: Uint8Array, encoding: string): string | null {
   try {
-    return new TextDecoder(encoding, { fatal: true }).decode(bytes);
+    return new TextDecoder(encoding, { fatal: true })
+      .decode(bytes)
+      .replace(/^\uFEFF/, "");
   } catch {
     return null;
   }
 }
-
-function decodeLossy(bytes: Uint8Array): string {
-  return new TextDecoder("windows-1252").decode(bytes);
-}
-
-function stripBom(value: string): string {
-  return value.charCodeAt(0) === 0xfeff ? value.slice(1) : value;
-}
-
-/**
- * A legacy CJK file can decode "successfully" as another CJK encoding while
- * producing nothing but rare ideographs and private-use characters. Real prose
- * in any language keeps a substantial share of ASCII (spaces, digits,
- * punctuation) or of common CJK; a page of replacement/private-use characters
- * means the candidate was wrong.
- */
-function looksLikeMojibake(value: string): boolean {
-  const sample = value.slice(0, 4096);
-  if (!sample) return false;
-  let suspicious = 0;
-  for (const char of sample) {
-    const code = char.codePointAt(0)!;
-    if (
-      code === 0xfffd ||
-      (code >= 0xe000 && code <= 0xf8ff) ||
-      (code >= 0x0080 && code <= 0x00a0)
-    ) {
-      suspicious++;
+export function detectTextBook(
+  bytes: Uint8Array,
+  {
+    encoding = "auto",
+    html = false,
+  }: { encoding?: TextEncoding; html?: boolean } = {},
+): TextDecoding {
+  const result = (
+    text: string,
+    selected: Exclude<TextEncoding, "auto">,
+    reason: TextDecoding["reason"],
+    confidence: TextDecoding["confidence"] = "high",
+    candidates: string[] = [selected],
+  ): TextDecoding => ({
+    text,
+    encoding: selected,
+    reason,
+    confidence,
+    candidates,
+  });
+  if (encoding !== "auto") {
+    const text = decode(bytes, encoding);
+    if (text === null) throw new Error("text-decoding-failed");
+    return result(text, encoding, "override");
+  }
+  for (const [bom, selected] of BOMS) {
+    if (bom.every((v, i) => bytes[i] === v)) {
+      const text = decode(bytes, selected);
+      if (text === null) throw new Error("text-decoding-failed");
+      return result(text, selected, "bom");
     }
   }
-  return suspicious > sample.length * 0.02;
+  if (bytes.length >= 8 && bytes.length % 2 === 0) {
+    let even = 0,
+      odd = 0;
+    const length = Math.min(bytes.length, 4096);
+    for (let i = 0; i < length; i++) {
+      if (bytes[i] === 0) {
+        if (i % 2) odd++;
+        else even++;
+      }
+    }
+    const pairs = length / 2;
+    const selected =
+      odd > pairs * 0.4 && even < pairs * 0.05
+        ? "utf-16le"
+        : even > pairs * 0.4 && odd < pairs * 0.05
+          ? "utf-16be"
+          : null;
+    if (selected) {
+      const text = decode(bytes, selected);
+      if (text !== null) return result(text, selected, "utf16-pattern");
+    }
+  }
+  if (html) {
+    const head = new TextDecoder("windows-1252").decode(
+      bytes.subarray(0, 4096),
+    );
+    const declared = head
+      .match(/charset\s*=\s*["']?\s*([a-zA-Z0-9_-]+)/i)?.[1]
+      ?.toLowerCase();
+    const aliases: Record<string, TextEncoding> = {
+      gbk: "gb18030",
+      gb2312: "gb18030",
+      big5: "big5",
+      utf8: "utf-8",
+      latin1: "windows-1252",
+      "iso-8859-1": "windows-1252",
+    };
+    const selected = declared
+      ? (aliases[declared] ?? normalizeTextEncoding(declared))
+      : "auto";
+    if (selected !== "auto") {
+      const text = decode(bytes, selected);
+      if (text !== null) return result(text, selected, "declaration");
+    }
+  }
+  const utf = decode(bytes, "utf-8");
+  if (utf !== null) return result(utf, "utf-8", "utf8");
+  const candidates = (
+    ["gb18030", "big5", "shift_jis", "euc-kr", "windows-1252"] as const
+  )
+    .flatMap((selected) => {
+      const text = decode(bytes, selected);
+      return text === null
+        ? []
+        : [{ selected, text, score: plausibility(text) }];
+    })
+    .sort((a, b) => b.score - a.score);
+  const best = candidates[0];
+  if (best)
+    return result(
+      best.text,
+      best.selected,
+      "legacy",
+      "low",
+      candidates.map((c) => c.selected),
+    );
+  return result(
+    new TextDecoder("windows-1252").decode(bytes),
+    "windows-1252",
+    "fallback",
+    "low",
+    [],
+  );
+}
+function plausibility(text: string): number {
+  let score = 0;
+  for (const char of text.slice(0, 4096)) {
+    const c = char.codePointAt(0)!;
+    if (
+      c === 65533 ||
+      (c >= 0xe000 && c <= 0xf8ff) ||
+      (c < 32 && !"\n\r\t".includes(char))
+    )
+      score -= 20;
+    else if (c >= 0x3400 && c <= 0x9fff) score += 1;
+    else if (c >= 0x3040 && c <= 0x30ff) score += 1.2;
+    else if (c >= 0xac00 && c <= 0xd7af) score += 1;
+    else if (c >= 0x80 && c <= 0x9f) score -= 10;
+  }
+  return score;
+}
+export function decodeTextBook(
+  bytes: Uint8Array,
+  options?: { encoding?: TextEncoding; html?: boolean },
+): string {
+  return detectTextBook(bytes, options).text;
 }

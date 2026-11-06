@@ -32,6 +32,9 @@ export type FoliateTocItem = {
 };
 
 export type FoliateBook = {
+  decoding?: Omit<import("./decode-text").TextDecoding, "text"> & {
+    requestedEncoding?: import("./decode-text").TextEncoding;
+  };
   metadata?: FoliateMetadata;
   toc?: FoliateTocItem[] | null;
   splitTOCHref?: (href: string) => [unknown, unknown];
@@ -66,6 +69,7 @@ export type FoliateRelocateDetail = {
   cfi?: string;
   range?: Range;
   index?: number;
+  section?: { current?: number; total?: number };
   reason?: FoliateRelocateReason;
 };
 
@@ -86,7 +90,11 @@ export type FoliateDrawAnnotationDetail = {
   range: Range;
 };
 
-export type FoliateShowAnnotationDetail = { value: string; index: number; range: Range };
+export type FoliateShowAnnotationDetail = {
+  value: string;
+  index: number;
+  range: Range;
+};
 
 export type FoliateResolved = { index: number; anchor: unknown };
 
@@ -112,7 +120,9 @@ export type FoliateRenderer = {
    * page as authored. Baked into the render, so this redraws (see the local
    * patch documented in the vendored VENDOR.md).
    */
-  setPageColors?: (colors: { background: string; foreground?: string } | null) => void;
+  setPageColors?: (
+    colors: { background: string; foreground?: string } | null,
+  ) => void;
   setStyles?: (css: string) => void;
   next: () => Promise<void> | void;
   destroy?: () => void;
@@ -128,7 +138,10 @@ export type FoliateRenderer = {
 /** One search hit's excerpt: text before / the match / text after. */
 export type FoliateSearchExcerpt = { pre: string; match: string; post: string };
 
-export type FoliateSearchSubitem = { cfi: string; excerpt: FoliateSearchExcerpt };
+export type FoliateSearchSubitem = {
+  cfi: string;
+  excerpt: FoliateSearchExcerpt;
+};
 
 /**
  * A yield from `view.search()` in whole-book mode (the only mode the app uses):
@@ -143,14 +156,33 @@ export type FoliateSearchYield =
   | { warning: "timeout" | "unavailable"; index: number }
   | "done";
 
-export type FoliateSearchScopeSpan={startIndex:number;endIndex:number|null;startAnchor?:(doc:Document)=>unknown;endAnchor?:(doc:Document)=>unknown};
+export type FoliateSearchScopeSpan = {
+  startIndex: number;
+  endIndex: number | null;
+  startAnchor?: (doc: Document) => unknown;
+  endAnchor?: (doc: Document) => unknown;
+};
 
 export type FoliateView = HTMLElement & {
   open: (book: BookFileSource | string | FoliateBook) => Promise<void>;
+  close: () => void;
   book?: FoliateBook;
   renderer?: FoliateRenderer;
-  goTo: (target: string | number | FoliateResolved) => Promise<FoliateResolved | undefined>;
-  goToFraction: (fraction: number) => Promise<void>;
+  goTo: (
+    target: string | number | FoliateResolved,
+    options?: { recordHistory?: boolean },
+  ) => Promise<FoliateResolved | undefined>;
+  history: EventTarget & {
+    canGoBack: boolean;
+    canGoForward: boolean;
+    back: () => Promise<boolean>;
+    forward: () => Promise<boolean>;
+    replaceState: (target: string) => void;
+  };
+  goToFraction: (
+    fraction: number,
+    options?: { recordHistory?: boolean },
+  ) => Promise<unknown>;
   /** Cumulative 0..1 start fractions of the spine sections (length: sections + 1),
    *  on the same size-proportional scale as `goToFraction`. */
   getSectionFractions?: () => number[];
@@ -195,7 +227,15 @@ export type FoliateView = HTMLElement & {
   select: (target: string) => Promise<void>;
   /** Remove every outline highlight drawn by `search()`. */
   clearSearch: () => void;
-  restoreSearchResults?: (items:{index:number;cfi:string}[],opts:{draw?:FoliateHighlightFn;drawOptions?:{color?:string;activeColor?:string};activeCfi?:string|null;signal?:AbortSignal}) => Promise<void>;
+  restoreSearchResults?: (
+    items: { index: number; cfi: string }[],
+    opts: {
+      draw?: FoliateHighlightFn;
+      drawOptions?: { color?: string; activeColor?: string };
+      activeCfi?: string | null;
+      signal?: AbortSignal;
+    },
+  ) => Promise<void>;
   /** Retint the active find hit without creating a text selection. */
   setSearchActive?: (cfi: string | null) => Promise<void>;
 };
@@ -258,7 +298,9 @@ const FOLIATE_GLOBAL_KEY = "__readawareFoliate";
 let enginePromise: Promise<FoliateGlobal> | null = null;
 
 function readEngineGlobal(): FoliateGlobal | undefined {
-  return (globalThis as unknown as Record<string, FoliateGlobal | undefined>)[FOLIATE_GLOBAL_KEY];
+  return (globalThis as unknown as Record<string, FoliateGlobal | undefined>)[
+    FOLIATE_GLOBAL_KEY
+  ];
 }
 
 function loadEngine(): Promise<FoliateGlobal> {
@@ -275,10 +317,12 @@ function loadEngine(): Promise<FoliateGlobal> {
     script.addEventListener("load", () => {
       const engine = readEngineGlobal();
       if (engine) resolve(engine);
-      else reject(new Error("The reading engine loaded but did not initialize."));
+      else
+        reject(new Error("The reading engine loaded but did not initialize."));
     });
     script.addEventListener("error", () =>
-      reject(new Error("Failed to load the reading engine.")));
+      reject(new Error("Failed to load the reading engine.")),
+    );
     document.head.append(script);
   });
   // Don't cache a failure: drop the promise so the next open (or the idle
@@ -305,7 +349,9 @@ export async function loadDrawFns(): Promise<FoliateDrawFns> {
 }
 
 /** Parse a book file into a foliate book object (auto-detects the format). */
-export async function makeFoliateBook(file: BookFileSource): Promise<FoliateBook> {
+export async function makeFoliateBook(
+  file: BookFileSource,
+): Promise<FoliateBook> {
   return (await loadEngine()).makeBook(file);
 }
 
@@ -362,7 +408,9 @@ const SCROLL_EDGE_EPSILON = 2;
  * the page comparison supplies the precision.
  */
 export function isAtEndOfBook(view: FoliateView | null | undefined): boolean {
-  const renderer = view?.renderer as unknown as FoliateScrollGeometry | undefined;
+  const renderer = view?.renderer as unknown as
+    | FoliateScrollGeometry
+    | undefined;
   if (renderer?.atEnd !== true) return false;
   const pages = renderer.pages ?? 0;
   if (pages <= 1) return true; // single screen: showing it is reaching the end
@@ -376,7 +424,9 @@ export function isAtEndOfBook(view: FoliateView | null | undefined): boolean {
 export function getScrollEdges(
   view: FoliateView | null | undefined,
 ): { atTop: boolean; atBottom: boolean } | null {
-  const renderer = view?.renderer as unknown as FoliateScrollGeometry | undefined;
+  const renderer = view?.renderer as unknown as
+    | FoliateScrollGeometry
+    | undefined;
   if (!renderer?.scrolled) return null;
   try {
     const start = renderer.start ?? 0;
@@ -393,7 +443,9 @@ export function getScrollEdges(
 
 // ---- Metadata normalizers (title/author may be language maps) --------------
 
-function firstLanguageValue(value: string | FoliateLanguageMap | undefined): string {
+function firstLanguageValue(
+  value: string | FoliateLanguageMap | undefined,
+): string {
   if (!value) return "";
   if (typeof value === "string") return value;
   const keys = Object.keys(value);

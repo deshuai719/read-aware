@@ -261,10 +261,18 @@ pub fn apply_event(tx: &Transaction<'_>, ev: &EventRow) -> Result<bool, String> 
             let id = require(p, "bookId", t)?;
             // The book's annotations go with it; their own `*.removed` events
             // are not emitted per-annotation on a book delete.
+            tx.execute(
+                "DELETE FROM reading_bookmarks WHERE book_id = ?1",
+                params![id],
+            )
+            .map_err(|e| e.to_string())?;
             tx.execute("DELETE FROM annotations WHERE book_id = ?1", params![id])
                 .map_err(|e| e.to_string())?;
-            tx.execute("DELETE FROM chapter_digests WHERE book_id = ?1", params![id])
-                .map_err(|e| e.to_string())?;
+            tx.execute(
+                "DELETE FROM chapter_digests WHERE book_id = ?1",
+                params![id],
+            )
+            .map_err(|e| e.to_string())?;
             tx.execute("DELETE FROM books WHERE id = ?1", params![id])
                 .map_err(|e| e.to_string())?;
         }
@@ -294,6 +302,11 @@ pub fn apply_event(tx: &Transaction<'_>, ev: &EventRow) -> Result<bool, String> 
             .map_err(|e| e.to_string())?;
             tx.execute(
                 "UPDATE annotations SET book_id = ?2 WHERE book_id = ?1",
+                params![merged, keep],
+            )
+            .map_err(|e| e.to_string())?;
+            tx.execute(
+                "UPDATE reading_bookmarks SET book_id = ?2 WHERE book_id = ?1",
                 params![merged, keep],
             )
             .map_err(|e| e.to_string())?;
@@ -334,10 +347,16 @@ pub fn apply_event(tx: &Transaction<'_>, ev: &EventRow) -> Result<bool, String> 
                 params![merged],
             )
             .map_err(|e| e.to_string())?;
-            tx.execute("DELETE FROM reading_time_daily WHERE book_id = ?1", params![merged])
-                .map_err(|e| e.to_string())?;
-            tx.execute("DELETE FROM reading_time_hourly WHERE book_id = ?1", params![merged])
-                .map_err(|e| e.to_string())?;
+            tx.execute(
+                "DELETE FROM reading_time_daily WHERE book_id = ?1",
+                params![merged],
+            )
+            .map_err(|e| e.to_string())?;
+            tx.execute(
+                "DELETE FROM reading_time_hourly WHERE book_id = ?1",
+                params![merged],
+            )
+            .map_err(|e| e.to_string())?;
             // Chapter digests describe the same content on both records: the
             // keeper's own rows win per chapter, the merged record fills gaps.
             tx.execute(
@@ -350,8 +369,11 @@ pub fn apply_event(tx: &Transaction<'_>, ev: &EventRow) -> Result<bool, String> 
                 params![merged, keep],
             )
             .map_err(|e| e.to_string())?;
-            tx.execute("DELETE FROM chapter_digests WHERE book_id = ?1", params![merged])
-                .map_err(|e| e.to_string())?;
+            tx.execute(
+                "DELETE FROM chapter_digests WHERE book_id = ?1",
+                params![merged],
+            )
+            .map_err(|e| e.to_string())?;
             // The keeper's metadata wins; reading STATE takes whichever record
             // got further (progress trio moves together), stars are sticky,
             // and an unfiled keeper adopts the merged record's shelf.
@@ -449,13 +471,25 @@ pub fn apply_event(tx: &Transaction<'_>, ev: &EventRow) -> Result<bool, String> 
             let chapter_href = str_of(p, "chapterHref");
             // The projection stores ReaderProgress verbatim as JSON; `cfi` and
             // `href` are the two anchor shapes the reader understands.
-            let progress = serde_json::json!({
+            let mut progress = serde_json::json!({
                 "currentLocation": i64_of(p, "currentLocation").unwrap_or(0),
                 "totalLocations": i64_of(p, "totalLocations").unwrap_or(0),
                 "progressPercent": json_number(f64_of(p, "progressPercent").unwrap_or(0.0)),
                 "cfi": if locator.is_empty() { Value::Null } else { Value::String(locator) },
                 "href": chapter_href.clone().map_or(Value::Null, Value::String),
             });
+            if let Some(context) = p.get("recovery").filter(|value| value.is_object()) {
+                let quote = context.get("quote").and_then(Value::as_str).unwrap_or("");
+                if quote.chars().count() > 240 {
+                    return Err("progress-recovery-quote-too-long".into());
+                }
+                if let Some(fraction) = context.get("fraction").and_then(Value::as_f64) {
+                    if !(0.0..=1.0).contains(&fraction) {
+                        return Err("progress-recovery-fraction-invalid".into());
+                    }
+                }
+                progress["recovery"] = context.clone();
+            }
             // last_opened_at moves with progress too: the shelf orders by it,
             // and making progress IS reading the book. `book.opened` covers the
             // case where a book is opened without any progress landing.
@@ -523,6 +557,35 @@ pub fn apply_event(tx: &Transaction<'_>, ev: &EventRow) -> Result<bool, String> 
         }
 
         // ── Annotations (highlights + notes + asks share one typed table) ────
+        "bookmark.created" => {
+            let fraction = f64_of(p, "fraction");
+            if fraction.is_some_and(|v| !v.is_finite() || !(0.0..=1.0).contains(&v)) {
+                return Err("bookmark-invalid-fraction".into());
+            }
+            let anchor = require(p, "anchor", t)?;
+            if anchor.trim().is_empty() {
+                return Err("bookmark-empty-anchor".into());
+            }
+            tx.execute("INSERT INTO reading_bookmarks (id,book_id,anchor,chapter_href,title,excerpt,fraction,source_sha256,created_at,updated_at)
+             SELECT ?1,?2,?3,?4,?5,?6,?7,?8,?9,?9 WHERE EXISTS(SELECT 1 FROM books WHERE id=?2)
+             ON CONFLICT(id) DO UPDATE SET title=excluded.title,excerpt=excluded.excerpt,updated_at=excluded.updated_at",
+             params![require(p,"bookmarkId",t)?,require(p,"bookId",t)?,anchor,str_of(p,"chapterHref"),require(p,"title",t)?,require(p,"excerpt",t)?,fraction,str_of(p,"sourceSha256"),at])
+             .map_err(|e|e.to_string())?;
+        }
+        "bookmark.renamed" => {
+            tx.execute(
+                "UPDATE reading_bookmarks SET title=?2,updated_at=?3 WHERE id=?1",
+                params![require(p, "bookmarkId", t)?, require(p, "title", t)?, at],
+            )
+            .map_err(|e| e.to_string())?;
+        }
+        "bookmark.removed" => {
+            tx.execute(
+                "DELETE FROM reading_bookmarks WHERE id=?1",
+                params![require(p, "bookmarkId", t)?],
+            )
+            .map_err(|e| e.to_string())?;
+        }
         "highlight.created" => {
             upsert_annotation(
                 tx,
@@ -811,8 +874,8 @@ pub fn apply_event(tx: &Transaction<'_>, ev: &EventRow) -> Result<bool, String> 
         // 同章后到的事件（管线升版重算）整行覆盖。
         "book.chapterDigested" => {
             let id = require(p, "bookId", t)?;
-            let chapter_index = i64_of(p, "chapterIndex")
-                .ok_or_else(|| format!("{t}: missing chapterIndex"))?;
+            let chapter_index =
+                i64_of(p, "chapterIndex").ok_or_else(|| format!("{t}: missing chapterIndex"))?;
             let characters_json = p
                 .get("characters")
                 .map(|value| value.to_string())
@@ -899,7 +962,15 @@ fn ensure_blob_manifest(
         "INSERT OR IGNORE INTO blob_objects
             (key, kind, mime_type, byte_size, sha256, storage_uri, sync_required, created_at)
          VALUES (?1, ?2, ?3, ?4, ?5, NULL, ?6, ?7)",
-        params![key, kind, mime_type, byte_size, sha256, sync_required as i64, at],
+        params![
+            key,
+            kind,
+            mime_type,
+            byte_size,
+            sha256,
+            sync_required as i64,
+            at
+        ],
     )
     .map_err(|e| e.to_string())?;
     Ok(())
@@ -968,6 +1039,7 @@ pub struct DiffSpec {
 /// clears exactly these — device-local state (app_kv, local_device, the blob
 /// registry, plugin documents) is NOT derived from the log and must survive.
 pub const DERIVED_TABLES: &[&str] = &[
+    "reading_bookmarks",
     "annotations",
     "books",
     "collections",
@@ -983,6 +1055,11 @@ pub const DERIVED_TABLES: &[&str] = &[
 ];
 
 pub const DIFF_SPECS: &[DiffSpec] = &[
+    DiffSpec {
+        table: "reading_bookmarks",
+        local_columns: &[],
+        domain_rows: None,
+    },
     DiffSpec {
         table: "annotations",
         local_columns: &[],

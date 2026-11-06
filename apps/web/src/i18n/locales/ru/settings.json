@@ -458,7 +458,12 @@
     "label": "Шрифт",
     "placeholderCurated": "Выберите подобранный шрифт",
     "placeholderCustom": "Выберите установленный шрифт",
-    "retry": "Повторить"
+    "retry": "Повторить",
+    "importLocal": "Импортировать шрифт",
+    "removeLocal": "Удалить локальный шрифт",
+    "importFailed": "Не удалось импортировать шрифт (TTF, OTF, WOFF, WOFF2; до 32 МБ).",
+    "missingLocal": "Шрифт недоступен",
+    "loadFailedLocal": "Не удалось загрузить шрифт."
   },
   "general": {
     "crashReports": {
@@ -515,7 +520,8 @@
       "stats": "Статистика",
       "toc": "Оглавление",
       "underline": "Подчеркнуть",
-      "viewControl": "Вид"
+      "viewControl": "Вид",
+      "translate": "Перевести"
     },
     "more": "Ещё",
     "overflow": "Меню переполнения",

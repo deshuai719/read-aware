@@ -86,5 +86,14 @@
   "title": "Reading stats",
   "weekly": {
     "last7Days": "Last 7 days"
+  },
+  "goal": {
+    "title": "Daily reading goal",
+    "target": "Daily target",
+    "off": "Off",
+    "minutes": "{{count}} min",
+    "achieved": "Goal reached",
+    "remaining": "{{count}} min remaining",
+    "read": "{{count}} min read today"
   }
 }

@@ -1,3 +1,5 @@
+import { useLocalFonts, useLocalFontFace } from "../hooks/useLocalFonts";
+import { localFontId } from "../lib/local-font-format";
 import { useMemo, useState } from "react";
 import { useAtomValue } from "jotai";
 import { Button, Caption, Select, Spinner, Toggle } from "@read-aware/ui";
@@ -20,10 +22,12 @@ import { usePluginFontFace } from "../hooks/usePluginFonts";
 import { toPluginRef, parsePluginRef } from "../../plugins/lib/plugin-theme";
 import { pluginFontsAtom } from "../../plugins/state/plugin-store";
 
-const CURATED_OPTIONS: { value: string; label: string }[] = CURATED_FONTS.map((font) => ({
-  value: toCuratedFont(font.id),
-  label: font.label,
-}));
+const CURATED_OPTIONS: { value: string; label: string }[] = CURATED_FONTS.map(
+  (font) => ({
+    value: toCuratedFont(font.id),
+    label: font.label,
+  }),
+);
 
 /**
  * `defaultLabel` opts a caller into a null selection — the leading choice in
@@ -72,6 +76,10 @@ export function FontField({
 }: FontFieldProps) {
   const { t } = useTranslation("settings");
   const systemFonts = useSystemFonts();
+  const local = useLocalFonts(value, (next) =>
+    (onChange as (value: ReaderFontFamily) => void)(next as ReaderFontFamily),
+  );
+  const localFace = useLocalFontFace(value ?? "system:");
   const pluginFonts = useAtomValue(pluginFontsAtom);
   // A null value is the surface's own default — neither loader owns it.
   const loaded = value ?? NO_FONT;
@@ -85,9 +93,16 @@ export function FontField({
   usePluginFontFace(loaded);
 
   const systemOptions = useMemo(() => {
-    const opts = systemFonts.map((family) => ({ value: toSystemFont(family), label: family }));
+    const opts = systemFonts.map((family) => ({
+      value: toSystemFont(family),
+      label: family,
+    }));
     // Keep the current pick visible before the list resolves, or if uninstalled.
-    if (value && isSystemFont(value) && !opts.some((option) => option.value === value)) {
+    if (
+      value &&
+      isSystemFont(value) &&
+      !opts.some((option) => option.value === value)
+    ) {
       opts.unshift({ value, label: systemFontFamily(value) ?? value });
     }
     return opts;
@@ -101,17 +116,30 @@ export function FontField({
       // as the top of the list rather than an escape hatch below the fonts.
       ...(defaultLabel ? [{ value: DEFAULT_OPTION, label: defaultLabel }] : []),
       ...CURATED_OPTIONS,
+      ...local.fonts.map((font) => ({
+        value: "local:" + font.id,
+        label: font.name,
+      })),
+      ...(value &&
+      localFontId(value) &&
+      !local.fonts.some((font) => value === "local:" + font.id)
+        ? [{ value, label: t("font.missingLocal") }]
+        : []),
       ...pluginFonts.map((font) => ({
         value: toPluginRef(font.pluginId, font.id) as string,
         label: font.family,
       })),
     ];
     // A stored plugin font whose plugin is currently gone stays visible.
-    if (value && isPluginFont(value) && !opts.some((option) => option.value === value)) {
+    if (
+      value &&
+      isPluginFont(value) &&
+      !opts.some((option) => option.value === value)
+    ) {
       opts.push({ value, label: parsePluginRef(value)?.partId ?? value });
     }
     return opts;
-  }, [defaultLabel, pluginFonts, value]);
+  }, [defaultLabel, pluginFonts, value, local.fonts, t]);
 
   const options = custom ? systemOptions : curatedOptions;
   // Reflect the value only when it belongs to the active source.
@@ -123,14 +151,16 @@ export function FontField({
       ? defaultLabel
         ? DEFAULT_OPTION
         : ""
-      : curatedFontId(value) || isPluginFont(value)
+      : curatedFontId(value) || isPluginFont(value) || localFontId(value)
         ? value
         : "";
 
   return (
     <div className={cn("relative", className)}>
       <label className="absolute right-0 top-0 z-[1] inline-flex cursor-pointer items-center gap-2">
-        <span className="font-sans text-[13px] text-fg-muted">{t("font.custom")}</span>
+        <span className="font-sans text-[13px] text-fg-muted">
+          {t("font.custom")}
+        </span>
         <Toggle
           aria-label={t("font.customAria")}
           checked={custom}
@@ -141,7 +171,9 @@ export function FontField({
         label={t("font.label")}
         value={selectValue}
         options={options}
-        placeholder={custom ? t("font.placeholderCustom") : t("font.placeholderCurated")}
+        placeholder={
+          custom ? t("font.placeholderCustom") : t("font.placeholderCurated")
+        }
         onChange={(next) =>
           // The union guarantees a null-accepting handler whenever the default
           // option can be picked, so the cast only widens for that caller.
@@ -150,13 +182,46 @@ export function FontField({
           )
         }
       />
+      <div className="mt-2 flex items-center gap-2">
+        <Button
+          size="sm"
+          variant="outline"
+          disabled={local.busy}
+          onClick={() => {
+            setCustom(false);
+            void local.importFont();
+          }}
+        >
+          {t("font.importLocal")}
+        </Button>
+        {local.canRemove && (
+          <Button
+            size="sm"
+            variant="ghost"
+            disabled={local.busy}
+            onClick={() => void local.remove()}
+          >
+            {t("font.removeLocal")}
+          </Button>
+        )}
+      </div>
+      {(local.error || localFace.error) && (
+        <Caption role="alert" className="mt-1 block">
+          {local.error ?? t("font.loadFailedLocal")}
+          <Button size="sm" variant="link" onClick={localFace.retry}>
+            {t("font.retry")}
+          </Button>
+        </Caption>
+      )}
       {/* Download feedback for curated fonts — fetched from a CDN on first use,
           which can be slow or unreachable; silence here read as a broken picker. */}
       {fontFace.status === "loading" && (
         <div className="mt-1.5 flex items-center gap-2 text-fg-muted">
           <Spinner size="sm" className="h-3 w-3" />
           <Caption>
-            {t("font.downloading", { percent: Math.round(fontFace.progress * 100) })}
+            {t("font.downloading", {
+              percent: Math.round(fontFace.progress * 100),
+            })}
           </Caption>
         </div>
       )}

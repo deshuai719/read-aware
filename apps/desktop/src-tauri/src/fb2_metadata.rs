@@ -41,7 +41,12 @@ fn read_document(path: &Path) -> Result<String, String> {
         let mut archive = ZipArchive::new(File::open(path).map_err(|e| e.to_string())?)
             .map_err(|error| error.to_string())?;
         let name = (0..archive.len())
-            .filter_map(|index| archive.by_index(index).ok().map(|entry| entry.name().to_owned()))
+            .filter_map(|index| {
+                archive
+                    .by_index(index)
+                    .ok()
+                    .map(|entry| entry.name().to_owned())
+            })
             .find(|name| name.to_ascii_lowercase().ends_with(".fb2"))
             .ok_or("Zipped FictionBook holds no .fb2 entry")?;
         let mut entry = archive.by_name(&name).map_err(|error| error.to_string())?;

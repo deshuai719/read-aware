@@ -7,6 +7,9 @@
  * and the current settings, and writes to the foliate renderer — so it belongs
  * in a hook rather than among the engine, selection, and annotation effects.
  */
+import { normalizeReaderAdvanced } from "../../settings/lib/reader-advanced";
+import { ensureLocalFontFaceCss } from "../../settings/lib/local-font-store";
+import { onAppEvent } from "../../../platform/app-events";
 import { useCallback, useEffect, useRef, type RefObject } from "react";
 import { useAtomValue } from "jotai";
 import {
@@ -15,8 +18,14 @@ import {
   readerFontWeightsNeeded,
   readerGapForMargins,
 } from "../../settings/lib/reader-css";
-import { curatedFontId, isPluginFont } from "../../settings/lib/reader-settings";
-import type { ReaderSettings, ReadingMode } from "../../settings/lib/reader-settings";
+import {
+  curatedFontId,
+  isPluginFont,
+} from "../../settings/lib/reader-settings";
+import type {
+  ReaderSettings,
+  ReadingMode,
+} from "../../settings/lib/reader-settings";
 import { ensureCuratedFontFaceCss } from "../../settings/lib/curated-font-loader";
 import { resolveReaderPalette } from "../../settings/lib/reader-theme";
 import { pluginFontFaceCss } from "../../settings/hooks/usePluginFonts";
@@ -45,12 +54,18 @@ export type ReaderTypography = {
   /** Recompute and push the text measure onto the renderer. */
   applyMaxInlineSize: () => void;
   /** Rebuild and inject the reader stylesheet (loading webfonts first). */
-  injectStyles: (settings: ReaderSettings, renderer?: FoliateRenderer) => Promise<void>;
+  injectStyles: (
+    settings: ReaderSettings,
+    renderer?: FoliateRenderer,
+  ) => Promise<void>;
   /**
    * Push the palette onto a fixed-layout renderer, which draws it into the
    * page. No-op for reflowable books — they take the palette as CSS instead.
    */
-  applyPageColors: (settings: ReaderSettings, renderer?: FoliateRenderer) => void;
+  applyPageColors: (
+    settings: ReaderSettings,
+    renderer?: FoliateRenderer,
+  ) => void;
 };
 
 export function useReaderTypography({
@@ -63,6 +78,15 @@ export function useReaderTypography({
   layoutForReadingMode,
 }: Options): ReaderTypography {
   const settingsRef = useRef(readerSettings);
+  const injectionEpochRef = useRef(0);
+  const disposedRef = useRef(false);
+  useEffect(() => {
+    disposedRef.current = false;
+    return () => {
+      disposedRef.current = true;
+      injectionEpochRef.current += 1;
+    };
+  }, []);
 
   /**
    * Drive the responsive text measure through foliate's `max-inline-size`
@@ -114,19 +138,30 @@ export function useReaderTypography({
    */
   const injectStyles = useCallback(
     async (settings: ReaderSettings, renderer = viewRef.current?.renderer) => {
+      const epoch = ++injectionEpochRef.current;
+      if (!renderer || disposedRef.current) return;
       const id = curatedFontId(settings.fontFamily);
       const pluginFont = isPluginFont(settings.fontFamily)
         ? findRegisteredByRef(settings.fontFamily, pluginFonts)
         : null;
-      const fontFaceCss = id
-        ? await ensureCuratedFontFaceCss(id, readerFontWeightsNeeded(settings.fontWeight)).catch(
-            () => "",
-          )
-        : pluginFont
-          ? pluginFontFaceCss(pluginFont)
-          : "";
+      const fontFaceCss = settings.fontFamily.startsWith("local:")
+        ? await ensureLocalFontFaceCss(settings.fontFamily).catch(() => "")
+        : id
+          ? await ensureCuratedFontFaceCss(
+              id,
+              readerFontWeightsNeeded(settings.fontWeight),
+            ).catch(() => "")
+          : pluginFont
+            ? pluginFontFaceCss(pluginFont)
+            : "";
+      if (
+        disposedRef.current ||
+        epoch !== injectionEpochRef.current ||
+        viewRef.current?.renderer !== renderer
+      )
+        return;
       const palette = resolveReaderPalette(settings.theme, pluginThemes);
-      renderer?.setStyles?.(
+      renderer.setStyles?.(
         buildReaderContentCss(settings, { palette, fontFaceCss, pluginFont }),
       );
     },
@@ -135,6 +170,10 @@ export function useReaderTypography({
 
   const applyPageColors = useCallback(
     (settings: ReaderSettings, renderer = viewRef.current?.renderer) => {
+      if (viewportRef.current)
+        viewportRef.current.style.filter = isFixedLayoutRef.current
+          ? `brightness(${normalizeReaderAdvanced(settings).imageBrightness / 100})`
+          : "";
       if (!renderer?.setPageColors) return;
       renderer.setPageColors(
         fixedLayoutPageColors(
@@ -155,5 +194,12 @@ export function useReaderTypography({
     applyPageColors(readerSettings);
   }, [readerSettings, applyMaxInlineSize, injectStyles, applyPageColors]);
 
+  useEffect(
+    () =>
+      onAppEvent("local-fonts-changed", () => {
+        void injectStyles(settingsRef.current);
+      }),
+    [injectStyles],
+  );
   return { settingsRef, applyMaxInlineSize, injectStyles, applyPageColors };
 }

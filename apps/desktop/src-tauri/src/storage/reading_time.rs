@@ -156,7 +156,9 @@ pub(crate) fn reading_time_genesis_inner(conn: &mut Connection) -> Result<usize,
                      ORDER BY hlc_wall_ms, hlc_counter, hlc_device",
                 )
                 .map_err(|e| e.to_string())?;
-            let iter = stmt.query_map([], row_to_event).map_err(|e| e.to_string())?;
+            let iter = stmt
+                .query_map([], row_to_event)
+                .map_err(|e| e.to_string())?;
             iter.collect::<rusqlite::Result<Vec<_>>>()
                 .map_err(|e| e.to_string())?
         };
@@ -257,8 +259,8 @@ pub(crate) fn reading_time_genesis_inner(conn: &mut Connection) -> Result<usize,
         let mut grid = vec![vec![0_i64; scaled_hours.len()]; days.len()];
         for (r, (_, day_ms)) in days.iter().enumerate() {
             for (c, (_, hour_ms)) in scaled_hours.iter().enumerate() {
-                let share = ((*day_ms as i128) * (*hour_ms as i128) / (day_total.max(1) as i128))
-                    as i64;
+                let share =
+                    ((*day_ms as i128) * (*hour_ms as i128) / (day_total.max(1) as i128)) as i64;
                 grid[r][c] = share;
                 row_left[r] -= share;
                 col_left[c] -= share;
@@ -366,7 +368,9 @@ pub fn reading_time_load(db: State<'_, Db>) -> Result<ReadingTimeWire, String> {
     let conn = db.0.lock().map_err(|e| e.to_string())?;
     let totals = {
         let mut stmt = conn
-            .prepare("SELECT book_id, total_ms, first_started_at, last_read_at FROM reading_time_totals")
+            .prepare(
+                "SELECT book_id, total_ms, first_started_at, last_read_at FROM reading_time_totals",
+            )
             .map_err(|e| e.to_string())?;
         let rows = stmt
             .query_map([], |row| {
@@ -416,7 +420,11 @@ pub fn reading_time_load(db: State<'_, Db>) -> Result<ReadingTimeWire, String> {
             .map_err(|e| e.to_string())?;
         rows
     };
-    Ok(ReadingTimeWire { totals, daily, hourly })
+    Ok(ReadingTimeWire {
+        totals,
+        daily,
+        hourly,
+    })
 }
 
 pub(crate) fn reading_time_record_inner(
@@ -481,7 +489,12 @@ pub fn reading_time_import(wire: ReadingTimeWire, db: State<'_, Db>) -> Result<(
         tx.execute(
             "INSERT INTO reading_time_totals (book_id, total_ms, first_started_at, last_read_at)
              VALUES (?1,?2,?3,?4)",
-            params![row.book_id, row.total_ms, row.first_started_at, row.last_read_at],
+            params![
+                row.book_id,
+                row.total_ms,
+                row.first_started_at,
+                row.last_read_at
+            ],
         )
         .map_err(|e| e.to_string())?;
     }
@@ -502,4 +515,3 @@ pub fn reading_time_import(wire: ReadingTimeWire, db: State<'_, Db>) -> Result<(
     tx.commit().map_err(|e| e.to_string())?;
     Ok(())
 }
-

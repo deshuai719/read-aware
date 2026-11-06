@@ -556,7 +556,10 @@ fn list_system_fonts() -> Vec<String> {
             return families;
         };
         let mut collection = None;
-        if factory.GetSystemFontCollection(&mut collection, false).is_err() {
+        if factory
+            .GetSystemFontCollection(&mut collection, false)
+            .is_err()
+        {
             return families;
         }
         let Some(collection) = collection else {
@@ -567,8 +570,7 @@ fn list_system_fonts() -> Vec<String> {
         // (the count includes the NUL terminator).
         let mut locale_buf = [0u16; 85];
         let locale_len = GetUserDefaultLocaleName(&mut locale_buf);
-        let user_locale =
-            (locale_len > 1).then(|| windows::core::PCWSTR(locale_buf.as_ptr()));
+        let user_locale = (locale_len > 1).then(|| windows::core::PCWSTR(locale_buf.as_ptr()));
 
         let count = collection.GetFontFamilyCount();
         families.reserve(count as usize);
@@ -819,7 +821,9 @@ pub fn run() {
         })
         .manage(android_update::AndroidUpdateState::default())
         .manage(desktop_update::DesktopUpdateState::default())
-        .manage(external_open::ExternalOpenQueue(Mutex::new(launch_open_paths)))
+        .manage(external_open::ExternalOpenQueue(Mutex::new(
+            launch_open_paths,
+        )))
         .manage(storage::BlobReadSessions::default())
         .manage(storage::BlobWriteSessions::default())
         .setup(|app| {
@@ -895,11 +899,10 @@ pub fn run() {
                 let handle = app.handle().clone();
                 tauri::async_runtime::spawn_blocking(move || {
                     let db = handle.state::<storage::Db>();
-                    let result = db
-                        .0
-                        .lock()
-                        .map_err(|e| e.to_string())
-                        .and_then(|mut conn| storage::finalize_staged_events_inner(&mut conn));
+                    let result =
+                        db.0.lock()
+                            .map_err(|e| e.to_string())
+                            .and_then(|mut conn| storage::finalize_staged_events_inner(&mut conn));
                     match result {
                         Ok(Some(report)) => log::info!(
                             "recovered staged sync events: replayed {} event(s)",
@@ -959,7 +962,11 @@ pub fn run() {
                 let menu = Menu::with_items(app, &[&show_item, &quit_item])?;
 
                 let _tray = TrayIconBuilder::with_id("readaware-tray")
-                    .icon(app.default_window_icon().cloned().ok_or("no default window icon")?)
+                    .icon(
+                        app.default_window_icon()
+                            .cloned()
+                            .ok_or("no default window icon")?,
+                    )
                     .menu(&menu)
                     .show_menu_on_left_click(false)
                     .on_tray_icon_event(|tray, event| {
@@ -1090,6 +1097,7 @@ pub fn run() {
             storage::library_put_collection,
             storage::library_find_book_by_sha,
             storage::library_duplicate_book_groups,
+            storage::reading_bookmarks_list,
             storage::annotations_list,
             storage::annotations_search,
             storage::annotation_get,

@@ -5,6 +5,8 @@
  * `queries` inspect projections, `commands` commit state changes, and
  * `events.subscribe` observes committed domain events.
  */
+import { searchLocalLibraryText } from "../features/library/lib/library-full-text-native";
+import type { LibraryTextEvent } from "../features/library/lib/library-full-text";
 import type {
   BookSummary,
   ChapterRef,
@@ -26,10 +28,17 @@ import {
   removeLibraryBooks,
   renameCollection,
   setBooksCollection,
+  setCollectionPassword,
   setLibraryBookStarred,
   updateBookMetadata,
   updateVirtualLibraryBookTitle,
 } from "../features/library/lib/library-db";
+import {
+  verifyCollectionPasswordAsync,
+  hashCollectionPasswordAsync,
+  unlockCollection,
+  lockCollection,
+} from "../features/library/lib/collection-lock";
 import type { LibraryBook } from "../features/library/lib/library-types";
 import {
   ensureBookTextExtracted,
@@ -61,32 +70,53 @@ export function toBookSummary(book: LibraryBook): BookSummary {
 
 const notifyLibraryChanged = (): void => emitAppEvent("library-changed", {});
 
-const chapterCache = new Map<string, ExtractedChapter[]>();
+async function requireReadableBook(bookId: string): Promise<void> {
+  const [books, collections] = await Promise.all([
+    listLibraryBooks(),
+    listCollections(),
+  ]);
+  const book = books.find((item) => item.id === bookId);
+  if (!book) throw new Error("book-not-found");
+  const { assertBookCollectionAccess } =
+    await import("../features/library/lib/collection-operations");
+  assertBookCollectionAccess([book], collections);
+}
 
-export async function getExtractedChapters(bookId: string): Promise<ExtractedChapter[]> {
+export async function getExtractedChapters(
+  bookId: string,
+): Promise<ExtractedChapter[]> {
   const key = String(bookId);
-  const cached = chapterCache.get(key);
-  if (cached) return cached;
+  await requireReadableBook(key);
   const chapters = await ensureBookTextExtracted(key);
-  if (chapters.length > 0) chapterCache.set(key, chapters);
+  await requireReadableBook(key);
   return chapters;
 }
 
-export async function getPersistedChapters(bookId: string): Promise<ExtractedChapter[] | null> {
+export async function getPersistedChapters(
+  bookId: string,
+): Promise<ExtractedChapter[] | null> {
   const key = String(bookId);
-  const cached = chapterCache.get(key);
-  if (cached) return cached;
+  await requireReadableBook(key);
   const chapters = await getPersistedBookText(key);
-  if (chapters) chapterCache.set(key, chapters);
+  await requireReadableBook(key);
   return chapters;
 }
 
 export type LibraryQueries = {
+  fullText: {
+    search: (
+      query: string,
+      signal: AbortSignal,
+    ) => AsyncGenerator<LibraryTextEvent>;
+  };
   books: {
     list(): Promise<BookSummary[]>;
     get(bookId: string): Promise<BookSummary | null>;
     getToc(bookId: string): Promise<ChapterRef[]>;
-    getChapterText(bookId: string, chapterIndex: number): Promise<string | null>;
+    getChapterText(
+      bookId: string,
+      chapterIndex: number,
+    ): Promise<string | null>;
   };
   collections: {
     list(): Promise<CollectionSummary[]>;
@@ -100,15 +130,35 @@ export type LibraryCommands = {
       fileName: string;
       data: ArrayBuffer | Uint8Array;
     }): Promise<BookSummary>;
-    editMetadata(bookId: string, patch: { title?: string; author?: string }): Promise<void>;
+    editMetadata(
+      bookId: string,
+      patch: { title?: string; author?: string },
+    ): Promise<void>;
     setStarred(bookId: string, starred: boolean): Promise<void>;
     remove(bookId: string): Promise<void>;
     removeMany(bookIds: string[]): Promise<void>;
-    addVirtualBook(input: { title: string; author?: string }): Promise<BookSummary>;
-    updateVirtualBookTitle(bookId: string, title: string, author?: string): Promise<void>;
+    addVirtualBook(input: {
+      title: string;
+      author?: string;
+    }): Promise<BookSummary>;
+    updateVirtualBookTitle(
+      bookId: string,
+      title: string,
+      author?: string,
+    ): Promise<void>;
   };
   collections: {
-    create(name: string): Promise<CollectionSummary>;
+    create(
+      name: string,
+      options?: { passwordHash?: string | null },
+    ): Promise<CollectionSummary & { passwordHash?: string | null }>;
+    unlock(collectionId: string, password: string): Promise<boolean>;
+    changePassword(
+      collectionId: string,
+      currentPassword: string,
+      newPassword: string | null,
+    ): Promise<boolean>;
+    relock(collectionId: string): void;
     rename(collectionId: string, name: string): Promise<void>;
     remove(collectionId: string): Promise<void>;
     assignBooks(bookIds: string[], collectionId: string | null): Promise<void>;
@@ -126,20 +176,26 @@ export type LibraryDomain = {
 
 export function createLibraryDomain(origin: EventOrigin): LibraryDomain {
   const queries: LibraryQueries = {
+    fullText: { search: searchLocalLibraryText },
     books: {
       list: async () => (await listLibraryBooks()).map(toBookSummary),
       get: async (bookId) => {
-        const book = (await listLibraryBooks()).find((entry) => entry.id === String(bookId));
+        const book = (await listLibraryBooks()).find(
+          (entry) => entry.id === String(bookId),
+        );
         return book ? toBookSummary(book) : null;
       },
       getToc: async (bookId) =>
-        (await getExtractedChapters(bookId)).map<ChapterRef>((chapter, index) => ({
-          index,
-          title: chapter.title,
-          chars: chapter.text.length,
-        })),
+        (await getExtractedChapters(bookId)).map<ChapterRef>(
+          (chapter, index) => ({
+            index,
+            title: chapter.title,
+            chars: chapter.text.length,
+          }),
+        ),
       getChapterText: async (bookId, chapterIndex) =>
-        (await getExtractedChapters(bookId))[Number(chapterIndex)]?.text ?? null,
+        (await getExtractedChapters(bookId))[Number(chapterIndex)]?.text ??
+        null,
     },
     collections: {
       list: async () =>
@@ -161,11 +217,21 @@ export function createLibraryDomain(origin: EventOrigin): LibraryDomain {
         const file = new File([input.data], String(input.fileName));
         const t = i18n.getFixedT(null, "shelf");
         const existing = await listLibraryBooks();
-        const result = await prepareBookImport({ kind: "file", file }, t, existing);
+        const result = await prepareBookImport(
+          { kind: "file", file },
+          t,
+          existing,
+        );
         if (result.status === "prepared") {
-          const commit = await commitBookImport(result.book, { kind: "file", file }, origin);
+          const commit = await commitBookImport(
+            result.book,
+            { kind: "file", file },
+            origin,
+          );
           if (commit.status === "duplicate") {
-            const original = existing.find((entry) => entry.id === commit.existingId);
+            const original = existing.find(
+              (entry) => entry.id === commit.existingId,
+            );
             if (original) return toBookSummary(original);
           } else {
             notifyLibraryChanged();
@@ -202,15 +268,83 @@ export function createLibraryDomain(origin: EventOrigin): LibraryDomain {
         return toBookSummary(book);
       },
       updateVirtualBookTitle: async (bookId, title, author) => {
-        await updateVirtualLibraryBookTitle(String(bookId), String(title), author, origin);
+        await updateVirtualLibraryBookTitle(
+          String(bookId),
+          String(title),
+          author,
+          origin,
+        );
         notifyLibraryChanged();
       },
     },
     collections: {
-      create: async (name) => {
-        const collection = await createCollection(String(name), origin);
+      unlock: async (id, password) => {
+        const collection = (await listCollections()).find((c) => c.id === id);
+        if (!collection) throw new Error("collection-not-found");
+        if (
+          collection.passwordHash &&
+          !(await verifyCollectionPasswordAsync(
+            collection.passwordHash,
+            password,
+          ))
+        )
+          return false;
+        const current = (await listCollections()).find((c) => c.id === id);
+        if (!current || current.passwordHash !== collection.passwordHash)
+          return false;
+        unlockCollection(id, current.passwordHash ?? null);
         notifyLibraryChanged();
-        return { id: collection.id, name: collection.name, createdAt: collection.createdAt };
+        return true;
+      },
+      relock: (id) => {
+        lockCollection(id);
+        notifyLibraryChanged();
+      },
+      changePassword: async (id, currentPassword, newPassword) => {
+        const collection = (await listCollections()).find((c) => c.id === id);
+        if (!collection) throw new Error("collection-not-found");
+        if (
+          collection.passwordHash &&
+          !(await verifyCollectionPasswordAsync(
+            collection.passwordHash,
+            currentPassword,
+          ))
+        )
+          return false;
+        if (newPassword !== null && newPassword.length < 4)
+          throw new Error("collection-password-short");
+        const nextHash =
+          newPassword === null
+            ? null
+            : await hashCollectionPasswordAsync(newPassword);
+        const latest = (await listCollections()).find((c) => c.id === id);
+        if (!latest || latest.passwordHash !== collection.passwordHash)
+          throw new Error("collection-password-changed");
+        await setCollectionPassword(
+          id,
+          nextHash,
+          origin,
+          collection.passwordHash ?? null,
+        );
+        lockCollection(id);
+        notifyLibraryChanged();
+        return true;
+      },
+      create: async (name, options) => {
+        const collection = await createCollection(
+          String(name),
+          origin,
+          options,
+        );
+        if (collection.passwordHash)
+          unlockCollection(collection.id, collection.passwordHash);
+        notifyLibraryChanged();
+        return {
+          id: collection.id,
+          name: collection.name,
+          createdAt: collection.createdAt,
+          passwordHash: collection.passwordHash,
+        };
       },
       rename: async (collectionId, name) => {
         await renameCollection(String(collectionId), String(name), origin);

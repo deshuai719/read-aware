@@ -28,7 +28,11 @@ import {
   type SealedEvent,
 } from "../sync-envelope";
 
-export type MergeReport = { appended: number; applied: number; replayed: boolean };
+export type MergeReport = {
+  appended: number;
+  applied: number;
+  replayed: boolean;
+};
 
 /** The local (SQLite-over-IPC) side the engine drives. */
 export type SyncLocalStore = {
@@ -64,11 +68,19 @@ export type SyncLocalStore = {
 /** The remote side — the relay's mailbox and shelf. */
 export type SyncRelayApi = {
   pushEvents(events: SealedEvent[]): Promise<Record<string, number>>;
-  pullEvents(after: number, limit: number): Promise<{ events: SealedEvent[]; next: number }>;
+  pullEvents(
+    after: number,
+    limit: number,
+  ): Promise<{ events: SealedEvent[]; next: number }>;
   putBlob(key: string, bytes: Uint8Array): Promise<void>;
   getBlob(key: string): Promise<Uint8Array | null>;
   /** Chunked transport (sync-envelope v2) for blobs over one request's worth. */
-  putBlobPart(key: string, index: number, parts: number, bytes: Uint8Array): Promise<void>;
+  putBlobPart(
+    key: string,
+    index: number,
+    parts: number,
+    bytes: Uint8Array,
+  ): Promise<void>;
   commitBlob(key: string, parts: number): Promise<void>;
   getBlobPart(key: string, index: number): Promise<Uint8Array>;
 };
@@ -103,6 +115,8 @@ export type SyncEngineOptions = {
   observe: (stamps: HlcStamp[]) => void;
   /** Called after every page/batch/blob with the cycle's running counters. */
   onProgress?: (progress: SyncCycleProgress) => void;
+  /** Reject replies after account/scheduler replacement, before local writes. */
+  isCurrent?: () => boolean;
   /** Events per push batch / pull page. */
   batchSize?: number;
   /** Blobs attempted per blob pass. */
@@ -148,7 +162,12 @@ export function createSyncEngine(options: SyncEngineOptions): SyncEngine {
   const blobBatchSize = options.blobBatchSize ?? 8;
   const blobChunkBytes = options.blobChunkBytes ?? BLOB_CHUNK_BYTES;
 
+  function assertCurrent(): void {
+    if (options.isCurrent?.() === false)
+      throw new Error("sync-session-changed");
+  }
   function requireKey(): Uint8Array {
+    assertCurrent();
     const key = options.masterKey();
     if (!key) throw new Error("sync: no master key — connect an account first");
     return key;
@@ -178,23 +197,37 @@ export function createSyncEngine(options: SyncEngineOptions): SyncEngine {
     let pushed = 0;
     for (;;) {
       const batch = await store.outboxEvents(batchSize);
+      assertCurrent();
       if (batch.length === 0) break;
       const sealedBatch = batch.map((event) => sealEvent(key, event));
       let seqs: Record<string, number>;
       try {
         seqs = await relay.pushEvents(sealedBatch);
       } catch (error) {
+        assertCurrent();
         await store.markEventsFailed(
           batch.map((e) => e.id),
           error instanceof Error ? error.message : String(error),
         );
         throw error;
       }
+      assertCurrent();
       const assigned = batch
-        .filter((e) => typeof seqs[e.id] === "number")
+        .filter((e) => Number.isSafeInteger(seqs[e.id]) && seqs[e.id] > 0)
         .map((e): [string, number] => [e.id, seqs[e.id]]);
       await store.markEventsPushed(assigned);
       pushed += assigned.length;
+      const pending = batch.filter(
+        (e) => !assigned.some(([id]) => id === e.id),
+      );
+      if (pending.length) {
+        const error = "sync relay: incomplete event acknowledgement";
+        await store.markEventsFailed(
+          pending.map((e) => e.id),
+          error,
+        );
+        throw new Error(error);
+      }
       report({ phase: "push", pushed });
       if (batch.length < batchSize) break;
     }
@@ -218,18 +251,32 @@ export function createSyncEngine(options: SyncEngineOptions): SyncEngine {
     try {
       for (;;) {
         const page = await relay.pullEvents(after, batchSize);
+        assertCurrent();
+        if (
+          !Number.isSafeInteger(page.next) ||
+          page.next < after ||
+          (page.events.length > 0 && page.next <= after)
+        )
+          throw new Error("sync relay: non-advancing event cursor");
         if (page.events.length > 0) {
           // Clock BEFORE content: once a stamp has been seen, no later local
           // stamp may sort under it — even if decrypting then fails.
           observe(page.events.map((e) => e.hlc));
-          const plains = page.events.map((sealedEvent) => openEvent(key, sealedEvent));
+          const plains = page.events.map((sealedEvent) =>
+            openEvent(key, sealedEvent),
+          );
           if (staging) {
             await store.stageRemote(plains);
           } else {
             const outcome = await store.applyRemote(plains);
-            if (outcome.replayed && page.events.length === batchSize) staging = true;
+            if (outcome.replayed && page.events.length === batchSize)
+              staging = true;
           }
-          await store.setEventsCursor(page.next, maxStamp(page.events.map((e) => e.hlc)));
+          assertCurrent();
+          await store.setEventsCursor(
+            page.next,
+            maxStamp(page.events.map((e) => e.hlc)),
+          );
           merged += page.events.length;
           report({ phase: "pull", pulled: merged });
         }
@@ -241,13 +288,18 @@ export function createSyncEngine(options: SyncEngineOptions): SyncEngine {
       // log must reach the projections before anyone reads them.
       if (staging) await store.finalizeStaged();
     }
+    assertCurrent();
     await store.touch("pull");
     return merged;
   }
 
   /** Upload one blob: whole (v1) at or under a chunk, sealed parts + commit
    *  (v2) above it. Part progress lands in the cycle counters as it moves. */
-  async function uploadBlob(key: Uint8Array, blobKey: string, bytes: Uint8Array): Promise<void> {
+  async function uploadBlob(
+    key: Uint8Array,
+    blobKey: string,
+    bytes: Uint8Array,
+  ): Promise<void> {
     if (bytes.length <= blobChunkBytes) {
       await relay.putBlob(blobKey, sealBlob(key, blobKey, bytes));
       return;
@@ -255,10 +307,20 @@ export function createSyncEngine(options: SyncEngineOptions): SyncEngine {
     const parts = Math.ceil(bytes.length / blobChunkBytes);
     report({ blobPartsDone: 0, blobPartsTotal: parts });
     for (let index = 0; index < parts; index += 1) {
-      const chunk = bytes.subarray(index * blobChunkBytes, (index + 1) * blobChunkBytes);
-      await relay.putBlobPart(blobKey, index, parts, sealBlobPart(key, blobKey, index, parts, chunk));
+      assertCurrent();
+      const chunk = bytes.subarray(
+        index * blobChunkBytes,
+        (index + 1) * blobChunkBytes,
+      );
+      await relay.putBlobPart(
+        blobKey,
+        index,
+        parts,
+        sealBlobPart(key, blobKey, index, parts, chunk),
+      );
       report({ blobPartsDone: index + 1 });
     }
+    assertCurrent();
     await relay.commitBlob(blobKey, parts);
   }
 
@@ -268,7 +330,13 @@ export function createSyncEngine(options: SyncEngineOptions): SyncEngine {
     let uploaded = 0;
     report({ phase: "blobs", blobsDone: 0, blobsTotal: tasks.length });
     for (const task of tasks) {
-      report({ blobKey: task.key, blobDirection: "up", blobPartsDone: 0, blobPartsTotal: 0 });
+      assertCurrent();
+      report({
+        blobKey: task.key,
+        blobDirection: "up",
+        blobPartsDone: 0,
+        blobPartsTotal: 0,
+      });
       try {
         const bytes = await store.readBlob(task.key);
         if (!bytes) {
@@ -277,9 +345,11 @@ export function createSyncEngine(options: SyncEngineOptions): SyncEngine {
           continue;
         }
         await uploadBlob(key, task.key, bytes);
+        assertCurrent();
         await store.markBlobsPushed([task.key]);
         uploaded += 1;
       } catch (error) {
+        assertCurrent();
         const message = error instanceof Error ? error.message : String(error);
         // A 4xx is the relay's final word (quota, malformed) — retrying
         // re-uploads the whole file into a guaranteed refusal every cycle.
@@ -308,6 +378,7 @@ export function createSyncEngine(options: SyncEngineOptions): SyncEngine {
   async function fetchBlob(key: string): Promise<"fetched" | "absent"> {
     const masterKey = requireKey();
     const wire = await relay.getBlob(key);
+    assertCurrent();
     if (!wire) return "absent";
     const head = decodeBlobHead(wire);
     report({ phase: "blobs", blobKey: key, blobDirection: "down" });
@@ -322,9 +393,13 @@ export function createSyncEngine(options: SyncEngineOptions): SyncEngine {
         try {
           for (let index = 0; index < head.partCount; index += 1) {
             const partWire = await relay.getBlobPart(key, index);
-            await writer.append(openBlobPart(masterKey, key, index, head.partCount, partWire));
+            assertCurrent();
+            await writer.append(
+              openBlobPart(masterKey, key, index, head.partCount, partWire),
+            );
             report({ blobPartsDone: index + 1 });
           }
+          assertCurrent();
           await writer.commit();
         } catch (error) {
           await writer.abort();
@@ -332,7 +407,12 @@ export function createSyncEngine(options: SyncEngineOptions): SyncEngine {
         }
       }
     } finally {
-      report({ blobKey: null, blobDirection: null, blobPartsDone: 0, blobPartsTotal: 0 });
+      report({
+        blobKey: null,
+        blobDirection: null,
+        blobPartsDone: 0,
+        blobPartsTotal: 0,
+      });
     }
     // The local write enqueued it for push; the relay already has it.
     await store.markBlobsPushed([key]);
@@ -370,7 +450,10 @@ export function createSyncEngine(options: SyncEngineOptions): SyncEngine {
  */
 export function nextSyncDelayMs(
   consecutiveFailures: number,
-  { baseMs = 5 * 60_000, maxMs = 30 * 60_000 }: { baseMs?: number; maxMs?: number } = {},
+  {
+    baseMs = 5 * 60_000,
+    maxMs = 30 * 60_000,
+  }: { baseMs?: number; maxMs?: number } = {},
 ): number {
   if (consecutiveFailures <= 0) return baseMs;
   return Math.min(baseMs * 2 ** consecutiveFailures, maxMs);

@@ -65,6 +65,7 @@ pub struct BlobPutResult {
 pub struct BlobInfo {
     pub byte_size: u64,
     pub mime_type: Option<String>,
+    pub sha256: Option<String>,
 }
 
 pub(crate) fn put_blob_inner(
@@ -156,7 +157,10 @@ fn copy_blob_from_file(
 
     let copy_result = (|| -> Result<(String, i64), String> {
         let byte_size = std::fs::copy(source_path, &tmp_path).map_err(|e| {
-            format!("Failed to copy selected book {}: {e}", source_path.display())
+            format!(
+                "Failed to copy selected book {}: {e}",
+                source_path.display()
+            )
         })?;
         let staged = std::fs::File::open(&tmp_path).map_err(|e| e.to_string())?;
         let mut reader = BufReader::new(staged);
@@ -201,19 +205,19 @@ pub(crate) fn get_blob_record_inner(
     data_dir: &Path,
     key: &str,
 ) -> Result<Option<(PathBuf, BlobInfo)>, String> {
-    let record: Option<(String, Option<String>)> = conn
+    let record: Option<(String, Option<String>, Option<String>)> = conn
         .query_row(
-            "SELECT storage_uri, mime_type FROM blob_objects
+            "SELECT storage_uri, mime_type, sha256 FROM blob_objects
              WHERE key = ?1 AND deleted_at IS NULL AND storage_uri IS NOT NULL",
             params![key],
-            |row| Ok((row.get(0)?, row.get(1)?)),
+            |row| Ok((row.get(0)?, row.get(1)?, row.get(2)?)),
         )
         .map(Some)
         .or_else(|e| match e {
             rusqlite::Error::QueryReturnedNoRows => Ok(None),
             other => Err(other.to_string()),
         })?;
-    let Some((storage_uri, mime_type)) = record else {
+    let Some((storage_uri, mime_type, sha256)) = record else {
         return Ok(None);
     };
 
@@ -242,13 +246,18 @@ pub(crate) fn get_blob_record_inner(
         BlobInfo {
             byte_size: metadata.len(),
             mime_type,
+            sha256,
         },
     )))
 }
 
 /// Empty vec means "no such blob" (the raw-response contract; no real payload
 /// is zero-length). A registry row whose file went missing is treated the same.
-pub(crate) fn get_blob_inner(conn: &Connection, data_dir: &Path, key: &str) -> Result<Vec<u8>, String> {
+pub(crate) fn get_blob_inner(
+    conn: &Connection,
+    data_dir: &Path,
+    key: &str,
+) -> Result<Vec<u8>, String> {
     let Some((path, _)) = get_blob_record_inner(conn, data_dir, key)? else {
         return Ok(Vec::new());
     };
@@ -285,7 +294,11 @@ pub(crate) fn get_blob_range_inner(
 /// Remove the bytes and tombstone the registry row (`deleted_at` set,
 /// `storage_uri` cleared, outbox row dropped). The tombstone keeps sync and
 /// backup-restore from resurrecting a deliberately deleted file.
-pub(crate) fn delete_blob_inner(conn: &Connection, data_dir: &Path, key: &str) -> Result<(), String> {
+pub(crate) fn delete_blob_inner(
+    conn: &Connection,
+    data_dir: &Path,
+    key: &str,
+) -> Result<(), String> {
     let storage_uri: Option<String> = conn
         .query_row(
             "SELECT storage_uri FROM blob_objects WHERE key = ?1",
@@ -374,7 +387,6 @@ pub fn init_db_at(data_dir: &Path) -> Result<(Connection, PathBuf), String> {
     Ok((conn, data_dir.to_path_buf()))
 }
 
-
 // --- Blob commands (book files + derivatives) ---
 
 #[tauri::command]
@@ -420,8 +432,7 @@ pub async fn put_blob_from_file(
     tauri::async_runtime::spawn_blocking(move || {
         let source = crate::native_path::materialize(&app, &path)?;
         let data_dir = app.state::<DataDir>().0.clone();
-        let (sha256, byte_size, file_name) =
-            copy_blob_from_file(&data_dir, &key, &source.path)?;
+        let (sha256, byte_size, file_name) = copy_blob_from_file(&data_dir, &key, &source.path)?;
         let db = app.state::<Db>();
         let conn = db.0.lock().map_err(|e| e.to_string())?;
         register_blob_inner(
@@ -576,20 +587,14 @@ pub fn blob_read_chunk(
 
 /// Drop a staged download once the webview has pulled every chunk.
 #[tauri::command]
-pub fn blob_read_close(
-    key: String,
-    sessions: State<'_, BlobReadSessions>,
-) -> Result<(), String> {
+pub fn blob_read_close(key: String, sessions: State<'_, BlobReadSessions>) -> Result<(), String> {
     sessions.0.lock().map_err(|e| e.to_string())?.remove(&key);
     Ok(())
 }
 
 /// Open (or reset) an upload buffer for `key`.
 #[tauri::command]
-pub fn blob_write_open(
-    key: String,
-    sessions: State<'_, BlobWriteSessions>,
-) -> Result<(), String> {
+pub fn blob_write_open(key: String, sessions: State<'_, BlobWriteSessions>) -> Result<(), String> {
     sessions
         .0
         .lock()
@@ -666,11 +671,7 @@ pub fn blob_write_commit(
 
 /// Discard an upload buffer after a failed transfer.
 #[tauri::command]
-pub fn blob_write_abort(
-    key: String,
-    sessions: State<'_, BlobWriteSessions>,
-) -> Result<(), String> {
+pub fn blob_write_abort(key: String, sessions: State<'_, BlobWriteSessions>) -> Result<(), String> {
     sessions.0.lock().map_err(|e| e.to_string())?.remove(&key);
     Ok(())
 }
-

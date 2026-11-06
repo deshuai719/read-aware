@@ -20,6 +20,61 @@ function makeRuntime() {
 }
 
 describe("AgentRuntime maintenance", () => {
+  test("inflight one-shot inference forwards abort to transport and rejects late completion", async () => {
+    const { deps } = createInMemoryDeps();
+    const abort = new AbortController();
+    let started!: () => void;
+    const flight = new Promise<void>((resolve) => {
+      started = resolve;
+    });
+    let received: AbortSignal | undefined,
+      aborted = false;
+    const runtime = createAgentRuntime({
+      deps,
+      account: {
+        kind: "api-key",
+        provider: "custom-openai",
+        apiKey: "synthetic",
+        baseUrl: "http://127.0.0.1:9340/v1",
+        api: "openai-completions",
+      },
+      models: { smart: "qa", fast: "qa" },
+      fetch: async (_input, init) => {
+        received = init?.signal ?? undefined;
+        started();
+        return new Promise<Response>((_resolve, reject) => {
+          received?.addEventListener(
+            "abort",
+            () => {
+              aborted = true;
+              reject(new DOMException("Aborted", "AbortError"));
+            },
+            { once: true },
+          );
+        });
+      },
+    });
+    const request = runtime.ask({
+      prompt: "Synthetic translation",
+      signal: abort.signal,
+    });
+    await flight;
+    abort.abort();
+    await expect(request).rejects.toThrow();
+    expect(received?.aborted).toBe(true);
+    expect(aborted).toBe(true);
+  });
+  test("pre-aborted one-shot requests never resolve a model or call inference", async () => {
+    const { runtime } = makeRuntime();
+    const abort = new AbortController();
+    abort.abort();
+    await expect(
+      runtime.ask({
+        prompt: "Translate a synthetic sentence",
+        signal: abort.signal,
+      }),
+    ).rejects.toThrow("ask-aborted");
+  });
   test("idle consolidation runs once while memory stays unchanged", async () => {
     const { runtime, memoryLists } = makeRuntime();
 

@@ -71,11 +71,17 @@ type BookRow = {
     progressPercent: number;
     cfi: string | null;
     href: string | null;
+    recovery?: import("@read-aware/core").ReadingPositionContext;
   } | null;
   starred?: boolean;
   collectionId?: string | null;
 };
-type CollectionRow = { id: string; name: string; createdAt: string };
+type CollectionRow = {
+  id: string;
+  name: string;
+  createdAt: string;
+  passwordHash?: string | null;
+};
 /** Wire shape of the SQLite `ai_messages` rows (camelCase serde). */
 type AiMessageRow = {
   id: string;
@@ -96,8 +102,13 @@ type AiMessageRow = {
 const isGlobalThreadId = (id: string): boolean =>
   id === "__global__" || id.startsWith("thread-");
 
-function conversationDrafts(conversationId: string, rows: AiMessageRow[]): DomainEventDraft[] {
-  const messages = [...rows].filter((row) => !row.error).sort((a, b) => a.seq - b.seq);
+function conversationDrafts(
+  conversationId: string,
+  rows: AiMessageRow[],
+): DomainEventDraft[] {
+  const messages = [...rows]
+    .filter((row) => !row.error)
+    .sort((a, b) => a.seq - b.seq);
   if (messages.length === 0) return [];
   const drafts: DomainEventDraft[] = [
     {
@@ -110,7 +121,11 @@ function conversationDrafts(conversationId: string, rows: AiMessageRow[]): Domai
     },
   ];
   for (const row of messages) {
-    let attachments: { text: string; cfiRange?: string | null; chapterHref?: string | null }[] = [];
+    let attachments: {
+      text: string;
+      cfiRange?: string | null;
+      chapterHref?: string | null;
+    }[] = [];
     try {
       attachments = row.attachmentsJson ? JSON.parse(row.attachmentsJson) : [];
     } catch {
@@ -167,7 +182,9 @@ function memoryDrafts(memory: MemoryRow): DomainEventDraft[] {
         kind: memory.kind,
         scope: bookScoped
           ? "book"
-          : ((memory.scope === "global" ? "global" : "user") as "global" | "user"),
+          : ((memory.scope === "global" ? "global" : "user") as
+              | "global"
+              | "user"),
         bookId: bookScoped ? memory.scope.slice("book:".length) : undefined,
         content: memory.content,
         importance: memory.importance,
@@ -251,11 +268,18 @@ function bookDrafts(book: BookRow): DomainEventDraft[] {
         chapterHref: book.progress.href ?? undefined,
         currentLocation: book.progress.currentLocation,
         totalLocations: book.progress.totalLocations,
+        recovery: book.progress.recovery,
         progressPercent: book.progressPercent,
         status: book.readingStatus as ReadingStatus,
       },
     });
   }
+  if (book.readingStatus === "finished")
+    drafts.push({
+      type: "book.finished",
+      createdAt: book.updatedAt,
+      payload: { bookId: book.id, finished: true },
+    });
   if (book.starred) {
     drafts.push({
       type: "book.starred",
@@ -314,19 +338,21 @@ function annotationDraft(annotation: AnnotationRow): DomainEventDraft | null {
  */
 export async function reconcileGenesisEvents(): Promise<void> {
   if (!isTauri()) return;
-  const [covered, coveredCovers, coveredConversations, coveredMemories] = await Promise.all([
-    listEventAggregateIds([...CREATION_TYPES]),
-    listEventAggregateIds(["book.coverExtracted"]),
-    listEventAggregateIds(["aiConversation.started"]),
-    listEventAggregateIds(["memory.promoted"]),
-  ]);
-  const [books, collections, annotations, chatRows, memories] = await Promise.all([
-    invoke<BookRow[]>("library_load"),
-    invoke<CollectionRow[]>("library_list_collections"),
-    invoke<AnnotationRow[]>("annotations_list"),
-    invoke<AiMessageRow[]>("ai_chat_load_all"),
-    invoke<MemoryRow[]>("memories_list_all"),
-  ]);
+  const [covered, coveredCovers, coveredConversations, coveredMemories] =
+    await Promise.all([
+      listEventAggregateIds([...CREATION_TYPES]),
+      listEventAggregateIds(["book.coverExtracted"]),
+      listEventAggregateIds(["aiConversation.started"]),
+      listEventAggregateIds(["memory.promoted"]),
+    ]);
+  const [books, collections, annotations, chatRows, memories] =
+    await Promise.all([
+      invoke<BookRow[]>("library_load"),
+      invoke<CollectionRow[]>("library_list_collections"),
+      invoke<AnnotationRow[]>("annotations_list"),
+      invoke<AiMessageRow[]>("ai_chat_load_all"),
+      invoke<MemoryRow[]>("memories_list_all"),
+    ]);
 
   // Creation order: collections before the books that reference them, books
   // before their annotations. Within a group, oldest first for a tidy log.
@@ -338,6 +364,15 @@ export async function reconcileGenesisEvents(): Promise<void> {
       createdAt: collection.createdAt,
       payload: { collectionId: collection.id, name: collection.name },
     });
+    if (collection.passwordHash)
+      drafts.push({
+        type: "collection.passwordChanged",
+        createdAt: collection.createdAt,
+        payload: {
+          collectionId: collection.id,
+          passwordHash: collection.passwordHash,
+        },
+      });
   }
   for (const book of byCreatedAt(books)) {
     if (covered.has(book.id)) continue;
@@ -349,7 +384,9 @@ export async function reconcileGenesisEvents(): Promise<void> {
   // covered set is the idempotency guard, same as every genesis pass.
   for (const book of byCreatedAt(books)) {
     if (coveredCovers.has(book.id)) continue;
-    const decoded = book.coverUrl?.startsWith("data:") ? dataUrlToBytes(book.coverUrl) : null;
+    const decoded = book.coverUrl?.startsWith("data:")
+      ? dataUrlToBytes(book.coverUrl)
+      : null;
     if (!decoded) continue;
     const coverBlobKey = `cover:${book.id}`;
     await putDesktopBlob(coverBlobKey, decoded.bytes, decoded.mimeType);

@@ -104,7 +104,11 @@ pub async fn desktop_update_install(app: tauri::AppHandle) -> Result<(), String>
 
     let update = {
         let state: tauri::State<'_, DesktopUpdateState> = app.state();
-        let taken = state.0.lock().expect("desktop update state poisoned").take();
+        let taken = state
+            .0
+            .lock()
+            .expect("desktop update state poisoned")
+            .take();
         taken.ok_or_else(|| "No software update is ready to install.".to_string())?
     };
 
@@ -117,13 +121,21 @@ pub async fn desktop_update_install(app: tauri::AppHandle) -> Result<(), String>
                 downloaded += chunk as u64;
                 let _ = progress_app.emit(
                     "ra-desktop-update-progress",
-                    DesktopUpdateProgress { downloaded, total, finished: false },
+                    DesktopUpdateProgress {
+                        downloaded,
+                        total,
+                        finished: false,
+                    },
                 );
             },
             move || {
                 let _ = finish_app.emit(
                     "ra-desktop-update-progress",
-                    DesktopUpdateProgress { downloaded: 0, total: None, finished: true },
+                    DesktopUpdateProgress {
+                        downloaded: 0,
+                        total: None,
+                        finished: true,
+                    },
                 );
             },
         )

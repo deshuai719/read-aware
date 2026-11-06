@@ -50,7 +50,10 @@ export type DomainEventDraft = DomainEvent extends infer E
  * Exhaustive over the event catalog — adding a variant without routing it is a
  * compile error. `null` = no single aggregate (e.g. profile).
  */
-const AGGREGATE_ROUTES: Record<DomainEventType, { type: string; idKey: string } | null> = {
+const AGGREGATE_ROUTES: Record<
+  DomainEventType,
+  { type: string; idKey: string } | null
+> = {
   "preference.changed": { type: "preference", idKey: "key" },
   "book.imported": { type: "book", idKey: "bookId" },
   "book.metadataEdited": { type: "book", idKey: "bookId" },
@@ -70,6 +73,9 @@ const AGGREGATE_ROUTES: Record<DomainEventType, { type: string; idKey: string } 
   "book.removedFromCollection": { type: "book", idKey: "bookId" },
   "book.progressed": { type: "book", idKey: "bookId" },
   "book.timeRecorded": { type: "book", idKey: "bookId" },
+  "bookmark.created": { type: "bookmark", idKey: "bookmarkId" },
+  "bookmark.renamed": { type: "bookmark", idKey: "bookmarkId" },
+  "bookmark.removed": { type: "bookmark", idKey: "bookmarkId" },
   "highlight.created": { type: "highlight", idKey: "highlightId" },
   "highlight.recolored": { type: "highlight", idKey: "highlightId" },
   "highlight.removed": { type: "highlight", idKey: "highlightId" },
@@ -198,7 +204,9 @@ function broadcastDomainEvents(drafts: DomainEventDraft[]): void {
  * pre-event-era rows whose state the projection already holds. Everything that
  * CHANGES state uses `commitDomainEvents`.
  */
-export async function appendDomainEvents(drafts: DomainEventDraft[]): Promise<void> {
+export async function appendDomainEvents(
+  drafts: DomainEventDraft[],
+): Promise<void> {
   if (!isTauri() || drafts.length === 0) return;
   const { deviceId } = await getDeviceInfo();
   const events = drafts.map((draft) => toEventRow(draft, deviceId));
@@ -224,6 +232,17 @@ export type CommitReport = { appended: number; applied: number };
 export async function commitDomainEvents(
   ...drafts: DomainEventDraft[]
 ): Promise<CommitReport> {
+  return commitCheckedDomainEvents(null, ...drafts);
+}
+
+/** Local optimistic-concurrency guard; not recorded in the immutable event payload. */
+export async function commitCheckedDomainEvents(
+  collectionPasswordPrecondition: {
+    collectionId: string;
+    expectedHash: string | null;
+  } | null,
+  ...drafts: DomainEventDraft[]
+): Promise<CommitReport> {
   if (drafts.length === 0) return { appended: 0, applied: 0 };
   if (!isTauri()) {
     // Browser shell (vite dev / Storybook): no store at all. Observers still
@@ -233,7 +252,10 @@ export async function commitDomainEvents(
   }
   const { deviceId } = await getDeviceInfo();
   const events = drafts.map((draft) => toEventRow(draft, deviceId));
-  const report = await invoke<CommitReport>("commit_events", { events });
+  const report = await invoke<CommitReport>("commit_events", {
+    events,
+    collectionPasswordPrecondition,
+  });
   // Broadcast only after the write succeeded — in-app observers must never see
   // a change the store rejected.
   broadcastDomainEvents(drafts);
@@ -256,7 +278,9 @@ export function observeRemoteHlcStamps(stamps: HlcStamp[]): void {
  * Aggregate ids already covered by any of the given event types. Backs genesis
  * reconciliation (which projection rows still need a creation event?).
  */
-export async function listEventAggregateIds(types: DomainEventType[]): Promise<Set<string>> {
+export async function listEventAggregateIds(
+  types: DomainEventType[],
+): Promise<Set<string>> {
   if (!isTauri()) return new Set();
   const ids = await invoke<string[]>("list_event_aggregate_ids", { types });
   return new Set(ids);

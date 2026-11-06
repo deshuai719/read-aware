@@ -7,6 +7,15 @@ import {
   type ReaderSettingsPreferences,
 } from "./reader-settings";
 
+import {
+  normalizeReadAloud,
+  type ReadAloudPreferences,
+} from "../../reader/lib/read-aloud-preferences";
+import { normalizeReaderAdvanced } from "./reader-advanced";
+import {
+  normalizeTextEncoding,
+  type TextEncoding,
+} from "../../reader/lib/decode-text";
 import { localKV } from "../../../platform/local-store";
 
 const STORAGE_KEY = "read-aware-reader-overrides";
@@ -26,6 +35,9 @@ export type ReaderAppearanceScope = "global" | "book";
 export type BookReaderOverride = {
   scope: ReaderAppearanceScope;
   settings: ReaderSettingsPreferences;
+  /** File decoding is always per-book, even while appearance inherits globally. */
+  textEncoding?: TextEncoding;
+  readAloud?: ReadAloudPreferences;
 };
 
 /** Per-book overrides keyed by library book id. */
@@ -39,6 +51,7 @@ function normalizeSettings(
   // (named font sizes, sans/serif presets) keep resolving.
   return {
     ...merged,
+    ...normalizeReaderAdvanced(merged),
     theme: normalizeReaderTheme(merged.theme),
     fontFamily: normalizeFontFamily(merged.fontFamily),
     fontSize: normalizeFontSize(merged.fontSize),
@@ -50,7 +63,10 @@ export function getReaderOverrides(): ReaderOverrides {
   try {
     const raw = localKV.getItem(STORAGE_KEY);
     if (!raw) return {};
-    const parsed = JSON.parse(raw) as Record<string, Partial<BookReaderOverride>>;
+    const parsed = JSON.parse(raw) as Record<
+      string,
+      Partial<BookReaderOverride>
+    >;
     if (!parsed || typeof parsed !== "object") return {};
 
     const result: ReaderOverrides = {};
@@ -59,6 +75,8 @@ export function getReaderOverrides(): ReaderOverrides {
       result[bookId] = {
         scope: value.scope === "book" ? "book" : "global",
         settings: normalizeSettings(value.settings),
+        textEncoding: normalizeTextEncoding(value.textEncoding),
+        readAloud: normalizeReadAloud(value.readAloud),
       };
     }
     return result;

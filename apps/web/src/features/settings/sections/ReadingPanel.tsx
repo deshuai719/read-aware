@@ -6,6 +6,7 @@ import {
   effectiveReaderSettingsAtom,
   readerPreferencesAtom,
 } from "../../../state/ui";
+import { AdvancedReaderFields } from "../components/AdvancedReaderFields";
 import { FontField } from "../components/FontField";
 import { SettingsGroup } from "../components/SettingsGroup";
 import { SettingsPage } from "../components/SettingsPage";
@@ -84,7 +85,9 @@ export function ReadingPanel() {
             label={t("reading.paragraphSpacing")}
             value={prefs.paragraphSpacing}
             options={paragraphSpacingOptions(tReader)}
-            onChange={(paragraphSpacing) => setPrefs({ ...prefs, paragraphSpacing })}
+            onChange={(paragraphSpacing) =>
+              setPrefs({ ...prefs, paragraphSpacing })
+            }
           />
           <ChoiceGroup
             label={t("reading.textAlign")}
@@ -112,6 +115,9 @@ export function ReadingPanel() {
         </Stack>
       </SettingsGroup>
 
+      <SettingsGroup title={tReader("advanced.title")}>
+        <AdvancedReaderFields value={prefs} onChange={setPrefs} />
+      </SettingsGroup>
       <SettingsGroup
         title={t("reading.pageColor.title")}
         description={t("reading.pageColor.description")}
@@ -124,7 +130,6 @@ export function ReadingPanel() {
           }
         />
       </SettingsGroup>
-
     </SettingsPage>
   );
 }
@@ -141,7 +146,9 @@ function ReadingPreview({ style }: { style: React.CSSProperties }) {
           <p className="m-0">{t("reading.previewText")}</p>
           <p
             className="m-0"
-            style={{ marginBlockStart: "var(--ra-reader-preview-paragraph-spacing)" }}
+            style={{
+              marginBlockStart: "var(--ra-reader-preview-paragraph-spacing)",
+            }}
           >
             {t("reading.previewTextSecondary")}
           </p>

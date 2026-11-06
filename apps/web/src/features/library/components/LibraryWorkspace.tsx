@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useMemo, useState, type DragEvent, type MouseEvent } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type DragEvent,
+  type MouseEvent,
+} from "react";
 import { useAtom, useAtomValue } from "jotai";
 import {
   ArrowDown,
@@ -11,7 +18,14 @@ import {
   PencilSimple,
   Trash,
 } from "@phosphor-icons/react";
-import { Body, Button, DropdownMenu, EmptyState, Skeleton, useToast } from "@read-aware/ui";
+import {
+  Body,
+  Button,
+  DropdownMenu,
+  EmptyState,
+  Skeleton,
+  useToast,
+} from "@read-aware/ui";
 import { cn } from "@read-aware/ui/cn";
 import { useTranslation } from "../../../i18n";
 import { userDomain } from "../../../domain";
@@ -20,7 +34,10 @@ import { CollectionHeader } from "../../shelf/components/CollectionHeader";
 import { AddToCollectionDialog } from "../../shelf/components/AddToCollectionDialog";
 import { CollectionUngroupDropZone } from "../../shelf/components/CollectionUngroupDropZone";
 import type { CollectionTileData } from "../../shelf/components/CollectionTile";
-import { CollectionDeleteDialog, CollectionRenameDialog } from "../../shelf/components/CollectionMenuDialogs";
+import {
+  CollectionDeleteDialog,
+  CollectionRenameDialog,
+} from "../../shelf/components/CollectionMenuDialogs";
 import { CollectionProfileDialog } from "../../shelf/components/CollectionProfileDialog";
 import { CollectionMergeDialog } from "../../shelf/components/CollectionMergeDialog";
 import {
@@ -39,16 +56,17 @@ import { ShelfSelectionToolbar } from "../../shelf/components/ShelfSelectionTool
 import { deriveShelfView } from "../../shelf/lib/derive-shelf-view";
 import { useShelfSelection } from "../../shelf/hooks/useShelfSelection";
 import { activeCollectionAtom, shelfViewAtom } from "../../../state/ui";
-import type { BookMetadataPatch, Collection, LibraryBook } from "../lib/library-types";
-import { CollectionLockDialog, type CollectionLockMode } from "../../shelf/components/CollectionLockDialog";
+import type {
+  BookMetadataPatch,
+  Collection,
+  LibraryBook,
+} from "../lib/library-types";
+import { CreateCollectionDialog } from "../../shelf/components/CreateCollectionDialog";
 import {
-  hashCollectionPassword,
-  isCollectionLocked,
-  lockCollection,
-  unlockCollection,
-  verifyCollectionPassword,
-} from "../lib/collection-lock";
-import { setCollectionPassword } from "../lib/library-db";
+  CollectionLockDialog,
+  type CollectionLockMode,
+} from "../../shelf/components/CollectionLockDialog";
+import { isCollectionLocked } from "../lib/collection-lock";
 import { formatLibraryError } from "../lib/format-library-error";
 import { BOOK_DRAG_MIME } from "../lib/book-drag";
 
@@ -68,10 +86,16 @@ type LibraryWorkspaceProps = {
   onToggleStar: (book: LibraryBook) => void;
   onUpdateBookMetadata: (book: LibraryBook, patch: BookMetadataPatch) => void;
   onBulkRemove: (ids: string[]) => void;
-  onCreateCollection: (name: string) => Promise<Collection | null>;
+  onCreateCollection: (
+    name: string,
+    password?: string,
+  ) => Promise<Collection | null>;
   onRenameCollection: (id: string, name: string) => void;
   onDeleteCollection: (id: string) => void;
-  onSetBooksCollection: (ids: string[], collectionId: string | null) => void;
+  onSetBooksCollection: (
+    ids: string[],
+    collectionId: string | null,
+  ) => void | Promise<void>;
   onMergeCollections: (sourceId: string, targetId: string) => Promise<void>;
 };
 
@@ -96,10 +120,16 @@ export function LibraryWorkspace({
 }: LibraryWorkspaceProps) {
   const { t } = useTranslation("shelf");
   const shelfView = useAtomValue(shelfViewAtom);
-  const [activeCollectionId, setActiveCollectionId] = useAtom(activeCollectionAtom);
-  const { active, ids, selectedIds, exit, clear, toggle, selectAll } = useShelfSelection();
+  const [activeCollectionId, setActiveCollectionId] =
+    useAtom(activeCollectionAtom);
+  const { active, ids, selectedIds, exit, clear, toggle, selectAll } =
+    useShelfSelection();
+  const [createCollectionOpen, setCreateCollectionOpen] = useState(false);
   const [showPendingBooks, setShowPendingBooks] = useState(false);
-  const [lockTarget, setLockTarget] = useState<{ mode: CollectionLockMode; collection: Collection } | null>(null);
+  const [lockTarget, setLockTarget] = useState<{
+    mode: CollectionLockMode;
+    collection: Collection;
+  } | null>(null);
   // In-flight book drag (ids being dragged); non-null only during our own drags.
   const [dragBookIds, setDragBookIds] = useState<string[] | null>(null);
   // Books waiting to be assigned to a collection: from a drop-onto-book merge
@@ -111,19 +141,36 @@ export function LibraryWorkspace({
     y: number;
     data: CollectionTileData;
   } | null>(null);
-  const [renameTarget, setRenameTarget] = useState<CollectionTileData | null>(null);
+  const [renameTarget, setRenameTarget] = useState<CollectionTileData | null>(
+    null,
+  );
   // Description / chosen cover / manual order for collections (a roaming
   // preference, not an event — see lib/collection-profiles).
-  const [profiles, setProfiles] = useState<CollectionProfiles>(() => readCollectionProfiles());
+  const [profiles, setProfiles] = useState<CollectionProfiles>(() =>
+    readCollectionProfiles(),
+  );
   useEffect(() => {
     const refresh = () => setProfiles(readCollectionProfiles());
-    const offRemote = onAppEvent("roaming-preferences-changed", ({ keys }) => { if (keys.includes(COLLECTION_PROFILES_KEY)) refresh(); });
-    const offLocal = onLocalKVWrite((key) => { if (key === COLLECTION_PROFILES_KEY) refresh(); });
-    return () => { offRemote(); offLocal(); };
+    const offRemote = onAppEvent("roaming-preferences-changed", ({ keys }) => {
+      if (keys.includes(COLLECTION_PROFILES_KEY)) refresh();
+    });
+    const offLocal = onLocalKVWrite((key) => {
+      if (key === COLLECTION_PROFILES_KEY) refresh();
+    });
+    return () => {
+      offRemote();
+      offLocal();
+    };
   }, []);
-  const [profileTarget, setProfileTarget] = useState<CollectionTileData | null>(null);
-  const [mergeTarget, setMergeTarget] = useState<CollectionTileData | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<CollectionTileData | null>(null);
+  const [profileTarget, setProfileTarget] = useState<CollectionTileData | null>(
+    null,
+  );
+  const [mergeTarget, setMergeTarget] = useState<CollectionTileData | null>(
+    null,
+  );
+  const [deleteTarget, setDeleteTarget] = useState<CollectionTileData | null>(
+    null,
+  );
   const dragActive = dragBookIds !== null;
   const { toast } = useToast();
 
@@ -144,7 +191,7 @@ export function LibraryWorkspace({
   }, [books.length, pendingBooks.length]);
 
   const visiblePendingBooks = useMemo(
-    () => books.length === 0 || showPendingBooks ? pendingBooks : [],
+    () => (books.length === 0 || showPendingBooks ? pendingBooks : []),
     [books.length, pendingBooks, showPendingBooks],
   );
   const pendingBookIds = useMemo(
@@ -157,14 +204,19 @@ export function LibraryWorkspace({
   );
 
   const activeCollection = activeCollectionId
-    ? collections.find((c) => c.id === activeCollectionId) ?? null
+    ? (collections.find((c) => c.id === activeCollectionId) ?? null)
     : null;
   // Password-hidden folders render nothing (no covers, no books) until unlocked.
-  const activeCollectionLocked = activeCollection ? isCollectionLocked(activeCollection) : false;
+  const activeCollectionLocked = activeCollection
+    ? isCollectionLocked(activeCollection)
+    : false;
 
   // Pop back to the top level if the open collection was deleted.
   useEffect(() => {
-    if (activeCollectionId && !collections.some((c) => c.id === activeCollectionId)) {
+    if (
+      activeCollectionId &&
+      !collections.some((c) => c.id === activeCollectionId)
+    ) {
       setActiveCollectionId(null);
     }
   }, [activeCollectionId, collections, setActiveCollectionId]);
@@ -174,9 +226,17 @@ export function LibraryWorkspace({
     if (active && books.length === 0) exit();
   }, [active, books.length, exit]);
 
-  const visible = useMemo(() => activeCollection
-    ? activeCollectionLocked ? [] : shelfBooks.filter((book) => book.collectionId === activeCollection.id)
-    : shelfBooks.filter((book) => !book.collectionId), [activeCollection, activeCollectionLocked, shelfBooks]);
+  const visible = useMemo(
+    () =>
+      activeCollection
+        ? activeCollectionLocked
+          ? []
+          : shelfBooks.filter(
+              (book) => book.collectionId === activeCollection.id,
+            )
+        : shelfBooks.filter((book) => !book.collectionId),
+    [activeCollection, activeCollectionLocked, shelfBooks],
+  );
   const sections = deriveShelfView(visible, shelfView, t);
 
   const collectionTiles: CollectionTileData[] = useMemo(() => {
@@ -230,33 +290,35 @@ export function LibraryWorkspace({
   );
 
   const handleUnlock = async (password: string): Promise<boolean> => {
-    const target = lockTarget;
-    if (!target?.collection.passwordHash) return false;
-    const ok = verifyCollectionPassword(target.collection.passwordHash, password);
-    if (ok) {
-      unlockCollection(target.collection.id);
-      setActiveCollectionId(target.collection.id);
-    }
+    if (!lockTarget) return false;
+    const ok = await userDomain.library.commands.collections.unlock(
+      lockTarget.collection.id,
+      password,
+    );
+    if (ok) setActiveCollectionId(lockTarget.collection.id);
     return ok;
   };
-
-  const handleSetPassword = async (password: string | null): Promise<void> => {
-    const target = lockTarget;
-    if (!target) return;
-    await setCollectionPassword(target.collection.id, password ? hashCollectionPassword(password) : null);
-    lockCollection(target.collection.id);
-  };
-
-  const handleClearPassword = async (currentPassword: string): Promise<boolean> => {
-    const target = lockTarget;
-    if (!target?.collection.passwordHash) return false;
-    const ok = verifyCollectionPassword(target.collection.passwordHash, currentPassword);
-    if (ok) {
-      await setCollectionPassword(target.collection.id, null);
-      lockCollection(target.collection.id);
-    }
-    return ok;
-  };
+  const handleSetPassword = async (
+    password: string,
+    currentPassword: string,
+  ): Promise<boolean> =>
+    lockTarget
+      ? userDomain.library.commands.collections.changePassword(
+          lockTarget.collection.id,
+          currentPassword,
+          password,
+        )
+      : false;
+  const handleClearPassword = async (
+    currentPassword: string,
+  ): Promise<boolean> =>
+    lockTarget
+      ? userDomain.library.commands.collections.changePassword(
+          lockTarget.collection.id,
+          currentPassword,
+          null,
+        )
+      : false;
 
   const handleStartBookDrag = useCallback(
     (ids: string[], event: DragEvent<HTMLButtonElement>) => {
@@ -290,7 +352,9 @@ export function LibraryWorkspace({
       setDragBookIds(null);
       onSetBooksCollection(ids, collectionId);
       const collection = collections.find((c) => c.id === collectionId);
-      toast({ description: t("dropFeedback.added", { name: collection?.name ?? "" }) });
+      toast({
+        description: t("dropFeedback.added", { name: collection?.name ?? "" }),
+      });
     },
     [dragBookIds, collections, onSetBooksCollection, toast, t],
   );
@@ -324,22 +388,38 @@ export function LibraryWorkspace({
   const handleToggleFinished = useCallback(
     (book: LibraryBook) => {
       const nextFinished = book.readingStatus !== "finished";
-      void userDomain.reading.commands.setFinished(book.id, nextFinished).catch((error: unknown) => {
-        toast({
-          variant: "destructive",
-          title: t("workspace.errorTitle"),
-          description: formatLibraryError(error, t),
+      void userDomain.reading.commands
+        .setFinished(book.id, nextFinished)
+        .catch((error: unknown) => {
+          toast({
+            variant: "destructive",
+            title: t("workspace.errorTitle"),
+            description: formatLibraryError(error, t),
+          });
         });
-      });
     },
     [toast, t],
   );
 
   /** Description + cover of a collection — a preference, saved the moment it is set. */
   const handleSaveProfile = useCallback(
-    (id: string, patch: { description: string; coverBookId: string | null; coverDataUrl: string | null }) => {
-      try { assertCollectionAccess(collections, [id]); setProfiles(updateCollectionProfile(id, patch)); }
-      catch (error) { toast({ variant: "destructive", description: formatLibraryError(error, t) }); }
+    (
+      id: string,
+      patch: {
+        description: string;
+        coverBookId: string | null;
+        coverDataUrl: string | null;
+      },
+    ) => {
+      try {
+        assertCollectionAccess(collections, [id]);
+        setProfiles(updateCollectionProfile(id, patch));
+      } catch (error) {
+        toast({
+          variant: "destructive",
+          description: formatLibraryError(error, t),
+        });
+      }
     },
     [collections, toast, t],
   );
@@ -349,21 +429,39 @@ export function LibraryWorkspace({
    * collection is removed (its name, lock and profile go with it).
    */
   const [merging, setMerging] = useState(false);
-  const handleMergeCollection = useCallback(async (id: string, targetId: string) => {
-    if (merging) return;
-    setMerging(true);
-    try {
-      assertCollectionAccess(collections, [id, targetId]);
-      const count = books.filter((book) => book.collectionId === id).length;
-      await onMergeCollections(id, targetId);
-      setProfiles(readCollectionProfiles());
-      setMergeTarget(null);
-      if (activeCollectionId === id) setActiveCollectionId(targetId);
-      toast({ description: t("collection.merged", { count }) });
-    } catch (error) {
-      toast({ variant: "destructive", title: t("workspace.errorTitle"), description: formatLibraryError(error, t) });
-    } finally { setMerging(false); }
-  }, [merging, collections, books, onMergeCollections, activeCollectionId, setActiveCollectionId, t, toast]);
+  const handleMergeCollection = useCallback(
+    async (id: string, targetId: string) => {
+      if (merging) return;
+      setMerging(true);
+      try {
+        assertCollectionAccess(collections, [id, targetId]);
+        const count = books.filter((book) => book.collectionId === id).length;
+        await onMergeCollections(id, targetId);
+        setProfiles(readCollectionProfiles());
+        setMergeTarget(null);
+        if (activeCollectionId === id) setActiveCollectionId(targetId);
+        toast({ description: t("collection.merged", { count }) });
+      } catch (error) {
+        toast({
+          variant: "destructive",
+          title: t("workspace.errorTitle"),
+          description: formatLibraryError(error, t),
+        });
+      } finally {
+        setMerging(false);
+      }
+    },
+    [
+      merging,
+      collections,
+      books,
+      onMergeCollections,
+      activeCollectionId,
+      setActiveCollectionId,
+      t,
+      toast,
+    ],
+  );
 
   /** Export a collection as a reading list (title, author, progress). */
   const handleExportCollection = useCallback(
@@ -374,8 +472,13 @@ export function LibraryWorkspace({
       if (!collection || members.length === 0) return;
       const lines = [`# ${collection.name}`, ""];
       for (const book of members) {
-        const author = book.author && book.author !== "Unknown author" ? ` — ${book.author}` : "";
-        lines.push(`- ${book.title}${author} (${Math.round(book.progressPercent)}%)`);
+        const author =
+          book.author && book.author !== "Unknown author"
+            ? ` — ${book.author}`
+            : "";
+        lines.push(
+          `- ${book.title}${author} (${Math.round(book.progressPercent)}%)`,
+        );
       }
       lines.push("", t("collection.exportFooter", { count: members.length }));
       try {
@@ -402,12 +505,12 @@ export function LibraryWorkspace({
       event.preventDefault();
       const collection = collections.find((entry) => entry.id === data.id);
       if (collection && isCollectionLocked(collection)) {
-        setLockTarget({ mode: "unlock", collection });
+        setLockTarget({ mode: "manage", collection });
         return;
       }
       setCollectionMenu({ x: event.clientX, y: event.clientY, data });
     },
-    [dragBookIds],
+    [dragBookIds, collections],
   );
 
   // An open collection is itself a file-drop target: dropping a book anywhere
@@ -432,6 +535,20 @@ export function LibraryWorkspace({
         active ? "pb-28" : "pb-8 sm:pb-10",
       )}
     >
+      <div className="mb-3 flex justify-end">
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => setCreateCollectionOpen(true)}
+        >
+          {t("collectionDialog.createOnly")}
+        </Button>
+      </div>
+      <CreateCollectionDialog
+        open={createCollectionOpen}
+        onClose={() => setCreateCollectionOpen(false)}
+        onCreate={onCreateCollection}
+      />
       {active && books.length > 0 && (
         <ShelfSelectionToolbar
           count={ids.length}
@@ -439,8 +556,8 @@ export function LibraryWorkspace({
           collections={collections}
           onSelectAll={() => selectAll(visible.map((book) => book.id))}
           onClear={clear}
-          onAssignCollection={(collectionId) => {
-            onSetBooksCollection(ids, collectionId);
+          onAssignCollection={async (collectionId) => {
+            await onSetBooksCollection(ids, collectionId);
             exit();
           }}
           onCreateCollection={onCreateCollection}
@@ -458,21 +575,26 @@ export function LibraryWorkspace({
         <div className="grid grid-cols-3 gap-x-4 gap-y-8 sm:grid-cols-4 sm:gap-x-5 md:grid-cols-5 md:gap-x-6 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-[repeat(auto-fill,minmax(10rem,1fr))]">
           {Array.from({ length: 12 }).map((_, index) => (
             <div key={index} className="space-y-2.5">
-              <Skeleton variant="rectangular" className="aspect-[2/3] w-full rounded-sm" />
+              <Skeleton
+                variant="rectangular"
+                className="aspect-[2/3] w-full rounded-sm"
+              />
               <Skeleton variant="text" className="w-3/4" />
             </div>
           ))}
         </div>
-      ) : books.length === 0 && importingCount === 0 ? (
+      ) : books.length === 0 &&
+        collections.length === 0 &&
+        importingCount === 0 ? (
         <div className="ra-motion-fade-in flex flex-1 items-center justify-center py-16">
           <EmptyState
             icon={<Books className="size-12 text-fg-subtle" weight="thin" />}
             title={t("workspace.emptyTitle")}
-            action={(
+            action={
               <Button size="sm" onClick={onImport}>
                 {t("actions.import")}
               </Button>
-            )}
+            }
           />
         </div>
       ) : (
@@ -486,7 +608,14 @@ export function LibraryWorkspace({
               count={collectionCount}
               description={profiles[activeCollection.id]?.description}
               onRename={(name) => onRenameCollection(activeCollection.id, name)}
-              onManageLock={() => setLockTarget({ mode: "manage", collection: activeCollection })}
+              onManageLock={() =>
+                setLockTarget({ mode: "manage", collection: activeCollection })
+              }
+              onRelock={() =>
+                userDomain.library.commands.collections.relock(
+                  activeCollection.id,
+                )
+              }
               onDelete={() => {
                 onDeleteCollection(activeCollection.id);
                 setActiveCollectionId(null);
@@ -500,12 +629,23 @@ export function LibraryWorkspace({
 
           {activeCollectionLocked ? (
             <div className="flex flex-col items-center gap-4 py-16 text-center">
-              <LockSimple size={32} weight="fill" aria-hidden="true" className="text-fg-muted" />
-              <Body className="text-sm text-fg-muted">{t("collection.lockedEmpty")}</Body>
+              <LockSimple
+                size={32}
+                weight="fill"
+                aria-hidden="true"
+                className="text-fg-muted"
+              />
+              <Body className="text-sm text-fg-muted">
+                {t("collection.lockedEmpty")}
+              </Body>
               <Button
                 size="sm"
                 onClick={() => {
-                  if (activeCollection) setLockTarget({ mode: "unlock", collection: activeCollection });
+                  if (activeCollection)
+                    setLockTarget({
+                      mode: "unlock",
+                      collection: activeCollection,
+                    });
                 }}
               >
                 {t("collection.lockUnlock")}
@@ -513,7 +653,9 @@ export function LibraryWorkspace({
             </div>
           ) : visible.length === 0 && collectionTiles.length === 0 ? (
             <Body className="py-16 text-center text-sm text-fg-muted">
-              {activeCollection ? t("workspace.emptyCollection") : t("workspace.nothingToShow")}
+              {activeCollection
+                ? t("workspace.emptyCollection")
+                : t("workspace.nothingToShow")}
             </Body>
           ) : (
             <Shelf
@@ -549,8 +691,8 @@ export function LibraryWorkspace({
           count={assignDialogIds.length}
           collections={collections}
           onClose={() => setAssignDialogIds(null)}
-          onAssign={(collectionId) => {
-            onSetBooksCollection(assignDialogIds, collectionId);
+          onAssign={async (collectionId) => {
+            await onSetBooksCollection(assignDialogIds, collectionId);
             setAssignDialogIds(null);
           }}
           onCreate={onCreateCollection}
@@ -577,12 +719,16 @@ export function LibraryWorkspace({
           items={[
             {
               label: t("collection.menu.open"),
-              icon: <FolderOpen size={14} weight="regular" aria-hidden="true" />,
+              icon: (
+                <FolderOpen size={14} weight="regular" aria-hidden="true" />
+              ),
               onClick: () => handleOpenCollection(collectionMenu.data.id),
             },
             {
               label: t("collection.menu.rename"),
-              icon: <PencilSimple size={14} weight="regular" aria-hidden="true" />,
+              icon: (
+                <PencilSimple size={14} weight="regular" aria-hidden="true" />
+              ),
               onClick: () => {
                 setRenameTarget(collectionMenu.data);
                 setCollectionMenu(null);
@@ -591,7 +737,9 @@ export function LibraryWorkspace({
             {
               // Description + cover: what the folder looks like, not what it is.
               label: t("collection.menu.editProfile"),
-              icon: <PencilSimple size={14} weight="regular" aria-hidden="true" />,
+              icon: (
+                <PencilSimple size={14} weight="regular" aria-hidden="true" />
+              ),
               onClick: () => {
                 setProfileTarget(collectionMenu.data);
                 setCollectionMenu(null);
@@ -601,7 +749,14 @@ export function LibraryWorkspace({
               label: t("collection.menu.moveUp"),
               icon: <ArrowUp size={14} weight="regular" aria-hidden="true" />,
               onClick: () => {
-                setProfiles(moveCollectionProfile(collections, profiles, collectionMenu.data.id, -1));
+                setProfiles(
+                  moveCollectionProfile(
+                    collections,
+                    profiles,
+                    collectionMenu.data.id,
+                    -1,
+                  ),
+                );
                 setCollectionMenu(null);
               },
             },
@@ -609,13 +764,22 @@ export function LibraryWorkspace({
               label: t("collection.menu.moveDown"),
               icon: <ArrowDown size={14} weight="regular" aria-hidden="true" />,
               onClick: () => {
-                setProfiles(moveCollectionProfile(collections, profiles, collectionMenu.data.id, 1));
+                setProfiles(
+                  moveCollectionProfile(
+                    collections,
+                    profiles,
+                    collectionMenu.data.id,
+                    1,
+                  ),
+                );
                 setCollectionMenu(null);
               },
             },
             {
               label: t("collection.menu.merge"),
-              icon: <FolderOpen size={14} weight="regular" aria-hidden="true" />,
+              icon: (
+                <FolderOpen size={14} weight="regular" aria-hidden="true" />
+              ),
               onClick: () => {
                 setMergeTarget(collectionMenu.data);
                 setCollectionMenu(null);
@@ -623,7 +787,9 @@ export function LibraryWorkspace({
             },
             {
               label: t("collection.menu.export"),
-              icon: <DownloadSimple size={14} weight="regular" aria-hidden="true" />,
+              icon: (
+                <DownloadSimple size={14} weight="regular" aria-hidden="true" />
+              ),
               onClick: () => {
                 void handleExportCollection(collectionMenu.data.id);
                 setCollectionMenu(null);
@@ -632,19 +798,29 @@ export function LibraryWorkspace({
             collectionMenu.data.locked
               ? {
                   label: t("collection.menu.unlock"),
-                  icon: <LockOpen size={14} weight="regular" aria-hidden="true" />,
+                  icon: (
+                    <LockOpen size={14} weight="regular" aria-hidden="true" />
+                  ),
                   onClick: () => {
-                    const collection = collections.find((c) => c.id === collectionMenu.data.id);
-                    if (collection) setLockTarget({ mode: "unlock", collection });
+                    const collection = collections.find(
+                      (c) => c.id === collectionMenu.data.id,
+                    );
+                    if (collection)
+                      setLockTarget({ mode: "unlock", collection });
                     setCollectionMenu(null);
                   },
                 }
               : {
                   label: t("collection.menu.manageLock"),
-                  icon: <LockSimple size={14} weight="regular" aria-hidden="true" />,
+                  icon: (
+                    <LockSimple size={14} weight="regular" aria-hidden="true" />
+                  ),
                   onClick: () => {
-                    const collection = collections.find((c) => c.id === collectionMenu.data.id);
-                    if (collection) setLockTarget({ mode: "manage", collection });
+                    const collection = collections.find(
+                      (c) => c.id === collectionMenu.data.id,
+                    );
+                    if (collection)
+                      setLockTarget({ mode: "manage", collection });
                     setCollectionMenu(null);
                   },
                 },
@@ -675,7 +851,11 @@ export function LibraryWorkspace({
           collection={profileTarget}
           members={books
             .filter((book) => book.collectionId === profileTarget.id)
-            .map((book) => ({ id: book.id, title: book.title, coverUrl: book.coverUrl }))}
+            .map((book) => ({
+              id: book.id,
+              title: book.title,
+              coverUrl: book.coverUrl,
+            }))}
           description={profiles[profileTarget.id]?.description ?? ""}
           coverBookId={profiles[profileTarget.id]?.coverBookId ?? null}
           coverDataUrl={profiles[profileTarget.id]?.coverDataUrl ?? null}
@@ -690,15 +870,22 @@ export function LibraryWorkspace({
         <CollectionMergeDialog
           source={mergeTarget}
           targets={collections
-            .filter((collection) => collection.id !== mergeTarget.id && !isCollectionLocked(collection))
+            .filter(
+              (collection) =>
+                collection.id !== mergeTarget.id &&
+                !isCollectionLocked(collection),
+            )
             .map((collection) => ({
               id: collection.id,
               name: collection.name,
-              count: books.filter((book) => book.collectionId === collection.id).length,
+              count: books.filter((book) => book.collectionId === collection.id)
+                .length,
             }))}
           onClose={() => setMergeTarget(null)}
           busy={merging}
-          onMerge={(targetId) => { void handleMergeCollection(mergeTarget.id, targetId); }}
+          onMerge={(targetId) => {
+            void handleMergeCollection(mergeTarget.id, targetId);
+          }}
         />
       )}
       {deleteTarget && (

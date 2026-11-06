@@ -28,7 +28,7 @@ type ReaderSessionSlice = {
   currentPage: number;
   totalPages: number;
   openReader: (book: LibraryBook) => void;
-  closeReader: () => void;
+  closeReader: () => void | Promise<void>;
 };
 
 export type ShelfHandoff = "idle" | "holding" | "fading";
@@ -76,14 +76,15 @@ export function useSurfaceHandoff(reader: ReaderSessionSlice) {
     if (closeTimeoutRef.current !== null) return; // already closing
     setShelfHandoff("idle");
     if (prefersReducedMotion()) {
-      reader.closeReader();
+      void Promise.resolve(reader.closeReader()).catch(() => {});
       return;
     }
     setReaderExiting(true);
     closeTimeoutRef.current = window.setTimeout(() => {
       closeTimeoutRef.current = null;
-      setReaderExiting(false);
-      reader.closeReader();
+      void Promise.resolve(reader.closeReader())
+        .catch(() => {})
+        .finally(() => setReaderExiting(false));
     }, CLOSE_TEARDOWN_MS);
   }, [reader.closeReader]);
 
@@ -113,7 +114,10 @@ export function useSurfaceHandoff(reader: ReaderSessionSlice) {
       untilEligible + ELIGIBLE_GRACE_MS,
       Math.max(0, HOLD_HARD_CAP_MS - heldFor),
     );
-    const failsafe = window.setTimeout(() => setShelfHandoff("fading"), failsafeDelay);
+    const failsafe = window.setTimeout(
+      () => setShelfHandoff("fading"),
+      failsafeDelay,
+    );
 
     let rafId = 0;
     let cancelled = false;
@@ -144,13 +148,17 @@ export function useSurfaceHandoff(reader: ReaderSessionSlice) {
   // Fading → idle when the exit animation has played out.
   useEffect(() => {
     if (shelfHandoff !== "fading") return;
-    const timeout = window.setTimeout(() => setShelfHandoff("idle"), EXIT_FADE_MS);
+    const timeout = window.setTimeout(
+      () => setShelfHandoff("idle"),
+      EXIT_FADE_MS,
+    );
     return () => window.clearTimeout(timeout);
   }, [shelfHandoff]);
 
   useEffect(() => {
     return () => {
-      if (closeTimeoutRef.current !== null) window.clearTimeout(closeTimeoutRef.current);
+      if (closeTimeoutRef.current !== null)
+        window.clearTimeout(closeTimeoutRef.current);
     };
   }, []);
 

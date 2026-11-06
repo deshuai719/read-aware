@@ -440,7 +440,12 @@
     "label": "字体",
     "placeholderCurated": "选择一款精选字体",
     "placeholderCustom": "选择一款已安装的字体",
-    "retry": "重试"
+    "retry": "重试",
+    "importLocal": "导入本地字体",
+    "removeLocal": "删除本地字体",
+    "importFailed": "字体导入失败，请选择有效的 TTF、OTF、WOFF 或 WOFF2（最大 32 MB）。",
+    "missingLocal": "导入的字体不可用",
+    "loadFailedLocal": "本地字体加载失败。"
   },
   "general": {
     "crashReports": {
@@ -497,7 +502,8 @@
       "stats": "阅读统计",
       "toc": "目录",
       "underline": "下划线",
-      "viewControl": "书架视图"
+      "viewControl": "书架视图",
+      "translate": "翻译"
     },
     "more": "更多",
     "overflow": "更多菜单",

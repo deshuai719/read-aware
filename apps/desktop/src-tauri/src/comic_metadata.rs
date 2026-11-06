@@ -22,7 +22,12 @@ pub fn extract_comic_metadata_from_path(path: &Path) -> Result<BookMetadata, Str
     let mut archive = ZipArchive::new(file).map_err(|error| error.to_string())?;
 
     let mut names: Vec<String> = (0..archive.len())
-        .filter_map(|index| archive.by_index(index).ok().map(|entry| entry.name().to_owned()))
+        .filter_map(|index| {
+            archive
+                .by_index(index)
+                .ok()
+                .map(|entry| entry.name().to_owned())
+        })
         .filter(|name| {
             let lower = name.to_ascii_lowercase();
             IMAGE_EXTENSIONS.iter().any(|ext| lower.ends_with(ext))
@@ -130,12 +135,11 @@ mod tests {
         let cover = metadata.cover_url.expect("cover");
         assert!(cover.starts_with("data:image/png;base64,"));
         // page2 sorts before page10, and its payload ends with the byte 2.
-        let encoded =
-            base64::Engine::encode(&base64::engine::general_purpose::STANDARD, {
-                let mut bytes = PNG.to_vec();
-                bytes.push(2);
-                bytes
-            });
+        let encoded = base64::Engine::encode(&base64::engine::general_purpose::STANDARD, {
+            let mut bytes = PNG.to_vec();
+            bytes.push(2);
+            bytes
+        });
         assert!(cover.ends_with(&encoded));
     }
 

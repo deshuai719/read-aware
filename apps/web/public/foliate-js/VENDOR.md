@@ -24,6 +24,10 @@ The typed wrapper that consumes this lives at
 
 ## What was changed from upstream
 
+- **`paginator.js` — headless search teardown:** `destroy()` tolerates a paginator opened without displaying its first section. Cross-book scans use the same engine without a reading viewport; no internal `#view` exists until navigation. Native regression found cleanup could discard valid scan results. Re-apply the optional teardown after re-vendoring.
+
+- **`history.js` / `view.js` — session navigation:** existing History extracted into a bounded serial stack; back/forward advance only after successful renderer navigation. Shared navigation queue ignores stale engine epochs. `goTo(target,{recordHistory:false})` keeps find previews out of ordinary waypoints. No durable history database or second reader engine. Regression: `reader-history.test.ts` plus native chapter/bookmark landings. Re-apply after re-vendoring.
+
 - Removed the demo (`reader.js`, `reader.html`, `ui/`), tests, and build/lint config.
 - Removed `vendor/pdfjs/*.map` sourcemaps (~7.4 MB, runtime-unneeded).
 - **PDF.js compatibility patch:** replaced PDF.js 5.5.207's modern

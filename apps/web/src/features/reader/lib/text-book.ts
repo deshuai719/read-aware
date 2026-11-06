@@ -7,7 +7,7 @@
  * same pagination, selection, CFI-anchored annotations, and progress model as
  * an EPUB. Nothing here touches the vendored engine.
  */
-import { decodeTextBook } from "./decode-text";
+import { detectTextBook, type TextEncoding } from "./decode-text";
 import { escapeHtml, wrapSectionHtml } from "./section-document";
 import {
   labelFromOpeningWords,
@@ -27,8 +27,13 @@ type BuiltSection = {
 /** Plain text arrives with no styling of its own; give it readable defaults. */
 const TEXT_SECTION_STYLE = "p { margin: 0 0 1em; text-indent: 2em; }";
 
-export function buildPlainTextFoliateBook(bytes: Uint8Array, fileName: string): unknown {
-  const text = decodeTextBook(bytes);
+export function buildPlainTextFoliateBook(
+  bytes: Uint8Array,
+  fileName: string,
+  encoding: TextEncoding = "auto",
+): unknown {
+  const decoding = detectTextBook(bytes, { encoding });
+  const text = decoding.text;
   const chapters = splitTextIntoChapters(text);
   const built: BuiltSection[] = chapters.map((chapter, index) => ({
     id: `text-${index}`,
@@ -41,15 +46,23 @@ export function buildPlainTextFoliateBook(bytes: Uint8Array, fileName: string): 
       .join(""),
   }));
 
-  return assembleBook(built, {
-    title: stripExtension(fileName),
-    language: guessLanguage(text),
-    sectionStyle: TEXT_SECTION_STYLE,
-  });
+  return {
+    ...(assembleBook(built, {
+      title: stripExtension(fileName),
+      language: guessLanguage(text),
+      sectionStyle: TEXT_SECTION_STYLE,
+    }) as object),
+    decoding: { ...decoding, text: undefined, requestedEncoding: encoding },
+  };
 }
 
-export function buildHtmlFoliateBook(bytes: Uint8Array, fileName: string): unknown {
-  const doc = new DOMParser().parseFromString(decodeTextBook(bytes), "text/html");
+export function buildHtmlFoliateBook(
+  bytes: Uint8Array,
+  fileName: string,
+  encoding: TextEncoding = "auto",
+): unknown {
+  const decoding = detectTextBook(bytes, { encoding, html: true });
+  const doc = new DOMParser().parseFromString(decoding.text, "text/html");
   const title = doc.querySelector("title")?.textContent?.trim();
   const author = doc
     .querySelector('meta[name="author" i]')
@@ -57,16 +70,19 @@ export function buildHtmlFoliateBook(bytes: Uint8Array, fileName: string): unkno
     ?.trim();
   const language = doc.documentElement.getAttribute("lang")?.trim() || "en";
 
-  return assembleBook(splitHtmlBody(doc), {
-    title: title || stripExtension(fileName),
-    author: author || undefined,
-    language,
-    // The document's own <style> rules travel with each section so a styled
-    // article keeps looking like itself.
-    sectionStyle: Array.from(doc.querySelectorAll("style"))
-      .map((style) => style.textContent ?? "")
-      .join("\n"),
-  });
+  return {
+    ...(assembleBook(splitHtmlBody(doc), {
+      title: title || stripExtension(fileName),
+      author: author || undefined,
+      language,
+      // The document's own <style> rules travel with each section so a styled
+      // article keeps looking like itself.
+      sectionStyle: Array.from(doc.querySelectorAll("style"))
+        .map((style) => style.textContent ?? "")
+        .join("\n"),
+    }) as object),
+    decoding: { ...decoding, text: undefined, requestedEncoding: encoding },
+  };
 }
 
 /**
@@ -78,9 +94,13 @@ function splitHtmlBody(doc: Document): BuiltSection[] {
   const body = doc.body ?? doc.documentElement;
   const children = Array.from(body.children);
   const headingAt = (element: Element) =>
-    /^h[12]$/i.test(element.tagName) ? element.textContent?.trim() || undefined : null;
+    /^h[12]$/i.test(element.tagName)
+      ? element.textContent?.trim() || undefined
+      : null;
 
-  const headingCount = children.filter((child) => headingAt(child) !== null).length;
+  const headingCount = children.filter(
+    (child) => headingAt(child) !== null,
+  ).length;
   if (headingCount < 2) {
     return [{ id: "html-0", html: body.innerHTML }];
   }
@@ -88,7 +108,10 @@ function splitHtmlBody(doc: Document): BuiltSection[] {
   const sections: BuiltSection[] = [];
   let current: { title?: string; parts: string[] } | null = null;
   const flush = () => {
-    if (current && (current.title || current.parts.some((part) => part.trim()))) {
+    if (
+      current &&
+      (current.title || current.parts.some((part) => part.trim()))
+    ) {
       sections.push({
         id: `html-${sections.length}`,
         title: current.title,
@@ -114,11 +137,21 @@ function splitHtmlBody(doc: Document): BuiltSection[] {
 
 function assembleBook(
   built: BuiltSection[],
-  meta: { title: string; author?: string; language: string; sectionStyle: string },
+  meta: {
+    title: string;
+    author?: string;
+    language: string;
+    sectionStyle: string;
+  },
 ): unknown {
   const sections = built.length ? built : [{ id: "text-0", html: "" }];
   const docs = sections.map((section) =>
-    wrapSectionHtml(section.html, section.title, meta.language, meta.sectionStyle),
+    wrapSectionHtml(
+      section.html,
+      section.title,
+      meta.language,
+      meta.sectionStyle,
+    ),
   );
   const ids = sections.map((section) => section.id);
 
@@ -135,14 +168,17 @@ function assembleBook(
         linear: "yes",
         size: docs[index]!.length,
         load: async () =>
-          (url ??= URL.createObjectURL(new Blob([docs[index]!], { type: "text/html" }))),
+          (url ??= URL.createObjectURL(
+            new Blob([docs[index]!], { type: "text/html" }),
+          )),
         unload: () => {
           if (url) {
             URL.revokeObjectURL(url);
             url = null;
           }
         },
-        createDocument: async () => new DOMParser().parseFromString(docs[index]!, "text/html"),
+        createDocument: async () =>
+          new DOMParser().parseFromString(docs[index]!, "text/html"),
       };
     }),
     // A single untitled section means the book has no navigation worth

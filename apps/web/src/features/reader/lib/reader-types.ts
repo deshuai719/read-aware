@@ -22,6 +22,8 @@ export type VirtualBookRef = {
 };
 
 export type LoadedBook = {
+  /** One-shot user navigation intent, never masquerades as stored progress. */
+  openingAnchor?: string;
   fileName: string;
   format: BookFormat;
   /** Absent for virtual books (content comes from a plugin provider). */

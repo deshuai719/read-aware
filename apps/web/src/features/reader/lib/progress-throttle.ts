@@ -1,40 +1,30 @@
-/**
- * Commit-side throttle for `book.progressed` (docs/sync-engine.md §11).
- *
- * Every page turn used to become a log event (behind a 250ms debounce), which
- * is exactly the log-bloat failure mode the sync design calls out: the log is
- * append-only, synced, and immutable — the place to be frugal is BEFORE the
- * commit, not compaction after. Policy: a chapter change commits promptly (it
- * is a real waypoint), everything else coalesces to one commit per interval,
- * and the latest position always wins. The optimistic UI patch is untouched —
- * only the event cadence changes.
- *
- * Timers are injected so the policy is testable without wall time.
- */
+/** Per-book event cadence and ordered, awaitable durable progress writes. */
 import type { BookProgress } from "../../library/lib/library-types";
-
 type Scheduler = {
-  schedule(fn: () => void, ms: number): number;
-  cancel(id: number): void;
+  schedule: (fn: () => void, ms: number) => number;
+  cancel: (id: number) => void;
 };
-
 type BookState = {
   pending: BookProgress | undefined;
   timer: number | null;
-  lastCommitAt: number;
+  lastCommitAt: number | null;
   lastChapterHref: string | null;
+  flight: Promise<void> | null;
+  error: unknown;
+  flushRequested: boolean;
 };
-
 export type ProgressThrottle = {
-  queue(bookId: string, progress: BookProgress): void;
-  /** Commit everything still pending, now. Called on unmount — a reading
-   * position must survive closing the book. */
-  flushAll(): void;
-  dispose(): void;
+  queue: (bookId: string, progress: BookProgress) => void;
+  flushAll: () => void;
+  /** Wait for accepted positions, including writes queued during the drain. Failed writes remain retryable. */
+  drain: (bookId?: string) => Promise<void>;
+  dispose: () => void;
 };
-
 export function createProgressThrottle(
-  commit: (bookId: string, progress: BookProgress) => void,
+  commit: (
+    bookId: string,
+    progress: BookProgress,
+  ) => unknown | Promise<unknown>,
   {
     commitIntervalMs = 30_000,
     debounceMs = 250,
@@ -46,44 +36,98 @@ export function createProgressThrottle(
   } = {},
 ): ProgressThrottle {
   const books = new Map<string, BookState>();
-
-  function fire(bookId: string, state: BookState): void {
+  function clearTimer(state: BookState) {
     if (state.timer !== null) {
       scheduler.cancel(state.timer);
       state.timer = null;
     }
-    if (state.pending === undefined) return;
-    const progress = state.pending;
-    state.pending = undefined;
-    state.lastCommitAt = now();
-    state.lastChapterHref = progress?.href ?? null;
-    commit(bookId, progress);
   }
-
-  return {
-    queue(bookId, progress) {
-      let state = books.get(bookId);
-      if (!state) {
-        state = { pending: undefined, timer: null, lastCommitAt: 0, lastChapterHref: null };
-        books.set(bookId, state);
+  function fire(id: string, state: BookState) {
+    clearTimer(state);
+    if (state.pending === undefined) return;
+    if (state.flight) {
+      state.flushRequested = true;
+      return;
+    }
+    const value = state.pending;
+    state.pending = undefined;
+    state.error = null;
+    state.flushRequested = false;
+    const previousTime = state.lastCommitAt,
+      previousChapter = state.lastChapterHref;
+    state.lastCommitAt = now();
+    state.lastChapterHref = value?.href ?? null;
+    const fail = (error: unknown) => {
+      state.error = error;
+      state.lastCommitAt = previousTime;
+      state.lastChapterHref = previousChapter;
+      if (state.pending === undefined) state.pending = value;
+    };
+    try {
+      const work = commit(id, value);
+      if (work && typeof (work as PromiseLike<unknown>).then === "function") {
+        state.flight = Promise.resolve(work)
+          .then(() => {}, fail)
+          .finally(() => {
+            state.flight = null;
+            if (state.flushRequested && !state.error) fire(id, state);
+          });
       }
-      state.pending = progress;
-      // A chapter boundary (or the very first position) is a waypoint worth
-      // recording promptly; within a chapter, the interval owns the cadence.
+    } catch (error) {
+      fail(error);
+    }
+  }
+  return {
+    queue(id, value) {
+      let state = books.get(id);
+      if (!state) {
+        state = {
+          pending: undefined,
+          timer: null,
+          lastCommitAt: null,
+          lastChapterHref: null,
+          flight: null,
+          error: null,
+          flushRequested: false,
+        };
+        books.set(id, state);
+      }
+      state.pending = value;
       const boundary =
-        state.lastCommitAt === 0 || (progress?.href ?? null) !== state.lastChapterHref;
-      const dueIn = boundary
+        state.lastCommitAt === null ||
+        (value?.href ?? null) !== state.lastChapterHref;
+      const due = boundary
         ? debounceMs
-        : Math.max(debounceMs, state.lastCommitAt + commitIntervalMs - now());
-      if (state.timer !== null) scheduler.cancel(state.timer);
-      state.timer = scheduler.schedule(() => fire(bookId, state), dueIn);
+        : Math.max(
+            debounceMs,
+            (state.lastCommitAt ?? 0) + commitIntervalMs - now(),
+          );
+      clearTimer(state);
+      state.timer = scheduler.schedule(() => fire(id, state!), due);
     },
     flushAll() {
-      for (const [bookId, state] of books) fire(bookId, state);
+      for (const [id, state] of books) fire(id, state);
+    },
+    async drain(bookId) {
+      const selected = () =>
+        [...books].filter(([id]) => bookId == null || id === bookId);
+      for (const [, state] of selected()) state.error = null;
+      while (true) {
+        const states = selected();
+        for (const [id, state] of states) fire(id, state);
+        await Promise.all(states.map(([, state]) => state.flight));
+        const failure = states.find(([, state]) => state.error != null);
+        if (failure) throw failure[1].error;
+        if (
+          selected().every(
+            ([, state]) => state.pending === undefined && !state.flight,
+          )
+        )
+          return;
+      }
     },
     dispose() {
-      for (const [bookId, state] of books) fire(bookId, state);
-      books.clear();
+      for (const [id, state] of books) fire(id, state);
     },
   };
 }

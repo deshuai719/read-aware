@@ -4,6 +4,7 @@ import { Overlayer } from './overlayer.js'
 import { textWalker, blockTextWalker } from './text-walker.js'
 import { readSearchDocument, yieldSearchControl, chapterSearchRange } from './search-section.js'
 import { resolveEntry } from './archive-path.js'
+import { History } from './history.js'
 
 const SEARCH_PREFIX = 'foliate-search:'
 
@@ -163,48 +164,6 @@ class CursorAutohider {
     }
 }
 
-class History extends EventTarget {
-    #arr = []
-    #index = -1
-    pushState(x) {
-        const last = this.#arr[this.#index]
-        if (last === x || last?.fraction && last.fraction === x.fraction) return
-        this.#arr[++this.#index] = x
-        this.#arr.length = this.#index + 1
-        this.dispatchEvent(new Event('index-change'))
-    }
-    replaceState(x) {
-        const index = this.#index
-        this.#arr[index] = x
-    }
-    back() {
-        const index = this.#index
-        if (index <= 0) return
-        const detail = { state: this.#arr[index - 1] }
-        this.#index = index - 1
-        this.dispatchEvent(new CustomEvent('popstate', { detail }))
-        this.dispatchEvent(new Event('index-change'))
-    }
-    forward() {
-        const index = this.#index
-        if (index >= this.#arr.length - 1) return
-        const detail = { state: this.#arr[index + 1] }
-        this.#index = index + 1
-        this.dispatchEvent(new CustomEvent('popstate', { detail }))
-        this.dispatchEvent(new Event('index-change'))
-    }
-    get canGoBack() {
-        return this.#index > 0
-    }
-    get canGoForward() {
-        return this.#index < this.#arr.length - 1
-    }
-    clear() {
-        this.#arr = []
-        this.#index = -1
-    }
-}
-
 const languageInfo = lang => {
     if (!lang) return {}
     try {
@@ -233,13 +192,12 @@ export class View extends HTMLElement {
         this.hasAttribute('autohide-cursor'))
     isFixedLayout = false
     lastLocation
-    history = new History()
+    #navigationTail = Promise.resolve()
+    #navigationEpoch = 0
+    history = new History(target => this.#navigate(target, {recordHistory:false}))
     constructor() {
         super()
-        this.history.addEventListener('popstate', ({ detail }) => {
-            const resolved = this.resolveNavigation(detail.state)
-            this.renderer.goTo(resolved)
-        })
+
     }
     async open(book) {
         if (typeof book === 'string'
@@ -313,6 +271,7 @@ export class View extends HTMLElement {
         this.#pageProgress = null
         this.#searchResults = new Map()
         this.lastLocation = null
+        this.#navigationEpoch++
         this.history.clear()
         this.tts = null
         this.mediaOverlay = null
@@ -497,32 +456,28 @@ export class View extends HTMLElement {
             console.error(`Could not resolve target ${target}`)
         }
     }
-    async goTo(target) {
-        const resolved = this.resolveNavigation(target)
-        try {
-            await this.renderer.goTo(resolved)
-            this.history.pushState(target)
+    #navigate(target, {recordHistory = true, select = false} = {}) {
+        const epoch = this.#navigationEpoch
+        const work = this.#navigationTail.catch(() => {}).then(async () => {
+            if (epoch !== this.#navigationEpoch) return
+            const resolved = await this.resolveNavigation(target)
+            if (!resolved) throw new Error('Navigation target could not be resolved')
+            const origin = this.lastLocation?.cfi
+            if (recordHistory && origin) this.history.replaceState(origin)
+            await this.renderer.goTo(select ? {...resolved,select:true} : resolved)
+            if (epoch !== this.#navigationEpoch) return
+            if (recordHistory) this.history.pushState(this.lastLocation?.cfi !== origin ? this.lastLocation?.cfi ?? target : target)
             return resolved
-        } catch(e) {
-            console.error(e)
-            console.error(`Could not go to ${target}`)
-        }
+        })
+        this.#navigationTail = work.catch(() => {})
+        return work
     }
-    async goToFraction(frac) {
-        const [index, anchor] = this.#sectionProgress.getSection(frac)
-        await this.renderer.goTo({ index, anchor })
-        this.history.pushState({ fraction: frac })
+    async goTo(target, options) {
+        try { return await this.#navigate(target, options) }
+        catch (cause) { console.error(cause) }
     }
-    async select(target) {
-        try {
-            const obj = await this.resolveNavigation(target)
-            await this.renderer.goTo({ ...obj, select: true })
-            this.history.pushState(target)
-        } catch(e) {
-            console.error(e)
-            console.error(`Could not go to ${target}`)
-        }
-    }
+    async goToFraction(fraction, options) { return this.#navigate({fraction}, options) }
+    async select(target) { return this.#navigate(target, {select:true}) }
     deselect() {
         for (const { doc } of this.renderer.getContents())
             doc.defaultView.getSelection().removeAllRanges()

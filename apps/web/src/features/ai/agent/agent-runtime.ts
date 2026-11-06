@@ -54,10 +54,13 @@ function routingTransform(routing: OpenRouterRoutingConfig | undefined) {
 
 export function getAgentRuntime(): AgentRuntime | null {
   const config = getAIConfig();
-  if (!config?.apiKey) return null;
+  if (!config) return null;
+  if (config.provider !== "readaware" && !config.apiKey) return null;
 
   const { account, models, thinking } = accountFromConfig(config);
-  const routing = config.provider === "openrouter" ? config.openRouterRouting : undefined;
+  if (account.kind === "readaware" && !account.session) return null;
+  const routing =
+    config.provider === "openrouter" ? config.openRouterRouting : undefined;
 
   const key = JSON.stringify([account, models, thinking, routing ?? null]);
   if (cached?.key !== key) {
@@ -77,7 +80,10 @@ export function getAgentRuntime(): AgentRuntime | null {
 }
 
 /** Clear hidden pi state when the corresponding persisted conversation is removed. */
-export async function discardAgentThread(kind: "book" | "global", id: string): Promise<void> {
+export async function discardAgentThread(
+  kind: "book" | "global",
+  id: string,
+): Promise<void> {
   const scope: ThreadScope =
     kind === "book"
       ? { kind: "book", bookId: id as Id }

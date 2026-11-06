@@ -4,14 +4,22 @@
  */
 import type { ThreadChunk } from "../chunks";
 import { digestBookCatchUp, digestBookTick } from "../memory/graph-upkeep";
-import { runConsolidation, type ConsolidationReport } from "../memory/consolidation";
+import {
+  runConsolidation,
+  type ConsolidationReport,
+} from "../memory/consolidation";
 import {
   accountCredential,
   createModelResolver,
   type LlmAccount,
   type RoleModels,
 } from "../models/accounts";
-import { createCompleteFn, createStreamFn, type CompleteFn, type StreamFn } from "../models/complete";
+import {
+  createCompleteFn,
+  createStreamFn,
+  type CompleteFn,
+  type StreamFn,
+} from "../models/complete";
 import { buildProviderRegistry } from "../models/registry";
 import type { ModelRole, RoleThinking } from "../models/roles";
 import type { AgentFetch } from "../models/transport";
@@ -35,7 +43,9 @@ export interface AgentRuntimeOptions {
    * OpenRouter 上游路由（compat.openRouterRouting），eval 用同型接缝
    * 注入 Baidu/千帆偏好。缺省恒等。
    */
-  transformModel?: <T extends { provider: string; compat?: object }>(model: T) => T;
+  transformModel?: <T extends { provider: string; compat?: object }>(
+    model: T,
+  ) => T;
 }
 
 export class AgentRuntime {
@@ -73,7 +83,11 @@ export class AgentRuntime {
       },
     };
     const registry = buildProviderRegistry();
-    const baseResolve = createModelResolver(options.account, options.models, registry);
+    const baseResolve = createModelResolver(
+      options.account,
+      options.models,
+      registry,
+    );
     this.resolveModel = options.transformModel
       ? (role) => options.transformModel!(baseResolve(role))
       : baseResolve;
@@ -128,13 +142,18 @@ export class AgentRuntime {
     return thread;
   }
 
-  sendTurn(scope: ThreadScope, input: SendTurnInput): AsyncGenerator<ThreadChunk> {
+  sendTurn(
+    scope: ThreadScope,
+    input: SendTurnInput,
+  ): AsyncGenerator<ThreadChunk> {
     return this.thread(scope).sendTurn(input);
   }
 
   /** 等待所有线程的后台管道（记忆提炼 + 滚动摘要）排空。 */
   async flushBackgroundWork(): Promise<void> {
-    await Promise.all([...this.threads.values()].map((thread) => thread.flushBackgroundWork()));
+    await Promise.all(
+      [...this.threads.values()].map((thread) => thread.flushBackgroundWork()),
+    );
   }
 
   /** 工具集变化（如插件启停）后调用：所有线程下一轮以新工具重建 Agent。 */
@@ -165,47 +184,65 @@ export class AgentRuntime {
     prompt: string;
     system?: string;
     model?: "fast" | "smart";
+    signal?: AbortSignal;
     onText?: (delta: string) => void;
   }): Promise<string>;
   async ask(input: {
     prompt: string;
     system?: string;
     model?: "fast" | "smart";
+    signal?: AbortSignal;
     schema: Record<string, unknown>;
   }): Promise<unknown>;
   async ask(input: {
     prompt: string;
     system?: string;
     model?: "fast" | "smart";
+    signal?: AbortSignal;
     schema?: Record<string, unknown>;
     onText?: (delta: string) => void;
   }): Promise<unknown> {
     if (input.schema && input.onText) {
       throw new Error("ask: schema and onText are mutually exclusive");
     }
-    const complete = async (system: string | undefined, prompt: string): Promise<string> => {
+    const complete = async (
+      system: string | undefined,
+      prompt: string,
+    ): Promise<string> => {
+      if (input.signal?.aborted) throw new Error("ask-aborted");
       const role = input.model ?? "fast";
       const model = this.resolveModel(role);
       const context = {
         systemPrompt: system,
-        messages: [{ role: "user" as const, content: prompt, timestamp: Date.now() }],
+        messages: [
+          { role: "user" as const, content: prompt, timestamp: Date.now() },
+        ],
       };
       let message;
       if (input.onText) {
-        const stream = this.streamFns[role](model, context);
+        const stream = this.streamFns[role](model, context, {
+          signal: input.signal,
+        });
         for await (const event of stream) {
-          if (event.type === "text_delta") input.onText(event.delta);
+          if (!input.signal?.aborted && event.type === "text_delta")
+            input.onText(event.delta);
         }
         message = await stream.result();
       } else {
-        message = await this.completeFns[role](model, context);
+        message = await this.completeFns[role](model, context, {
+          signal: input.signal,
+        });
       }
+      if (input.signal?.aborted) throw new Error("ask-aborted");
       // completeSimple 不 reject：失败 resolve 成 stopReason "error"/"aborted"。
       if (message.stopReason === "error" || message.stopReason === "aborted") {
         throw new Error(message.errorMessage ?? "ask failed");
       }
       return message.content
-        .filter((block): block is { type: "text"; text: string } => block.type === "text")
+        .filter(
+          (block): block is { type: "text"; text: string } =>
+            block.type === "text",
+        )
         .map((block) => block.text)
         .join("");
     };
@@ -215,7 +252,9 @@ export class AgentRuntime {
     const instruction =
       "Return ONLY a single JSON object — no prose, no markdown, no code fences. " +
       `It must validate against this JSON Schema:\n${JSON.stringify(input.schema)}`;
-    const system = input.system ? `${input.system}\n\n${instruction}` : instruction;
+    const system = input.system
+      ? `${input.system}\n\n${instruction}`
+      : instruction;
 
     let feedback = "";
     for (let attempt = 0; attempt < 2; attempt += 1) {
@@ -300,7 +339,9 @@ export class AgentRuntime {
     });
   }
 
-  private runConsolidation(force: boolean): Promise<ConsolidationReport | null> {
+  private runConsolidation(
+    force: boolean,
+  ): Promise<ConsolidationReport | null> {
     if (this.consolidationWork) return this.consolidationWork;
     if (!force && this.memoryRevision === this.consolidatedRevision) {
       return Promise.resolve(null);
@@ -316,7 +357,8 @@ export class AgentRuntime {
         complete: this.completeFns.fast,
         model: this.resolveModel("fast"),
       });
-      if (this.memoryRevision === revision) this.consolidatedRevision = revision;
+      if (this.memoryRevision === revision)
+        this.consolidatedRevision = revision;
       return report;
     })().finally(() => {
       this.consolidationWork = null;

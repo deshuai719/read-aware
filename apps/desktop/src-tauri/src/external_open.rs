@@ -15,8 +15,8 @@ use tauri::{AppHandle, Emitter, Manager};
 /// Extensions the importer accepts. Keep in sync with `BOOK_FILE_EXTENSIONS`
 /// in `apps/web/src/features/library/lib/pick-book-files.ts`.
 const BOOK_EXTENSIONS: [&str; 14] = [
-    "epub", "mobi", "prc", "azw3", "azw", "kf8", "fb2", "fbz", "cbz", "cbr", "txt", "html",
-    "htm", "pdf",
+    "epub", "mobi", "prc", "azw3", "azw", "kf8", "fb2", "fbz", "cbz", "cbr", "txt", "html", "htm",
+    "pdf",
 ];
 
 /// Book paths waiting for the webview to collect them.
@@ -57,8 +57,7 @@ where
                 (false, Some(cwd)) => cwd.join(raw),
                 _ => raw,
             };
-            (is_book_path(&path) && path.is_file())
-                .then(|| path.to_string_lossy().into_owned())
+            (is_book_path(&path) && path.is_file()).then(|| path.to_string_lossy().into_owned())
         })
         .collect()
 }

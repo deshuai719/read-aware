@@ -42,7 +42,12 @@ describe("buildCommands", () => {
 
   test("hides books whose collection is password-locked", () => {
     const collections: Collection[] = [
-      { id: "c-locked", name: "Private", createdAt: "2026-01-01T00:00:00.000Z", passwordHash: "hash" },
+      {
+        id: "c-locked",
+        name: "Private",
+        createdAt: "2026-01-01T00:00:00.000Z",
+        passwordHash: "hash",
+      },
       { id: "c-open", name: "Open", createdAt: "2026-01-01T00:00:00.000Z" },
     ];
     const base: LibraryBook = {
@@ -66,19 +71,33 @@ describe("buildCommands", () => {
       ...context(null),
       collections,
       books: [
-        { ...base, id: "locked-book", title: "Secret", collectionId: "c-locked" },
+        {
+          ...base,
+          id: "locked-book",
+          title: "Secret",
+          collectionId: "c-locked",
+        },
         { ...base, id: "open-book", title: "Visible", collectionId: "c-open" },
       ] satisfies LibraryBook[],
     };
     const commands = buildCommands(ctx, t);
-    expect(commands.some((command) => command.id === "book-locked-book")).toBe(false);
-    expect(commands.some((command) => command.id === "book-open-book")).toBe(true);
+    expect(commands.some((command) => command.id === "book-locked-book")).toBe(
+      false,
+    );
+    expect(commands.some((command) => command.id === "book-open-book")).toBe(
+      true,
+    );
   });
 
   test("shows locked-collection books once the folder is unlocked this session", () => {
-    unlockCollection("c-locked");
+    unlockCollection("c-locked", "hash");
     const collections: Collection[] = [
-      { id: "c-locked", name: "Private", createdAt: "2026-01-01T00:00:00.000Z", passwordHash: "hash" },
+      {
+        id: "c-locked",
+        name: "Private",
+        createdAt: "2026-01-01T00:00:00.000Z",
+        passwordHash: "hash",
+      },
     ];
     const base: LibraryBook = {
       id: "x",
@@ -100,9 +119,18 @@ describe("buildCommands", () => {
     const ctx = {
       ...context(null),
       collections,
-      books: [{ ...base, id: "now-visible", title: "Secret", collectionId: "c-locked" }] satisfies LibraryBook[],
+      books: [
+        {
+          ...base,
+          id: "now-visible",
+          title: "Secret",
+          collectionId: "c-locked",
+        },
+      ] satisfies LibraryBook[],
     };
     const commands = buildCommands(ctx, t);
-    expect(commands.some((command) => command.id === "book-now-visible")).toBe(true);
+    expect(commands.some((command) => command.id === "book-now-visible")).toBe(
+      true,
+    );
   });
 });

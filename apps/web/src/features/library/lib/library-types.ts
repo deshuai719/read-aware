@@ -24,6 +24,7 @@ export type ReaderProgress = {
   progressPercent: number;
   cfi: string | null;
   href: string | null;
+  recovery?: import("@read-aware/core").ReadingPositionContext;
 };
 
 export type BookProgress = ReaderProgress | null;

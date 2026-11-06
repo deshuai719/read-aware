@@ -538,6 +538,15 @@ pub(crate) const MIGRATIONS: &[(i64, &str, &str)] = &[
         // NULL = 未加密。哈希本身即验证材料,客户端用同一口令派生比对。
         "ALTER TABLE collections ADD COLUMN password_hash TEXT;",
     ),
+    (
+        25,
+        "reading_bookmarks",
+        "CREATE TABLE IF NOT EXISTS reading_bookmarks (
+       id TEXT PRIMARY KEY, book_id TEXT NOT NULL, anchor TEXT NOT NULL, chapter_href TEXT,
+       title TEXT NOT NULL, excerpt TEXT NOT NULL, fraction REAL, source_sha256 TEXT,
+       created_at TEXT NOT NULL, updated_at TEXT NOT NULL);
+      CREATE INDEX IF NOT EXISTS ix_reading_bookmarks_book ON reading_bookmarks(book_id);",
+    ),
 ];
 
 /// Apply migrations newer than the highest recorded version, up to `max_version`
@@ -735,7 +744,6 @@ pub fn register_sql_functions(conn: &Connection) -> Result<(), String> {
     .map_err(|e| e.to_string())
 }
 
-
 // ── Factory reset ────────────────────────────────────────────────────────────
 
 /// Every user-data table, resolved by introspection so a future migration's
@@ -755,8 +763,11 @@ fn wipeable_tables(conn: &Connection) -> Result<Vec<String>, String> {
     let virtual_tables: Vec<String> = rows
         .iter()
         .filter(|(_, sql)| {
-            sql.as_deref()
-                .is_some_and(|s| s.trim_start().to_uppercase().starts_with("CREATE VIRTUAL TABLE"))
+            sql.as_deref().is_some_and(|s| {
+                s.trim_start()
+                    .to_uppercase()
+                    .starts_with("CREATE VIRTUAL TABLE")
+            })
         })
         .map(|(name, _)| name.clone())
         .collect();

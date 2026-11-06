@@ -1,3 +1,5 @@
+import { cjkTypographyCss, normalizeReaderAdvanced } from "./reader-advanced";
+import { localFontFamily } from "./local-font-format";
 import type { CSSProperties } from "react";
 import {
   curatedFontId,
@@ -10,7 +12,11 @@ import {
   type ReaderSettings,
   type ReaderTextAlign,
 } from "./reader-settings";
-import { curatedFallback, getCuratedFont, type CuratedFontKind } from "./curated-fonts";
+import {
+  curatedFallback,
+  getCuratedFont,
+  type CuratedFontKind,
+} from "./curated-fonts";
 import type { ReaderPalette } from "./reader-theme";
 
 // Trailing fallbacks after a user-picked system family, so a missing glyph (or a
@@ -45,6 +51,8 @@ export function resolveReaderFontStack(
   fontFamily: ReaderFontFamily,
   pluginFont?: PluginFontStackSource | null,
 ): string {
+  const local = localFontFamily(fontFamily);
+  if (local) return `"${local}", ${SYSTEM_FONT_FALLBACK}`;
   const curatedId = curatedFontId(fontFamily);
   if (curatedId) {
     const font = getCuratedFont(curatedId);
@@ -56,7 +64,8 @@ export function resolveReaderFontStack(
   }
   if (isPluginFont(fontFamily)) {
     const safe = pluginFont ? sanitizeFamily(pluginFont.family) : "";
-    if (safe) return `"${safe}", ${curatedFallback(pluginFont?.kind ?? "serif")}`;
+    if (safe)
+      return `"${safe}", ${curatedFallback(pluginFont?.kind ?? "serif")}`;
     return DEFAULT_FONT_STACK;
   }
   const family = systemFontFamily(fontFamily);
@@ -84,8 +93,12 @@ const FONT_WEIGHT_MAP = {
  * 400 as the regular/italic anchor, and 700 for strong text and headings.
  * Drives the curated-font loader so only these weights get downloaded.
  */
-export function readerFontWeightsNeeded(fontWeight: ReaderFontWeight): number[] {
-  return [...new Set([FONT_WEIGHT_MAP[fontWeight], 400, 700])].sort((a, b) => a - b);
+export function readerFontWeightsNeeded(
+  fontWeight: ReaderFontWeight,
+): number[] {
+  return [...new Set([FONT_WEIGHT_MAP[fontWeight], 400, 700])].sort(
+    (a, b) => a - b,
+  );
 }
 
 const FONT_SIZE_MAP = {
@@ -148,7 +161,11 @@ const MEASURE_MAX_REM = 84;
 const READER_MARGIN_PRESETS = {
   narrow: { measureFraction: "fill", gap: "3%", horizontalPadding: "0.75rem" },
   medium: { measureFraction: 0.9, gap: "5%", horizontalPadding: "1rem" },
-  wide: { measureFraction: MEASURE_VIEWPORT_FRACTION, gap: "7%", horizontalPadding: "1.5rem" },
+  wide: {
+    measureFraction: MEASURE_VIEWPORT_FRACTION,
+    gap: "7%",
+    horizontalPadding: "1.5rem",
+  },
 } as const satisfies Record<
   ReaderPageMargins,
   { measureFraction: number | "fill"; gap: string; horizontalPadding: string }
@@ -242,12 +259,16 @@ export function buildReaderContentCss(
   assets: ReaderContentAssets,
 ): string {
   const fontFaceCss = assets.fontFaceCss ?? "";
-  const fontFamily = resolveReaderFontStack(settings.fontFamily, assets.pluginFont);
+  const fontFamily = resolveReaderFontStack(
+    settings.fontFamily,
+    assets.pluginFont,
+  );
   const fontSize = FONT_SIZE_MAP[settings.fontSize];
   const fontWeight = FONT_WEIGHT_MAP[settings.fontWeight];
   const lineHeight = LINE_HEIGHT_MAP[settings.lineSpacing];
   const paragraphSpacing = PARAGRAPH_SPACING_MAP[settings.paragraphSpacing];
-  const horizontalMargin = READER_MARGIN_PRESETS[settings.pageMargins].horizontalPadding;
+  const horizontalMargin =
+    READER_MARGIN_PRESETS[settings.pageMargins].horizontalPadding;
   const theme = assets.palette;
 
   // Must lead the sheet: @namespace is only honored before style rules (after
@@ -272,6 +293,8 @@ export function buildReaderContentCss(
       line-height: ${lineHeight} !important;
     }
 ${textAlignCss(settings.textAlign)}
+${cjkTypographyCss(normalizeReaderAdvanced(settings))}
+body :where(img,svg.image){filter:brightness(${normalizeReaderAdvanced(settings).imageBrightness / 100}) !important;}
     /* Publisher stylesheets routinely declare font-family directly on p / h1 /
        div / classes (often naming an embedded font), which beats inheritance
        from body — so the picked font must be forced onto every element, not

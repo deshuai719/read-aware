@@ -62,8 +62,9 @@ fn validate_manifest(manifest: &AndroidUpdateManifest) -> Result<(), String> {
     let expected_path = format!(
         "/deshuai719/read-aware/releases/download/v{version}/ReadAware-v{version}-android-arm64.apk"
     );
-    let legacy_path =
-        format!("/deshuai719/read-aware/releases/download/v{version}/ReadAware-v{version}-arm64.apk");
+    let legacy_path = format!(
+        "/deshuai719/read-aware/releases/download/v{version}/ReadAware-v{version}-arm64.apk"
+    );
     if url.scheme() != "https"
         || url.host_str() != Some("github.com")
         || (url.path() != expected_path && url.path() != legacy_path)

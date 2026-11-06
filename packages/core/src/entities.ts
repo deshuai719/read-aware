@@ -3,6 +3,15 @@
 // Field names and nullability are kept in lock-step with docs/sqlite-schema.sql
 // (the authoritative DDL) and the event payloads in events.ts.
 
+/** Short source-bound fallback for a saved locator. Quote offsets always reference the original document. */
+export type ReadingPositionContext = {
+  sourceSha256?: string | null;
+  textEncoding?: string;
+  sectionIndex?: number;
+  quote?: string;
+  fraction?: number;
+};
+
 export type Id = string;
 
 /** ISO-8601 timestamp string (UTC). */
@@ -112,6 +121,20 @@ export interface Note {
   chapterHref?: string;
   quotedText?: string;
   body: string;
+  createdAt: IsoDate;
+  updatedAt: IsoDate;
+}
+
+/** Saved point, independent of a selected passage or note. */
+export interface ReadingBookmark {
+  id: Id;
+  bookId: Id;
+  anchor: string;
+  chapterHref?: string;
+  title: string;
+  excerpt: string;
+  fraction?: number;
+  sourceSha256?: string;
   createdAt: IsoDate;
   updatedAt: IsoDate;
 }

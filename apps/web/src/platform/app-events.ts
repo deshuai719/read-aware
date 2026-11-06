@@ -13,6 +13,7 @@ import { createLogger } from "./logger";
 const log = createLogger("app-events");
 
 export type AppEventMap = {
+  "local-fonts-changed": Record<string, never>;
   "book-opened": { book: { id: string; title: string; author?: string } };
   "book-closed": { bookId: string };
   "chapter-changed": { bookId: string; chapterHref: string | null };
@@ -54,7 +55,10 @@ export function onAppEvent<K extends AppEventName>(
   };
 }
 
-export function emitAppEvent<K extends AppEventName>(event: K, payload: AppEventMap[K]): void {
+export function emitAppEvent<K extends AppEventName>(
+  event: K,
+  payload: AppEventMap[K],
+): void {
   const set = listeners.get(event);
   if (!set) return;
   for (const handler of [...set]) {

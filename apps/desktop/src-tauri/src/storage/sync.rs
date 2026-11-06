@@ -60,7 +60,10 @@ pub fn sync_profile_get(db: State<'_, Db>) -> Result<SyncProfile, String> {
     sync_profile_get_inner(&conn)
 }
 
-pub(crate) fn sync_profile_set_inner(conn: &Connection, profile: &SyncProfile) -> Result<(), String> {
+pub(crate) fn sync_profile_set_inner(
+    conn: &Connection,
+    profile: &SyncProfile,
+) -> Result<(), String> {
     conn.execute(
         "INSERT INTO sync_profile
             (id, sync_enabled, remote_account_id, encryption_key_ref,

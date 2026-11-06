@@ -20,7 +20,12 @@ import {
 const TEST_KDF = { algo: "argon2id", t: 1, m: 16, p: 1 } as const;
 const key = deriveMasterKey("同一个口令", "c2FsdHNhbHRzYWx0c2FsdA==", TEST_KDF);
 
-function plain(id: string, wallMs: number, deviceId: string, text: string): PlainEvent {
+function plain(
+  id: string,
+  wallMs: number,
+  deviceId: string,
+  text: string,
+): PlainEvent {
   return {
     id,
     type: "highlight.created",
@@ -43,7 +48,12 @@ function fakeDevice() {
   const staged: PlainEvent[] = [];
   // Test control: make applyRemote report the replay fallback (events behind
   // the local frontier), which is what flips the pull loop into staging.
-  const controls = { replayOnApply: false, applyCalls: 0, stageCalls: 0, finalizeCalls: 0 };
+  const controls = {
+    replayOnApply: false,
+    applyCalls: 0,
+    stageCalls: 0,
+    finalizeCalls: 0,
+  };
 
   const store: SyncLocalStore = {
     async outboxEvents(limit) {
@@ -173,7 +183,10 @@ function fakeDevice() {
 }
 
 /** The relay reduced to its essence: a numbered mailbox + a blob shelf. */
-function fakeRelay(): SyncRelayApi & { count(): number; failNextPush?: boolean } {
+function fakeRelay(): SyncRelayApi & {
+  count(): number;
+  failNextPush?: boolean;
+} {
   const rows: Array<{ seq: number; sealed: ReturnType<typeof sealEvent> }> = [];
   const byId = new Map<string, number>();
   const shelf = new Map<string, Uint8Array>();
@@ -212,12 +225,21 @@ function fakeRelay(): SyncRelayApi & { count(): number; failNextPush?: boolean }
     },
     // Chunked transport, faked the way the relay implements it: parts stage
     // at `key#i`, commit publishes the [2][partCount u32be] descriptor.
-    async putBlobPart(key: string, index: number, _parts: number, bytes: Uint8Array) {
+    async putBlobPart(
+      key: string,
+      index: number,
+      _parts: number,
+      bytes: Uint8Array,
+    ) {
       shelf.set(`${key}#${index}`, bytes);
     },
     async commitBlob(key: string, parts: number) {
       for (let i = 0; i < parts; i += 1) {
-        if (!shelf.has(`${key}#${i}`)) throw Object.assign(new Error(`relay 400: missing staged part ${i}`), { status: 400 });
+        if (!shelf.has(`${key}#${i}`))
+          throw Object.assign(
+            new Error(`relay 400: missing staged part ${i}`),
+            { status: 400 },
+          );
       }
       const descriptor = new Uint8Array(5);
       descriptor[0] = 2;
@@ -226,14 +248,21 @@ function fakeRelay(): SyncRelayApi & { count(): number; failNextPush?: boolean }
     },
     async getBlobPart(key: string, index: number) {
       const part = shelf.get(`${key}#${index}`);
-      if (!part) throw Object.assign(new Error("relay 404: no such blob"), { status: 404 });
+      if (!part)
+        throw Object.assign(new Error("relay 404: no such blob"), {
+          status: 404,
+        });
       return part;
     },
   };
   return api;
 }
 
-function engineFor(device: ReturnType<typeof fakeDevice>, relay: SyncRelayApi, k = key) {
+function engineFor(
+  device: ReturnType<typeof fakeDevice>,
+  relay: SyncRelayApi,
+  k = key,
+) {
   return createSyncEngine({
     store: device.store,
     relay,
@@ -244,10 +273,55 @@ function engineFor(device: ReturnType<typeof fakeDevice>, relay: SyncRelayApi, k
 }
 
 describe("push", () => {
+  test("old-account acknowledgements cannot clear the new account outbox", async () => {
+    const device = fakeDevice(),
+      relay = fakeRelay();
+    device.commitLocal(plain("e1", 1001, "a", "one"));
+    let current = true;
+    const stale = {
+      ...relay,
+      pushEvents: async () => {
+        current = false;
+        return { e1: 1 };
+      },
+    };
+    const engine = createSyncEngine({
+      store: device.store,
+      relay: stale,
+      masterKey: () => key,
+      observe: () => {},
+      isCurrent: () => current,
+    });
+    await expect(engine.pushOnce()).rejects.toThrow("sync-session-changed");
+    expect(device.outbox.map((e) => e.id)).toEqual(["e1"]);
+    expect(device.failed.size).toBe(0);
+  });
+  test("partial acknowledgements retain missing events and do not loop", async () => {
+    const device = fakeDevice(),
+      relay = fakeRelay();
+    device.commitLocal(plain("e1", 1001, "a", "one"));
+    device.commitLocal(plain("e2", 1002, "a", "two"));
+    let calls = 0;
+    const bad = {
+      ...relay,
+      pushEvents: async () => {
+        calls++;
+        return { e1: 1, e2: NaN };
+      },
+    };
+    await expect(engineFor(device, bad).pushOnce()).rejects.toThrow(
+      "incomplete event acknowledgement",
+    );
+    expect(calls).toBe(1);
+    expect(device.outbox.map((e) => e.id)).toEqual(["e2"]);
+    await engineFor(device, relay).pushOnce();
+    expect(device.outbox).toEqual([]);
+  });
   test("drains the outbox in batches and acknowledges assigned seqs", async () => {
     const relay = fakeRelay();
     const device = fakeDevice();
-    for (let i = 1; i <= 5; i += 1) device.commitLocal(plain(`e${i}`, 1_000 + i, "device-a", "…"));
+    for (let i = 1; i <= 5; i += 1)
+      device.commitLocal(plain(`e${i}`, 1_000 + i, "device-a", "…"));
 
     const pushed = await engineFor(device, relay).pushOnce();
     expect(pushed).toBe(5);
@@ -261,7 +335,9 @@ describe("push", () => {
     device.commitLocal(plain("e1", 1_001, "device-a", "…"));
     relay.failNextPush = true;
 
-    await expect(engineFor(device, relay).pushOnce()).rejects.toThrow("relay 503");
+    await expect(engineFor(device, relay).pushOnce()).rejects.toThrow(
+      "relay 503",
+    );
     expect(device.failed.get("e1")).toBe("relay 503");
     // The outbox still owns the event; the next pass retries it.
     expect(device.outbox.length).toBe(1);
@@ -284,6 +360,43 @@ describe("push", () => {
 });
 
 describe("pull", () => {
+  test("old-account pull replies never apply or advance the replacement account cursor", async () => {
+    const device = fakeDevice(),
+      relay = fakeRelay();
+    let current = true;
+    const event = plain("peer", 1001, "peer", "text");
+    const stale = {
+      ...relay,
+      pullEvents: async () => {
+        current = false;
+        return { events: [sealEvent(key, event)], next: 1 };
+      },
+    };
+    const engine = createSyncEngine({
+      store: device.store,
+      relay: stale,
+      masterKey: () => key,
+      observe: () => {},
+      isCurrent: () => current,
+    });
+    await expect(engine.pullOnce()).rejects.toThrow("sync-session-changed");
+    expect(device.applied).toEqual([]);
+    expect(device.cursorValue()).toBe(0);
+  });
+  test("non-advancing cursors never apply or skip a page", async () => {
+    const device = fakeDevice(),
+      relay = fakeRelay();
+    const event = plain("peer", 1001, "peer", "text");
+    const bad = {
+      ...relay,
+      pullEvents: async () => ({ events: [sealEvent(key, event)], next: 0 }),
+    };
+    await expect(engineFor(device, bad).pullOnce()).rejects.toThrow(
+      "non-advancing event cursor",
+    );
+    expect(device.applied).toEqual([]);
+    expect(device.cursorValue()).toBe(0);
+  });
   test("pages through the feed, observes clocks BEFORE applying, advances the cursor", async () => {
     const relay = fakeRelay();
     const producer = fakeDevice();
@@ -295,7 +408,13 @@ describe("pull", () => {
     const consumer = fakeDevice();
     const merged = await engineFor(consumer, relay).pullOnce();
     expect(merged).toBe(5);
-    expect(consumer.applied.map((e) => e.id)).toEqual(["e1", "e2", "e3", "e4", "e5"]);
+    expect(consumer.applied.map((e) => e.id)).toEqual([
+      "e1",
+      "e2",
+      "e3",
+      "e4",
+      "e5",
+    ]);
     expect(consumer.applied[2].payload).toEqual({
       highlightId: "e3",
       bookId: "b1",
@@ -330,7 +449,15 @@ describe("pull", () => {
     // One defensive finalize at the start + ONE finishing replay at the end.
     expect(consumer.controls.finalizeCalls).toBe(2);
     expect(consumer.staged).toEqual([]);
-    expect(consumer.applied.map((e) => e.id)).toEqual(["e1", "e2", "e3", "e4", "e5", "e6", "e7"]);
+    expect(consumer.applied.map((e) => e.id)).toEqual([
+      "e1",
+      "e2",
+      "e3",
+      "e4",
+      "e5",
+      "e6",
+      "e7",
+    ]);
     expect(consumer.cursorValue()).toBe(7);
   });
 
@@ -357,8 +484,14 @@ describe("pull", () => {
     await engineFor(producer, relay).pushOnce();
 
     const eavesdropper = fakeDevice();
-    const wrongKey = deriveMasterKey("错误口令", "c2FsdHNhbHRzYWx0c2FsdA==", TEST_KDF);
-    await expect(engineFor(eavesdropper, relay, wrongKey).pullOnce()).rejects.toThrow();
+    const wrongKey = deriveMasterKey(
+      "错误口令",
+      "c2FsdHNhbHRzYWx0c2FsdA==",
+      TEST_KDF,
+    );
+    await expect(
+      engineFor(eavesdropper, relay, wrongKey).pullOnce(),
+    ).rejects.toThrow();
     expect(eavesdropper.applied).toEqual([]);
   });
 });
@@ -378,7 +511,8 @@ describe("two devices through one relay", () => {
     await engineB.syncOnce(); // B: pull a1,a2 → push b1
     await engineA.syncOnce(); // A: pull b1
 
-    const ids = (d: ReturnType<typeof fakeDevice>) => d.applied.map((e) => e.id).sort();
+    const ids = (d: ReturnType<typeof fakeDevice>) =>
+      d.applied.map((e) => e.id).sort();
     expect(ids(a)).toEqual(["a1", "a2", "b1"]);
     expect(ids(b)).toEqual(["a1", "a2", "b1"]);
     // Neither device ever re-pushed what it pulled (no echo).
@@ -401,7 +535,9 @@ describe("two devices through one relay", () => {
     expect(b.blobStates.get("bookfile:b1")).toBe("synced");
     expect(b.blobOutbox.size).toBe(0);
 
-    expect(await engineFor(b, relay).fetchBlob("bookfile:missing")).toBe("absent");
+    expect(await engineFor(b, relay).fetchBlob("bookfile:missing")).toBe(
+      "absent",
+    );
   });
 
   test("a blob over one chunk uploads as sealed parts and downloads back whole", async () => {
@@ -425,7 +561,9 @@ describe("two devices through one relay", () => {
     expect(await engineA.syncBlobsOnce()).toBe(1);
     expect(a.blobStates.get("bookfile:big")).toBe("synced");
     // Part progress was narrated with the blob's identity attached.
-    expect(seen.some((p) => p.blobKey === "bookfile:big" && p.blobPartsTotal === 3)).toBe(true);
+    expect(
+      seen.some((p) => p.blobKey === "bookfile:big" && p.blobPartsTotal === 3),
+    ).toBe(true);
     expect(Math.max(...seen.map((p) => p.blobPartsDone))).toBe(3);
 
     // Device B reassembles through its staged writer — chunk size is NOT
@@ -459,7 +597,9 @@ describe("two devices through one relay", () => {
         return part;
       },
     };
-    await expect(engineFor(b, corrupting).fetchBlob("bookfile:big")).rejects.toThrow();
+    await expect(
+      engineFor(b, corrupting).fetchBlob("bookfile:big"),
+    ).rejects.toThrow();
     expect(b.blobs.has("bookfile:big")).toBe(false);
     expect(b.blobStates.get("bookfile:big")).toBeUndefined();
   });
@@ -469,7 +609,8 @@ describe("two devices through one relay", () => {
     const refusing: SyncRelayApi = {
       ...relay,
       async putBlob(key, bytes) {
-        if (key === "bookfile:huge") throw new RelayError(413, "blob exceeds the size cap");
+        if (key === "bookfile:huge")
+          throw new RelayError(413, "blob exceeds the size cap");
         if (key === "bookfile:flaky") throw new RelayError(503, "relay hiccup");
         return relay.putBlob(key, bytes);
       },
@@ -514,10 +655,18 @@ describe("connect flow", () => {
           keys: material.get(accountId) ?? null,
         };
       },
-      async publishKeys(keys: { kdfSalt: string; kdfParams: typeof TEST_KDF; keyCheck: string }) {
-        if (servedSession !== "sess") throw new Error("relay 401: authentication required");
+      async publishKeys(keys: {
+        kdfSalt: string;
+        kdfParams: typeof TEST_KDF;
+        keyCheck: string;
+      }) {
+        if (servedSession !== "sess")
+          throw new Error("relay 401: authentication required");
         if (material.has(accountId)) {
-          return { outcome: "conflict" as const, keys: material.get(accountId) ?? null };
+          return {
+            outcome: "conflict" as const,
+            keys: material.get(accountId) ?? null,
+          };
         }
         material.set(accountId, keys);
         return { outcome: "set" as const };
@@ -572,11 +721,21 @@ describe("connect flow", () => {
     const relay = fakeAuthRelay("acc-1");
     const firstVerification = await verifySignInToken(relay, "t1");
     relay.serveSession(firstVerification.session);
-    const first = await establishEncryption(relay, firstVerification, "鲸鱼在唱歌", { derive });
+    const first = await establishEncryption(
+      relay,
+      firstVerification,
+      "鲸鱼在唱歌",
+      { derive },
+    );
 
     const secondVerification = await verifySignInToken(relay, "t2");
     relay.serveSession(secondVerification.session);
-    const second = await establishEncryption(relay, secondVerification, "鲸鱼在唱歌", { derive });
+    const second = await establishEncryption(
+      relay,
+      secondVerification,
+      "鲸鱼在唱歌",
+      { derive },
+    );
     expect(second).toBe(first);
 
     const thirdVerification = await verifySignInToken(relay, "t3");
@@ -592,9 +751,9 @@ describe("connect flow", () => {
     const verification = await verifySignInToken(relay, "t");
     // No serveSession — the exact regression that burned a live sign-in
     // token on first deploy: publishing before the session is served 401s.
-    await expect(establishEncryption(relay, verification, "鲸鱼在唱歌", { derive })).rejects.toThrow(
-      /401/,
-    );
+    await expect(
+      establishEncryption(relay, verification, "鲸鱼在唱歌", { derive }),
+    ).rejects.toThrow(/401/);
   });
 
   test("losing the publish race falls back to verifying the winner's material", async () => {
@@ -606,18 +765,29 @@ describe("connect flow", () => {
     const { makeKeyCheck } = await import("../sync-envelope");
     const race = {
       async verifyMagicLink() {
-        return { session: "sess", accountId: "acc-2", email: "acc-2@example.com", keys: null }; // looked empty…
+        return {
+          session: "sess",
+          accountId: "acc-2",
+          email: "acc-2@example.com",
+          keys: null,
+        }; // looked empty…
       },
       async publishKeys() {
         // …but someone else landed first.
         return {
           outcome: "conflict" as const,
-          keys: { kdfSalt: winnerSalt, kdfParams: TEST_KDF, keyCheck: makeKeyCheck(winnerKey) },
+          keys: {
+            kdfSalt: winnerSalt,
+            kdfParams: TEST_KDF,
+            keyCheck: makeKeyCheck(winnerKey),
+          },
         };
       },
     };
     const verification = await verifySignInToken(race, "t");
-    const result = await establishEncryption(race, verification, "共享口令", { derive });
+    const result = await establishEncryption(race, verification, "共享口令", {
+      derive,
+    });
     // The loser ends with the WINNER's key (their salt), not its own minting.
     expect(result).toBe(Buffer.from(winnerKey).toString("base64"));
   });

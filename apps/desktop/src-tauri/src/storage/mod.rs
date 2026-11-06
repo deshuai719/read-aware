@@ -18,6 +18,8 @@ mod library;
 pub use library::*;
 mod annotations;
 pub use annotations::*;
+mod bookmarks;
+pub use bookmarks::*;
 mod memories;
 pub use memories::*;
 mod chat;

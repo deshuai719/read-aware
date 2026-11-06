@@ -452,7 +452,12 @@
     "label": "Fuente",
     "placeholderCurated": "Elige una fuente seleccionada",
     "placeholderCustom": "Elige una fuente instalada",
-    "retry": "Reintentar"
+    "retry": "Reintentar",
+    "importLocal": "Importar fuente local",
+    "removeLocal": "Eliminar fuente local",
+    "importFailed": "No se pudo importar la fuente (TTF, OTF, WOFF, WOFF2; máximo 32 MB).",
+    "missingLocal": "Fuente no disponible",
+    "loadFailedLocal": "No se pudo cargar la fuente."
   },
   "general": {
     "crashReports": {
@@ -509,7 +514,8 @@
       "stats": "Estadísticas",
       "toc": "Índice",
       "underline": "Subrayado",
-      "viewControl": "Vista"
+      "viewControl": "Vista",
+      "translate": "Traducir"
     },
     "more": "Más",
     "overflow": "Menú de desbordamiento",

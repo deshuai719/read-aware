@@ -5,6 +5,7 @@ import {
   Highlighter,
   NotePencil,
   TextUnderline,
+  Translate,
 } from "@phosphor-icons/react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useAtomValue } from "jotai";
@@ -12,7 +13,10 @@ import { IconButton, Tooltip } from "@read-aware/ui";
 import { cn } from "@read-aware/ui/cn";
 import { useTranslation } from "../../../i18n";
 import { useAskAiEnabled } from "../../ai/hooks/useAskAiEnabled";
-import { MenuOverflow, type MenuOverflowEntry } from "../../menus/components/MenuOverflow";
+import {
+  MenuOverflow,
+  type MenuOverflowEntry,
+} from "../../menus/components/MenuOverflow";
 import { coreMenuMeta } from "../../menus/lib/menu-registry";
 import {
   CORE_MENU_DEFAULTS,
@@ -45,6 +49,7 @@ type ReaderSelectionMenuProps = {
   onUnderline?: () => void;
   onAddNote?: () => void;
   onAskAI?: () => void;
+  onTranslate?: () => void;
   /** When false (e.g. fixed-layout PDF) only the copy action is offered. */
   allowAnnotations?: boolean;
   /** Selection context for plugin-contributed actions (null hides them). */
@@ -53,7 +58,9 @@ type ReaderSelectionMenuProps = {
 
 /** Hairline divider separating action groups within the bar. */
 function MenuDivider() {
-  return <span aria-hidden="true" className="mx-0.5 h-5 w-px shrink-0 bg-border" />;
+  return (
+    <span aria-hidden="true" className="mx-0.5 h-5 w-px shrink-0 bg-border" />
+  );
 }
 
 /**
@@ -67,12 +74,15 @@ export function ReaderSelectionMenu({
   onUnderline,
   onAddNote,
   onAskAI,
+  onTranslate,
   allowAnnotations = true,
   pluginInput = null,
 }: ReaderSelectionMenuProps) {
   const { t } = useTranslation("reader");
   const { t: tMenus } = useTranslation("settings");
-  const { containerRef, menuRef, position } = useAnchoredMenuPosition(selection?.anchorRect);
+  const { containerRef, menuRef, position } = useAnchoredMenuPosition(
+    selection?.anchorRect,
+  );
   const copyResetTimeoutRef = useRef<number | null>(null);
   const [copied, setCopied] = useState(false);
   const askEnabled = useAskAiEnabled();
@@ -115,7 +125,9 @@ export function ReaderSelectionMenu({
 
   // Availability gates: fixed-layout books offer copy only; Ask AI needs a key.
   const availableCore = CORE_MENU_DEFAULTS.selection.filter((id) => {
-    if (!allowAnnotations && id !== "core:copy") return false;
+    if (!allowAnnotations && id !== "core:copy" && id !== "core:translate")
+      return false;
+    if (id === "core:translate" && !onTranslate) return false;
     if (id === "core:askAI" && !askEnabled) return false;
     return true;
   });
@@ -135,8 +147,22 @@ export function ReaderSelectionMenu({
   );
 
   const coreNodes: Record<string, ReactNode> = {
+    "core:translate": (
+      <Tooltip content={t("translation.title")} side="top">
+        <IconButton
+          label={t("translation.title")}
+          size="sm"
+          onClick={onTranslate}
+          className={actionButtonClass}
+          icon={<Translate size={14} aria-hidden="true" />}
+        />
+      </Tooltip>
+    ),
     "core:copy": (
-      <Tooltip content={copied ? t("menu.copied") : t("menu.copySelection")} side="top">
+      <Tooltip
+        content={copied ? t("menu.copied") : t("menu.copySelection")}
+        side="top"
+      >
         <IconButton
           label={copied ? t("menu.copied") : t("menu.copySelection")}
           size="sm"
@@ -194,7 +220,9 @@ export function ReaderSelectionMenu({
           size="sm"
           onClick={() => onAskAI?.()}
           className={actionButtonClass}
-          icon={<ChatCircleDots size={14} weight="regular" aria-hidden="true" />}
+          icon={
+            <ChatCircleDots size={14} weight="regular" aria-hidden="true" />
+          }
         />
       </Tooltip>
     ),
@@ -206,11 +234,14 @@ export function ReaderSelectionMenu({
     "core:underline": onUnderline,
     "core:addNote": onAddNote,
     "core:askAI": onAskAI,
+    "core:translate": onTranslate,
   };
   const overflowEntries = layout.overflow
     .map((id): MenuOverflowEntry | null => {
       if (id.startsWith("plugin:")) {
-        const action = pluginActions.find((entry) => pluginMenuId(entry.key) === id);
+        const action = pluginActions.find(
+          (entry) => pluginMenuId(entry.key) === id,
+        );
         if (!action || !pluginInput) return null;
         return {
           id,
@@ -242,7 +273,6 @@ export function ReaderSelectionMenu({
   return (
     <div
       ref={containerRef}
-      aria-hidden="true"
       className="pointer-events-none absolute inset-0 z-20 overflow-hidden"
     >
       <div
@@ -252,7 +282,9 @@ export function ReaderSelectionMenu({
       >
         {layout.visible.map((id) => {
           if (id.startsWith("plugin:")) {
-            const action = pluginActions.find((entry) => pluginMenuId(entry.key) === id);
+            const action = pluginActions.find(
+              (entry) => pluginMenuId(entry.key) === id,
+            );
             if (!action || !pluginInput) return null;
             const divider = !renderedPluginBoundary ? <MenuDivider /> : null;
             renderedPluginBoundary = true;
@@ -279,7 +311,11 @@ export function ReaderSelectionMenu({
             );
           }
           const node = coreNodes[id];
-          return node ? <span key={id} className="contents">{node}</span> : null;
+          return node ? (
+            <span key={id} className="contents">
+              {node}
+            </span>
+          ) : null;
         })}
         <MenuOverflow entries={overflowEntries} size="sm" />
       </div>

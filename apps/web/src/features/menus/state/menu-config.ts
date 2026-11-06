@@ -49,6 +49,7 @@ export const CORE_MENU_DEFAULTS: Record<MenuSurface, string[]> = {
     "core:underline",
     "core:addNote",
     "core:askAI",
+    "core:translate",
   ],
 };
 
@@ -205,5 +206,7 @@ export function resolveSurfaceLayout(
 export function clampPrimaryNavVisible(visible: string[]): string[] {
   const rules = SURFACE_RULES.primaryNav;
   const safe = visible.length > 0 ? visible : CORE_MENU_DEFAULTS.primaryNav;
-  return rules.maxVisible === null ? [...safe] : safe.slice(0, rules.maxVisible);
+  return rules.maxVisible === null
+    ? [...safe]
+    : safe.slice(0, rules.maxVisible);
 }

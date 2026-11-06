@@ -1,17 +1,30 @@
+import { useTocOutline } from "../hooks/useTocOutline";
+import { desktopChromeKind } from "../../../platform/environment";
+import { WindowCaptionControls } from "../../navigation/components/WindowCaptionControls";
 import { onAppEvent } from "../../../platform/app-events";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAtomValue } from "jotai";
-import { CaretLeft, ChatCircle, ListBullets, MagnifyingGlass } from "@phosphor-icons/react";
+import {
+  CaretLeft,
+  CaretRight,
+  CaretDown,
+  ChatCircle,
+  ListBullets,
+  MagnifyingGlass,
+} from "@phosphor-icons/react";
 import { cn } from "@read-aware/ui/cn";
 import { usePhoneViewport } from "@read-aware/ui/media";
-import { Body, IconButton, ScrollArea, Tooltip } from "@read-aware/ui";
+import { Body, Button, IconButton, ScrollArea, Tooltip } from "@read-aware/ui";
 import { formatPercent, useLocale, useTranslation } from "../../../i18n";
 import { ChatPanel } from "../../ai/components/ChatPanel";
 import { askAiRequestAtom } from "../../ai/state/chat-intent";
 import { useBookAnnotations } from "../../annotations/hooks/useBookAnnotations";
 import type { LibraryBook } from "../../library/lib/library-types";
 import { useBackInterceptor } from "../../../hooks/useBackInterceptor";
-import { MenuOverflow, type MenuOverflowEntry } from "../../menus/components/MenuOverflow";
+import {
+  MenuOverflow,
+  type MenuOverflowEntry,
+} from "../../menus/components/MenuOverflow";
 import { coreMenuMeta } from "../../menus/lib/menu-registry";
 import {
   CORE_MENU_DEFAULTS,
@@ -33,6 +46,9 @@ import { useReaderPanelLayout } from "../hooks/useReaderPanelLayout";
 import { useReaderPanelSizes } from "../hooks/useReaderPanelSizes";
 import type { ReaderSearchApi } from "../hooks/useReaderSearch";
 import type { TocEntry } from "../lib/reader-types";
+import type { ReaderNavigationApi } from "../hooks/useReaderNavigation";
+import { ReaderNavigationControls } from "./ReaderNavigationControls";
+import { ReaderBookmarksPopover } from "./ReaderBookmarksPopover";
 import { ReaderNotesPopover } from "./ReaderNotesPopover";
 import { ReaderProgressScrubber } from "./ReaderProgressScrubber";
 import { ReaderResizeHandle } from "./ReaderResizeHandle";
@@ -71,6 +87,9 @@ type ReaderShellOverlayProps = {
    * text-unit mode.
    */
   fixedLayout?: boolean;
+  bookmarkEnabled?: boolean;
+  navigation?: ReaderNavigationApi;
+  decoding?: import("../lib/foliate-engine").FoliateBook["decoding"];
 };
 
 export function ReaderShellOverlay({
@@ -94,8 +113,12 @@ export function ReaderShellOverlay({
   textUnitModeActive = false,
   onToggleTextUnitMode,
   fixedLayout = false,
+  bookmarkEnabled = true,
+  navigation,
+  decoding,
 }: ReaderShellOverlayProps) {
   const { t } = useTranslation("reader");
+  const chrome = desktopChromeKind();
   // A text-unit mode segments running text — there is none to segment in a
   // book whose pages are pre-typeset.
   const textUnitModeAvailable = textUnitMode !== null && !fixedLayout;
@@ -116,7 +139,10 @@ export function ReaderShellOverlay({
         : formatPercent(percent)
       : null;
   // Chapter ticks for the progress bar, and the labels its scrub readout names.
-  const progressMarks = useMemo(() => buildProgressMarks(tocEntries), [tocEntries]);
+  const progressMarks = useMemo(
+    () => buildProgressMarks(tocEntries),
+    [tocEntries],
+  );
 
   // TOC + chat + search panels persist per book (restored when the book
   // reopens); the appearance popover is transient and resets each session.
@@ -124,11 +150,21 @@ export function ReaderShellOverlay({
     useReaderPanelLayout(bookId);
   const [localSearchOpen, setLocalSearchOpen] = useState(false);
   const searchOpen = findOpen ?? localSearchOpen;
-  const setSearchOpen = useCallback((open: boolean) => {
-    if (onFindOpenChange) onFindOpenChange(open); else setLocalSearchOpen(open);
-  }, [onFindOpenChange]);
-  useEffect(() => { setSearchOpen(false); }, [bookId]);
-  const { sizes, adjust: adjustPanel, persist: persistPanelSizes } = useReaderPanelSizes();
+  const setSearchOpen = useCallback(
+    (open: boolean) => {
+      if (onFindOpenChange) onFindOpenChange(open);
+      else setLocalSearchOpen(open);
+    },
+    [onFindOpenChange],
+  );
+  useEffect(() => {
+    setSearchOpen(false);
+  }, [bookId]);
+  const {
+    sizes,
+    adjust: adjustPanel,
+    persist: persistPanelSizes,
+  } = useReaderPanelSizes();
   const [appearanceOpen, setAppearanceOpen] = useState(false);
   const [annotationsOpen, setAnnotationsOpen] = useState(false);
   // Opening the chat is what earns the caret — not merely having it on screen.
@@ -136,11 +172,17 @@ export function ReaderShellOverlay({
   // so focusing off "revealed" would raise the phone keyboard every time the
   // reader tapped the page to check the header.
   const [chatFocusRequestId, setChatFocusRequestId] = useState(0);
-  const requestChatFocus = useCallback(() => setChatFocusRequestId((id) => id + 1), []);
+  const requestChatFocus = useCallback(
+    () => setChatFocusRequestId((id) => id + 1),
+    [],
+  );
   // The search panel's input focuses the same way: on a panel-intent arrival
   // (Ctrl+F), not on every time the chrome is revealed.
   const [searchFocusRequestId, setSearchFocusRequestId] = useState(0);
-  const requestSearchFocus = useCallback(() => setSearchFocusRequestId((id) => id + 1), []);
+  const requestSearchFocus = useCallback(
+    () => setSearchFocusRequestId((id) => id + 1),
+    [],
+  );
 
   // Phone-width: the side docks become full-screen sheets (below the top bar),
   // so only one can be open at a time and resizing is meaningless.
@@ -181,9 +223,13 @@ export function ReaderShellOverlay({
   // Stable identity: the find bar subscribes its outside-click listener to this
   // callback, and a per-render arrow would re-bind it on every keystroke.
   const closeSearch = useCallback(() => setSearchOpen(false), [setSearchOpen]);
-  useEffect(() => onAppEvent("reader-content-pressed", (event) => {
-    if (event.bookId === bookId) closeSearch();
-  }), [bookId, closeSearch]);
+  useEffect(
+    () =>
+      onAppEvent("reader-content-pressed", (event) => {
+        if (event.bookId === bookId) closeSearch();
+      }),
+    [bookId, closeSearch],
+  );
 
   const wasSearchOpenRef = useRef(searchOpen);
   useEffect(() => {
@@ -196,7 +242,10 @@ export function ReaderShellOverlay({
   // reader back to the shelf. Docked desktop/tablet panels don't occlude the
   // page, so there back keeps its usual close-the-book meaning.
   useBackInterceptor(() => {
-    if (searchOpen) { setSearchOpen(false); return true; }
+    if (searchOpen) {
+      setSearchOpen(false);
+      return true;
+    }
     if (!visible || !isPhone) return false;
     if (notesOpen) {
       setNotesOpen(false);
@@ -232,39 +281,48 @@ export function ReaderShellOverlay({
   ]);
 
   const coreReaderNodes: Record<string, React.ReactNode | null> = {
-    "core:navigator": textUnitModeAvailable && textUnitMode ? (
-      <Tooltip
-        content={resolvePluginText(textUnitMode.copy.title, locale)}
-        side="bottom"
-        className="pointer-events-auto"
-      >
-        <IconButton
-          size="sm"
-          label={resolvePluginText(
-            textUnitModeActive ? textUnitMode.copy.exit : textUnitMode.copy.enable,
-            locale,
-          )}
-          aria-pressed={textUnitModeActive}
-          onClick={onToggleTextUnitMode}
-          className={cn(textUnitModeActive && "text-fg")}
-          icon={renderPluginIcon(
-            textUnitMode.icon,
-            18,
-            textUnitModeActive ? "bold" : "regular",
-          )}
-        />
-      </Tooltip>
-    ) : null,
+    "core:navigator":
+      textUnitModeAvailable && textUnitMode ? (
+        <Tooltip
+          content={resolvePluginText(textUnitMode.copy.title, locale)}
+          side="bottom"
+          className="pointer-events-auto"
+        >
+          <IconButton
+            size="sm"
+            label={resolvePluginText(
+              textUnitModeActive
+                ? textUnitMode.copy.exit
+                : textUnitMode.copy.enable,
+              locale,
+            )}
+            aria-pressed={textUnitModeActive}
+            onClick={onToggleTextUnitMode}
+            className={cn(textUnitModeActive && "text-fg")}
+            icon={renderPluginIcon(
+              textUnitMode.icon,
+              18,
+              textUnitModeActive ? "bold" : "regular",
+            )}
+          />
+        </Tooltip>
+      ) : null,
     "core:appearance": (
       <ReaderAppearanceMenu
         bookId={bookId}
+        format={book.format}
+        decoding={decoding}
         fixedLayout={fixedLayout}
         open={appearanceOpen}
         onOpenChange={setAppearanceOpen}
       />
     ),
     "core:chat": (
-      <Tooltip content={t("chat")} side="bottom" className="pointer-events-auto">
+      <Tooltip
+        content={t("chat")}
+        side="bottom"
+        className="pointer-events-auto"
+      >
         <IconButton
           size="sm"
           label={t("chat")}
@@ -272,7 +330,11 @@ export function ReaderShellOverlay({
           onClick={toggleNotes}
           className={cn(notesOpen && "text-fg")}
           icon={
-            <ChatCircle size={18} weight={notesOpen ? "bold" : "regular"} aria-hidden="true" />
+            <ChatCircle
+              size={18}
+              weight={notesOpen ? "bold" : "regular"}
+              aria-hidden="true"
+            />
           }
         />
       </Tooltip>
@@ -286,7 +348,9 @@ export function ReaderShellOverlay({
   const readerOverflowEntries = readerLayout.overflow
     .map((id): MenuOverflowEntry | null => {
       if (id.startsWith("plugin:")) {
-        const action = readerPluginActions.find((entry) => pluginMenuId(entry.key) === id);
+        const action = readerPluginActions.find(
+          (entry) => pluginMenuId(entry.key) === id,
+        );
         if (!action) return null;
         return {
           id,
@@ -317,15 +381,18 @@ export function ReaderShellOverlay({
             ? resolvePluginText(textUnitMode.copy.menuLabel, locale)
             : String(tMenus(`menus.items.${meta.labelKey}` as never)),
         icon:
-          id === "core:navigator" && textUnitMode
-            ? renderPluginIcon(textUnitMode.icon, 16)
-            : <meta.Icon size={16} weight="regular" aria-hidden="true" />,
+          id === "core:navigator" && textUnitMode ? (
+            renderPluginIcon(textUnitMode.icon, 16)
+          ) : (
+            <meta.Icon size={16} weight="regular" aria-hidden="true" />
+          ),
         run,
       };
     })
     .filter((entry): entry is MenuOverflowEntry => entry !== null);
 
   const activeTocIndex = findTocIndexForHref(tocEntries, currentChapterHref);
+  const tocOutline = useTocOutline(tocEntries, activeTocIndex, bookId);
 
   // "Ask AI about this" fires from the reader (a sibling component) via this
   // atom. Reveal the chat panel; the chat panel itself adopts the passage. We
@@ -370,7 +437,16 @@ export function ReaderShellOverlay({
         }
         break;
     }
-  }, [panelIntent, bookId, isPhone, requestChatFocus, requestSearchFocus, setNotesOpen, setSearchOpen, setTocOpen]);
+  }, [
+    panelIntent,
+    bookId,
+    isPhone,
+    requestChatFocus,
+    requestSearchFocus,
+    setNotesOpen,
+    setSearchOpen,
+    setTocOpen,
+  ]);
 
   const askAiRequest = useAtomValue(askAiRequestAtom);
   const handledAskAiIdRef = useRef<string | null>(null);
@@ -382,7 +458,14 @@ export function ReaderShellOverlay({
     requestChatFocus();
     // Full-screen sheets are exclusive on phones — chat replaces the TOC.
     if (isPhone) setTocOpen(false);
-  }, [askAiRequest, bookId, requestChatFocus, setNotesOpen, setTocOpen, isPhone]);
+  }, [
+    askAiRequest,
+    bookId,
+    requestChatFocus,
+    setNotesOpen,
+    setTocOpen,
+    isPhone,
+  ]);
 
   // The appearance popover is transient — it closes whenever the overlay is
   // dismissed. The contents and chat panels are NOT reset: they keep their open
@@ -417,23 +500,34 @@ export function ReaderShellOverlay({
         "pointer-events-none fixed inset-0 z-50 flex min-h-0 flex-col overflow-clip",
       )}
     >
+      {chrome === "custom" && !visible && (
+        <div
+          data-tauri-drag-region
+          className="pointer-events-auto fixed left-0 right-[132px] top-0 z-0 h-12"
+        />
+      )}
+      {chrome === "custom" && (
+        <div
+          data-reader-window-band
+          className="pointer-events-none fixed inset-x-0 top-0 z-40 h-12"
+          style={{ paddingTop: "var(--ra-safe-top)" }}
+        >
+          <WindowCaptionControls chrome={chrome} />
+        </div>
+      )}
       {/* Top bar — doubles as the window drag region on desktop. Non-interactive
           children stay pointer-events-none so a drag started anywhere but the
           buttons falls through to this element; the buttons re-enable clicks.
           Left padding clears the macOS traffic lights when present. */}
       <div
-        data-tauri-drag-region="deep"
+        data-tauri-drag-region
         inert={!visible}
         style={{
-          // Left clears the macOS traffic lights (zero on Windows/Linux, where
-          // the frameless reader keeps no window controls at all — immersive
-          // reading stays chrome-free); the right uses the plain edge inset so
-          // the appearance/notes cluster sits flush against the right edge
-          // instead of being pushed inward by a mirrored offset. On mobile
-          // both sides also clear the display-cutout safe areas, and the bar
-          // grows downward past the status bar (content stays a 3rem band).
-          paddingLeft: "max(1.25rem, var(--ra-traffic-light-inset), var(--ra-safe-left))",
-          paddingRight: "max(1.25rem, var(--ra-safe-right))",
+          // Reserve native traffic lights and persistent custom captions.
+          paddingLeft:
+            "max(1.25rem, var(--ra-traffic-light-inset), var(--ra-safe-left))",
+          paddingRight:
+            "max(1.25rem, var(--ra-window-controls-inset,0px), var(--ra-safe-right))",
           paddingTop: "var(--ra-safe-top)",
           height: "var(--ra-reader-bar-height)",
         }}
@@ -456,15 +550,26 @@ export function ReaderShellOverlay({
         <div className="pointer-events-none flex h-full items-center gap-3">
           {/* Left cluster: back to shelf + contents toggle */}
           <div className="ml-2 flex shrink-0 items-center gap-0.5">
-            <Tooltip content={t("shelf")} side="bottom" className="pointer-events-auto">
+            <Tooltip
+              content={t("shelf")}
+              side="bottom"
+              className="pointer-events-auto"
+            >
               <IconButton
                 size="sm"
                 label={t("backToShelf")}
                 onClick={onBack}
-                icon={<CaretLeft size={18} weight="regular" aria-hidden="true" />}
+                icon={
+                  <CaretLeft size={18} weight="regular" aria-hidden="true" />
+                }
               />
             </Tooltip>
-            <Tooltip content={t("contents")} side="bottom" className="pointer-events-auto">
+            {navigation && <ReaderNavigationControls navigation={navigation} />}
+            <Tooltip
+              content={t("contents")}
+              side="bottom"
+              className="pointer-events-auto"
+            >
               <IconButton
                 size="sm"
                 label={t("tableOfContents")}
@@ -483,12 +588,16 @@ export function ReaderShellOverlay({
             {/* In-book search. Fixed-layout books (PDF, comics) have no text to
                 search, so the entry is hidden there entirely. */}
             {!fixedLayout && (
-              <Tooltip content={t("search.label")} side="bottom" className="pointer-events-auto">
+              <Tooltip
+                content={t("search.label")}
+                side="bottom"
+                className="pointer-events-auto"
+              >
                 <IconButton
                   size="sm"
                   label={t("search.label")}
                   data-reader-search-toggle
-              aria-pressed={searchOpen}
+                  aria-pressed={searchOpen}
                   onClick={toggleSearch}
                   className={cn(searchOpen && "text-fg")}
                   icon={
@@ -501,7 +610,16 @@ export function ReaderShellOverlay({
                 />
               </Tooltip>
             )}
+            <ReaderBookmarksPopover
+              key={book.id}
+              book={book}
+              cursor={readingCursor}
+              enabled={bookmarkEnabled}
+              onNavigate={(anchor) => onAnnotationSelect?.(anchor)}
+            />
             <ReaderNotesPopover
+              bookId={book.id}
+              bookTitle={book.title}
               annotations={annotations}
               tocEntries={tocEntries}
               onNavigate={(cfiRange) => onAnnotationSelect?.(cfiRange)}
@@ -539,13 +657,23 @@ export function ReaderShellOverlay({
                   <PluginHeaderItem
                     key={id}
                     action={action}
-                    input={{ book: { id: book.id, title: book.title, author: book.author } }}
+                    input={{
+                      book: {
+                        id: book.id,
+                        title: book.title,
+                        author: book.author,
+                      },
+                    }}
                     buttonClassName="pointer-events-auto"
                   />
                 ) : null;
               }
               const node = coreReaderNodes[id];
-              return node ? <span key={id} className="contents">{node}</span> : null;
+              return node ? (
+                <span key={id} className="contents">
+                  {node}
+                </span>
+              ) : null;
             })}
             <MenuOverflow
               entries={readerOverflowEntries}
@@ -597,48 +725,92 @@ export function ReaderShellOverlay({
               // on a dark surface, reads as an inlaid plastic strip.
               className="flex flex-col py-4 pb-[calc(1rem+var(--ra-safe-bottom))]"
             >
+              {tocEntries.length > 0 && (
+                <div className="mb-2 flex gap-1 px-4">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={tocOutline.expandAll}
+                  >
+                    {t("navigation.expandAll")}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={tocOutline.collapseAll}
+                  >
+                    {t("navigation.collapseAll")}
+                  </Button>
+                </div>
+              )}
               {tocEntries.length === 0 && (
                 <Body className="px-5 py-2 text-sm text-fg-muted">
                   {t("noToc")}
                 </Body>
               )}
 
-              {tocEntries.map((entry, index) => {
+              {tocOutline.indices.map((index) => {
+                const entry = tocEntries[index];
+                const hasChildren =
+                  (tocEntries[index + 1]?.depth ?? 0) > entry.depth;
                 // A single resolved index (fragment-aware) — per-entry loose
                 // matching lit up every chapter sharing the current spine file.
                 const isActive = index === activeTocIndex;
 
                 return (
-                  <button
-                    key={entry.id}
-                    type="button"
-                    onClick={() => {
-                      onChapterSelect?.(entry.href);
-                      // A full-screen sheet would hide the jump it just made.
-                      if (isPhone) setTocOpen(false);
-                    }}
-                    aria-current={isActive ? "location" : undefined}
-                    className={cn(
-                      "w-full border-l-2 py-1.5 pr-6 text-left transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-fg",
-                      isActive
-                        ? "border-fg bg-fill text-fg"
-                        : "border-transparent text-fg-muted hover:text-fg",
+                  <div key={entry.id} className="relative flex items-center">
+                    {hasChildren && (
+                      <IconButton
+                        size="sm"
+                        className="absolute z-10"
+                        style={{ left: `${0.2 + entry.depth * 0.85}rem` }}
+                        label={t(
+                          tocOutline.collapsed.has(entry.id)
+                            ? "navigation.expandChapter"
+                            : "navigation.collapseChapter",
+                          { chapter: entry.label },
+                        )}
+                        aria-expanded={!tocOutline.collapsed.has(entry.id)}
+                        onClick={() => tocOutline.toggle(entry.id)}
+                        icon={
+                          tocOutline.collapsed.has(entry.id) ? (
+                            <CaretRight size={13} />
+                          ) : (
+                            <CaretDown size={13} />
+                          )
+                        }
+                      />
                     )}
-                    // The row's own inset (what the list used to pad), so the
-                    // text sits where it always did while the row runs edge to
-                    // edge. Nesting adds to it.
-                    style={{ paddingLeft: `${1.75 + entry.depth * 0.85}rem` }}
-                  >
-                    <Body
-                      as="span"
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onChapterSelect?.(entry.href);
+                        // A full-screen sheet would hide the jump it just made.
+                        if (isPhone) setTocOpen(false);
+                      }}
+                      aria-current={isActive ? "location" : undefined}
                       className={cn(
-                        "block min-w-0 text-sm leading-6",
-                        isActive ? "font-semibold text-fg" : "text-inherit",
+                        "w-full border-l-2 py-1.5 pr-6 text-left transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-fg",
+                        isActive
+                          ? "border-fg bg-fill text-fg"
+                          : "border-transparent text-fg-muted hover:text-fg",
                       )}
+                      // The row's own inset (what the list used to pad), so the
+                      // text sits where it always did while the row runs edge to
+                      // edge. Nesting adds to it.
+                      style={{ paddingLeft: `${1.75 + entry.depth * 0.85}rem` }}
                     >
-                      {entry.label}
-                    </Body>
-                  </button>
+                      <Body
+                        as="span"
+                        className={cn(
+                          "block min-w-0 text-sm leading-6",
+                          isActive ? "font-semibold text-fg" : "text-inherit",
+                        )}
+                      >
+                        {entry.label}
+                      </Body>
+                    </button>
+                  </div>
                 );
               })}
             </div>
@@ -660,6 +832,7 @@ export function ReaderShellOverlay({
           <ReaderSearchBar
             open={searchOpen}
             belowChrome={visible}
+            clearWindowControls={chrome === "custom"}
             search={search}
             focusRequestId={searchFocusRequestId}
             onClose={closeSearch}

@@ -7,7 +7,18 @@
  * 无浏览器持久化 —— agent 只在桌面壳里运行，浏览器构建是纯 UI；非 Tauri 下
  * 读返回 null、写是空操作（抽取仍可跑，只是不落盘，靠端口的会话缓存）。
  */
-import { deleteDesktopBlob, getDesktopBlob, putDesktopBlob } from "../../../platform/blob-store";
+import {
+  bookTextIdentityKey,
+  bookTextIdentityMatches,
+  type BookTextIdentity,
+} from "./book-text-identity";
+import { normalizeTextEncoding } from "../../reader/lib/decode-text";
+import {
+  deleteDesktopBlob,
+  getDesktopBlob,
+  getDesktopBlobInfo,
+  putDesktopBlob,
+} from "../../../platform/blob-store";
 import { isTauri } from "../../../platform/environment";
 import { flattenToc } from "../../reader/lib/epub-utils";
 import { parseBookFile } from "../../reader/lib/parse-book";
@@ -47,6 +58,8 @@ interface PersistedBookText {
   version: number;
   extractedAt: string;
   chapters: ExtractedChapter[];
+  sourceSha256?: string | null;
+  textEncoding?: import("../../reader/lib/decode-text").TextEncoding;
   /** v4：true = 抽取完整跑完（chapters 为空即无文字层的定论）。v3 记录视同 true。 */
   complete?: boolean;
   /** v4：未跑完时的断点（已抽 section 原料 + 续跑点）；complete 后清除。 */
@@ -58,12 +71,34 @@ export type BookTextStatus = "ok" | "unextracted" | "textless";
 
 const blobKey = (bookId: string) => `booktext:${bookId}`;
 
-async function readPersisted(bookId: string): Promise<PersistedBookText | null> {
+async function currentTextIdentity(bookId: string): Promise<BookTextIdentity> {
+  const { getReaderOverrides } =
+    await import("../../settings/lib/reader-overrides");
+  const source = await getDesktopBlobInfo("bookfile:" + bookId);
+  return {
+    sourceSha256: source?.sha256 ?? null,
+    textEncoding: normalizeTextEncoding(
+      getReaderOverrides()[bookId]?.textEncoding,
+    ),
+  };
+}
+async function readPersisted(
+  bookId: string,
+  identity?: BookTextIdentity,
+): Promise<PersistedBookText | null> {
   if (!isTauri()) return null;
   const bytes = await getDesktopBlob(blobKey(bookId));
   if (!bytes) return null;
   try {
-    return JSON.parse(new TextDecoder().decode(bytes)) as PersistedBookText;
+    const record = JSON.parse(
+      new TextDecoder().decode(bytes),
+    ) as PersistedBookText;
+    return bookTextIdentityMatches(
+      record,
+      identity ?? (await currentTextIdentity(bookId)),
+    )
+      ? record
+      : null;
   } catch {
     return null;
   }
@@ -71,6 +106,10 @@ async function readPersisted(bookId: string): Promise<PersistedBookText | null> 
 
 async function writePersisted(record: PersistedBookText): Promise<void> {
   if (!isTauri()) return;
+  if (
+    !bookTextIdentityMatches(record, await currentTextIdentity(record.bookId))
+  )
+    return;
   const bytes = new TextEncoder().encode(JSON.stringify(record));
   await putDesktopBlob(blobKey(record.bookId), bytes, "application/json");
 }
@@ -97,7 +136,9 @@ type FoliateResolvedLike = { index?: number } | null | undefined;
 type FoliateBookLike = {
   toc?: unknown;
   sections?: FoliateSectionLike[];
-  resolveHref?: (href: string) => FoliateResolvedLike | Promise<FoliateResolvedLike>;
+  resolveHref?: (
+    href: string,
+  ) => FoliateResolvedLike | Promise<FoliateResolvedLike>;
 };
 
 /**
@@ -145,7 +186,11 @@ interface ExtractOutcome {
  * 不会白费。失败的 section 计数上报——调用方据此区分"抽完了确实没字"
  * （纯图扫描版的定论）与"这次没抽全"（下次重试）。
  */
-async function extract(bookId: string, preopened?: unknown): Promise<ExtractOutcome> {
+async function extract(
+  bookId: string,
+  identity: BookTextIdentity,
+  preopened?: unknown,
+): Promise<ExtractOutcome> {
   let book: FoliateBookLike;
   if (preopened) {
     // 阅读器传来的 book 已经过 ensureUsableToc（开卷前修复残缺目录）。
@@ -153,7 +198,9 @@ async function extract(bookId: string, preopened?: unknown): Promise<ExtractOutc
   } else {
     const file = await getStoredBookFile(bookId);
     if (!file) return { chapters: [], sectionsFailed: 0 };
-    book = (await parseBookFile(file)) as FoliateBookLike;
+    book = (await parseBookFile(file, {
+      textEncoding: identity.textEncoding,
+    })) as FoliateBookLike;
     // 懒回填路径同样先修目录，否则残缺 nav 会把整本书合并成一章。
     await ensureUsableToc(book);
   }
@@ -162,7 +209,9 @@ async function extract(bookId: string, preopened?: unknown): Promise<ExtractOutc
 
   // section → 归属 TOC 条目：条目解析到的 section 先到先得（指进同一文件的
   // 子条目不抢所有权）,没有条目直指的 section 归前一个有主的条目（跨文件章节）。
-  const ownerOf: (number | undefined)[] = new Array(sections.length).fill(undefined);
+  const ownerOf: (number | undefined)[] = new Array(sections.length).fill(
+    undefined,
+  );
   for (let entryIndex = 0; entryIndex < entries.length; entryIndex++) {
     try {
       const resolved = await book.resolveHref?.(entries[entryIndex].href);
@@ -189,8 +238,12 @@ async function extract(bookId: string, preopened?: unknown): Promise<ExtractOutc
   let resumed: PieceRecord[] = [];
   let startSection = 0;
   if (useCheckpoints) {
-    const prior = await readPersisted(bookId);
-    if (prior?.version === FORMAT_VERSION && !prior.complete && prior.checkpoint) {
+    const prior = await readPersisted(bookId, identity);
+    if (
+      prior?.version === FORMAT_VERSION &&
+      !prior.complete &&
+      prior.checkpoint
+    ) {
       resumed = prior.checkpoint.pieces;
       startSection = prior.checkpoint.nextSection;
     }
@@ -198,7 +251,9 @@ async function extract(bookId: string, preopened?: unknown): Promise<ExtractOutc
 
   // 逐 section 抽文本（线性阅读顺序）,再按归属合并。每个 section 一次
   // DOMParser 是纯 CPU 块 —— 章节之间让出主线程,大书抽取不再冻 UI。
-  const isPageTextBook = sections.some((section) => typeof section.getText === "function");
+  const isPageTextBook = sections.some(
+    (section) => typeof section.getText === "function",
+  );
   const rawPieces: PieceRecord[] = [...resumed];
   let sectionsFailed = 0;
   let consecutiveFailures = 0;
@@ -207,8 +262,10 @@ async function extract(bookId: string, preopened?: unknown): Promise<ExtractOutc
     const section = sections[i];
     if (
       section.linear === "no" ||
-      (typeof section.getText !== "function" && typeof section.createDocument !== "function")
-    ) continue;
+      (typeof section.getText !== "function" &&
+        typeof section.createDocument !== "function")
+    )
+      continue;
     await yieldToUi();
     let text = "";
     let failed = false;
@@ -250,6 +307,7 @@ async function extract(bookId: string, preopened?: unknown): Promise<ExtractOutc
       await writePersisted({
         bookId,
         version: FORMAT_VERSION,
+        ...identity,
         extractedAt: new Date().toISOString(),
         chapters: [],
         complete: false,
@@ -280,9 +338,10 @@ async function extract(bookId: string, preopened?: unknown): Promise<ExtractOutc
     const text = current.texts.filter(Boolean).join(" ").trim();
     if (text.length >= 40) {
       const hrefs = [...new Set(current.hrefs)];
-      const pageTitle = current.firstSection === current.lastSection
-        ? `Page ${current.firstSection + 1}`
-        : `Pages ${current.firstSection + 1}-${current.lastSection + 1}`;
+      const pageTitle =
+        current.firstSection === current.lastSection
+          ? `Page ${current.firstSection + 1}`
+          : `Pages ${current.firstSection + 1}-${current.lastSection + 1}`;
       chapters.push({
         title: current.title ?? (isPageTextBook ? pageTitle : undefined),
         text,
@@ -293,7 +352,9 @@ async function extract(bookId: string, preopened?: unknown): Promise<ExtractOutc
   };
   for (const piece of pieces) {
     const sameTocOwner =
-      current !== null && piece.owner !== undefined && piece.owner === current.owner;
+      current !== null &&
+      piece.owner !== undefined &&
+      piece.owner === current.owner;
     const samePdfChunk =
       current !== null &&
       isPageTextBook &&
@@ -304,7 +365,8 @@ async function extract(bookId: string, preopened?: unknown): Promise<ExtractOutc
     const merges = sameTocOwner || samePdfChunk;
     if (!merges) {
       flush();
-      const entry = piece.owner !== undefined ? entries[piece.owner] : undefined;
+      const entry =
+        piece.owner !== undefined ? entries[piece.owner] : undefined;
       current = {
         owner: piece.owner,
         title: entry?.label,
@@ -333,7 +395,9 @@ function isComplete(record: PersistedBookText): boolean {
 }
 
 /** 只读已持久化的正文；未抽取（或只有断点）返回 null（全书架检索用 —— 绝不触发批量抽取）。 */
-export async function getPersistedBookText(bookId: string): Promise<ExtractedChapter[] | null> {
+export async function getPersistedBookText(
+  bookId: string,
+): Promise<ExtractedChapter[] | null> {
   const record = await readPersisted(bookId);
   return record && isComplete(record) ? record.chapters : null;
 }
@@ -343,7 +407,9 @@ export async function getPersistedBookText(bookId: string): Promise<ExtractedCha
  * 纯图扫描版）/ unextracted（还没抽，或只有断点）。agent 的工具层据此
  * 把"没字"与"没抽"说成两回事，而不是同一个空目录。
  */
-export async function getBookTextStatus(bookId: string): Promise<BookTextStatus> {
+export async function getBookTextStatus(
+  bookId: string,
+): Promise<BookTextStatus> {
   const record = await readPersisted(bookId);
   if (!record || !isComplete(record)) return "unextracted";
   return record.chapters.length > 0 ? "ok" : "textless";
@@ -366,31 +432,40 @@ export async function ensureBookTextExtracted(
   let format: string | undefined;
   {
     const { listLibraryBooks } = await import("./library-db");
-    const record = (await listLibraryBooks()).find((b) => b.id === String(bookId));
+    const record = (await listLibraryBooks()).find(
+      (b) => b.id === String(bookId),
+    );
     if (record?.format === "virtual") return [];
     format = record?.format;
   }
 
-  const persisted = await getPersistedBookText(bookId);
-  if (persisted) return persisted;
-
-  let pending = inflight.get(bookId);
+  const identity = await currentTextIdentity(bookId);
+  const pre = (
+    preopened as { decoding?: { requestedEncoding?: string } } | undefined
+  )?.decoding;
+  if (pre && pre.requestedEncoding !== identity.textEncoding)
+    preopened = undefined;
+  const record = await readPersisted(bookId, identity);
+  if (record && isComplete(record)) return record.chapters;
+  const key = bookId + "|" + bookTextIdentityKey(identity);
+  let pending = inflight.get(key);
   if (!pending) {
-    pending = extract(bookId, preopened)
+    pending = extract(bookId, identity, preopened)
       .then(async ({ chapters, sectionsFailed }) => {
         if (chapters.length > 0 || sectionsFailed === 0) {
           await writePersisted({
             bookId,
             version: FORMAT_VERSION,
+            ...identity,
             extractedAt: new Date().toISOString(),
             chapters,
-            complete: true,
+            complete: sectionsFailed === 0,
           });
         }
         return chapters;
       })
-      .finally(() => inflight.delete(bookId));
-    inflight.set(bookId, pending);
+      .finally(() => inflight.delete(key));
+    inflight.set(key, pending);
   }
   // 扫描 PDF 的懒路径（agent 冷查询一本从未打开过的书）逐页抽取以分钟计，
   // 阻塞等它会把一次工具调用挂死。PDF 冷查询改为：抽取已在后台启动

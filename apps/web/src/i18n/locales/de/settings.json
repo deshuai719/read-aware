@@ -446,7 +446,12 @@
     "label": "Schriftart",
     "placeholderCurated": "Kuratierte Schriftart wählen",
     "placeholderCustom": "Installierte Schriftart wählen",
-    "retry": "Erneut versuchen"
+    "retry": "Erneut versuchen",
+    "importLocal": "Lokale Schrift importieren",
+    "removeLocal": "Lokale Schrift entfernen",
+    "importFailed": "Schrift konnte nicht importiert werden (TTF, OTF, WOFF, WOFF2; max. 32 MB).",
+    "missingLocal": "Importierte Schrift fehlt",
+    "loadFailedLocal": "Importierte Schrift konnte nicht geladen werden."
   },
   "general": {
     "crashReports": {
@@ -503,7 +508,8 @@
       "stats": "Statistik",
       "toc": "Inhalt",
       "underline": "Unterstreichen",
-      "viewControl": "Ansicht"
+      "viewControl": "Ansicht",
+      "translate": "Übersetzen"
     },
     "more": "Mehr",
     "overflow": "Überlaufmenü",

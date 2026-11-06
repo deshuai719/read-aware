@@ -12,21 +12,37 @@ import { invoke } from "@tauri-apps/api/core";
 import { isTauri } from "../environment";
 import { emitAppEvent } from "../app-events";
 import { reconcileDuplicateBooks } from "../book-dedupe";
-import { observeRemoteHlcStamps, onDomainEventBroadcast } from "../domain-events";
+import {
+  observeRemoteHlcStamps,
+  onDomainEventBroadcast,
+} from "../domain-events";
 import { localKV } from "../local-store";
 import { createLogger } from "../logger";
-import { refreshRoamingPreferences, republishRoamingSecrets } from "../roaming-preferences";
+import {
+  refreshRoamingPreferences,
+  republishRoamingSecrets,
+} from "../roaming-preferences";
 import { deleteSecret, getSecret, setSecret } from "../secret-store";
 import { fromBase64 } from "../sync-envelope";
 import { clearReauthNoticeDismissal } from "./reauth-notice";
-import { createRelayClient, RelayError, RelayMisdirectedError, type RelayClient } from "./relay-client";
+import {
+  createRelayClient,
+  RelayError,
+  RelayMisdirectedError,
+  type RelayClient,
+} from "./relay-client";
 import {
   createSyncEngine,
   nextSyncDelayMs,
   type SyncCycleProgress,
   type SyncEngine,
 } from "./sync-engine";
-import { adoptSyncAccount, createIpcSyncStore, getSyncProfile, setSyncProfile } from "./sync-store";
+import {
+  adoptSyncAccount,
+  createIpcSyncStore,
+  getSyncProfile,
+  setSyncProfile,
+} from "./sync-store";
 import { isDevBundle } from "../app-identity";
 import { lastSuccessfulSyncAt } from "./sync-status";
 
@@ -105,7 +121,9 @@ export function relayBaseUrl(): string {
   if (!raw) return defaultRelayUrl();
   try {
     const parsed: unknown = JSON.parse(raw);
-    return typeof parsed === "string" && parsed.length > 0 ? parsed : defaultRelayUrl();
+    return typeof parsed === "string" && parsed.length > 0
+      ? parsed
+      : defaultRelayUrl();
   } catch {
     return raw;
   }
@@ -166,18 +184,28 @@ export function syncRelayClient(): RelayClient {
   });
 }
 
+let schedulerEpoch = 0;
 function buildEngine(): SyncEngine {
+  const epoch = schedulerEpoch,
+    session = getSecret("sync.session"),
+    master = getSecret("sync.master-key");
   return createSyncEngine({
+    isCurrent: () => epoch === schedulerEpoch,
     store: createIpcSyncStore(),
-    relay: syncRelayClient(),
+    relay: createRelayClient({
+      baseUrl: relayBaseUrl(),
+      session: () => session || null,
+    }),
     masterKey: () => {
-      const b64 = getSecret("sync.master-key");
+      const b64 = master;
       return b64 ? fromBase64(b64) : null;
     },
     observe: observeRemoteHlcStamps,
     // Every page/batch/blob lands in the status snapshot, which is what the
     // header indicator and the Data & Sync panel subscribe to.
-    onProgress: (progress) => setStatus({ progress }),
+    onProgress: (progress) => {
+      if (epoch === schedulerEpoch) setStatus({ progress });
+    },
   });
 }
 
@@ -188,20 +216,42 @@ const getEngine = (): SyncEngine => (engine ??= buildEngine());
 const isAuthRejection = (error: unknown): boolean =>
   error instanceof RelayError && error.status === 401;
 
-let running = false;
-
-async function runCycle(): Promise<void> {
-  if (running) return;
-  running = true;
+let cycleFlight: { epoch: number; work: Promise<void> } | null = null;
+function runCycle(): Promise<void> {
+  const epoch = schedulerEpoch;
+  if (cycleFlight) {
+    if (cycleFlight.epoch === epoch) return cycleFlight.work;
+    return cycleFlight.work
+      .catch(() => {})
+      .then(() => (epoch === schedulerEpoch ? runCycle() : undefined));
+  }
+  const work = runCycleInner(epoch);
+  cycleFlight = { epoch, work };
+  void work.then(
+    () => {
+      if (cycleFlight?.work === work) cycleFlight = null;
+    },
+    () => {
+      if (cycleFlight?.work === work) cycleFlight = null;
+    },
+  );
+  return work;
+}
+async function runCycleInner(epoch: number): Promise<void> {
+  const current = () => epoch === schedulerEpoch,
+    activeEngine = getEngine();
   // Denominators first: what the outbox holds now is what this cycle's push
   // and blob phases will work through. Best-effort — without them the ring
   // just stays indeterminate.
   let cycleTotals: SyncStatusSnapshot["cycleTotals"] = null;
   try {
-    cycleTotals = await invoke<{ events: number; blobs: number }>("sync_outbox_counts");
+    cycleTotals = await invoke<{ events: number; blobs: number }>(
+      "sync_outbox_counts",
+    );
   } catch {
     // Non-Tauri or transient failure: progress still renders, just unmeasured.
   }
+  if (!current()) return;
   setStatus({
     state: "syncing",
     progress: {
@@ -218,12 +268,14 @@ async function runCycle(): Promise<void> {
     cycleTotals,
   });
   try {
-    const { pulled, pushed, blobs } = await getEngine().syncOnce();
+    const { pulled, pushed, blobs } = await activeEngine.syncOnce();
+    if (!current()) return;
     if (pulled > 0) {
       // Another device may have imported content this shelf already holds —
       // collapse same-sha records BEFORE announcing, so the reload that
       // follows paints the merged shelf, not a momentary duplicate.
       await reconcileDuplicateBooks();
+      if (!current()) return;
       // Merged events write projections straight through Rust — nothing else
       // tells the mounted UI. The shelf already reloads on this event.
       emitAppEvent("library-changed", {});
@@ -235,6 +287,7 @@ async function runCycle(): Promise<void> {
       // re-overlay the projection onto KV and announce what moved.
       await refreshRoamingPreferences();
     }
+    if (!current()) return;
     setStatus({
       state: "idle",
       lastSyncAt: Date.now(),
@@ -243,8 +296,8 @@ async function runCycle(): Promise<void> {
       cycleTotals: null,
       lastCycle: { pulled, pushed, blobs },
     });
-  } finally {
-    running = false;
+  } catch (error) {
+    if (current()) throw error;
   }
 }
 
@@ -263,7 +316,10 @@ async function runCycle(): Promise<void> {
  */
 export type RemoteBlobFetch =
   | { outcome: "fetched" }
-  | { outcome: "unavailable"; reason: "not-tauri" | "sync-off" | "not-connected" }
+  | {
+      outcome: "unavailable";
+      reason: "not-tauri" | "sync-off" | "not-connected";
+    }
   | { outcome: "missing" }
   | {
       outcome: "failed";
@@ -276,15 +332,21 @@ export async function fetchRemoteBlob(key: string): Promise<RemoteBlobFetch> {
   if (!getSecret("sync.master-key") || !getSecret("sync.session")) {
     return { outcome: "unavailable", reason: "not-connected" };
   }
+  const epoch = schedulerEpoch;
   const profile = await getSyncProfile();
-  if (!profile.syncEnabled) return { outcome: "unavailable", reason: "sync-off" };
+  if (epoch !== schedulerEpoch)
+    return { outcome: "unavailable", reason: "not-connected" };
+  if (!profile.syncEnabled)
+    return { outcome: "unavailable", reason: "sync-off" };
   // Surface the download like any sync activity: the indicator ring narrates
   // "syncing <book> n/m" while parts stream in, then yields to the prior state.
   const restoreState = status.state === "syncing" ? null : status.state;
   setStatus({ state: "syncing" });
   try {
     const result = await getEngine().fetchBlob(key);
-    return result === "fetched" ? { outcome: "fetched" } : { outcome: "missing" };
+    return result === "fetched"
+      ? { outcome: "fetched" }
+      : { outcome: "missing" };
   } catch (error) {
     log.warn(`remote blob fetch failed for "${key}"`, error);
     const detail = error instanceof Error ? error.message : String(error);
@@ -299,7 +361,8 @@ export async function fetchRemoteBlob(key: string): Promise<RemoteBlobFetch> {
     }
     return { outcome: "failed", reason: "unreachable", detail };
   } finally {
-    if (restoreState !== null) setStatus({ state: restoreState, progress: null });
+    if (epoch === schedulerEpoch && restoreState !== null)
+      setStatus({ state: restoreState, progress: null });
   }
 }
 
@@ -309,9 +372,11 @@ let disposeScheduler: (() => void) | null = null;
 
 /** Manual "sync now" (settings panel). Throws so the panel can toast failure. */
 export async function syncNow(): Promise<void> {
+  const epoch = schedulerEpoch;
   try {
     await runCycle();
   } catch (error) {
+    if (epoch !== schedulerEpoch) return;
     setStatus({
       state: isAuthRejection(error) ? "unauthenticated" : "error",
       lastError: error instanceof Error ? error.message : String(error),
@@ -329,6 +394,8 @@ export async function syncNow(): Promise<void> {
  */
 export function startSyncScheduler(): () => void {
   disposeScheduler?.();
+  schedulerEpoch++;
+  engine = null;
   // Restarting is also the account-boundary transition. Clear the previous
   // account's live status synchronously while the persisted profile loads.
   setStatus({
@@ -342,7 +409,8 @@ export function startSyncScheduler(): () => void {
   });
   if (!isTauri()) return () => {};
 
-  let disposed = false;
+  let disposed = false,
+    ready = false;
   let timer: number | null = null;
   let pushDebounce: number | null = null;
   let failures = 0;
@@ -362,7 +430,7 @@ export function startSyncScheduler(): () => void {
   // doorbell alive) would only hammer the relay with 401s. Go dormant; a
   // reconnect through the settings panel restarts the scheduler fresh.
   const onAuthRejected = () => {
-    if (sessionRejected) return;
+    if (disposed || sessionRejected) return;
     sessionRejected = true;
     if (timer !== null) window.clearTimeout(timer);
     if (pushDebounce !== null) window.clearTimeout(pushDebounce);
@@ -379,13 +447,15 @@ export function startSyncScheduler(): () => void {
   };
 
   const tick = () => {
-    if (sessionRejected) return;
+    if (disposed || !ready || sessionRejected) return;
     void runCycle()
       .then(() => {
+        if (disposed) return;
         failures = 0;
         schedule(PULL_INTERVAL_MS);
       })
       .catch((error) => {
+        if (disposed) return;
         if (isAuthRejection(error)) {
           onAuthRejected();
           return;
@@ -426,7 +496,9 @@ export function startSyncScheduler(): () => void {
     const base = relayBaseUrl().replace(/^http/, "ws");
     let socket: WebSocket;
     try {
-      socket = new WebSocket(`${base}/v1/events/watch?ticket=${encodeURIComponent(ticket)}`);
+      socket = new WebSocket(
+        `${base}/v1/events/watch?ticket=${encodeURIComponent(ticket)}`,
+      );
     } catch (error) {
       log.warn("watch socket rejected; falling back to polling", error);
       return;
@@ -477,7 +549,9 @@ export function startSyncScheduler(): () => void {
     ) {
       return;
     }
+    ready = true;
     window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", onVisible);
     setStatus({
       state: "idle",
       accountConnected: true,
@@ -491,7 +565,10 @@ export function startSyncScheduler(): () => void {
   })();
 
   disposeScheduler = () => {
+    if (disposed) return;
     disposed = true;
+    schedulerEpoch++;
+    engine = null;
     if (timer !== null) window.clearTimeout(timer);
     if (pushDebounce !== null) window.clearTimeout(pushDebounce);
     if (watchReconnect !== null) window.clearTimeout(watchReconnect);
@@ -519,6 +596,8 @@ export async function persistConnection(options: {
   accountId: string;
   masterKeyBase64: string;
 }): Promise<void> {
+  disposeScheduler?.();
+  await cycleFlight?.work.catch(() => {});
   setSecret("sync.session", options.session);
   setSecret("sync.master-key", options.masterKeyBase64);
   // Before the scheduler wakes up against this account: if the bookkeeping
@@ -544,6 +623,8 @@ export async function persistConnection(options: {
 }
 
 export async function disconnectSync(): Promise<void> {
+  disposeScheduler?.();
+  await cycleFlight?.work.catch(() => {});
   try {
     await syncRelayClient().logout();
   } catch {

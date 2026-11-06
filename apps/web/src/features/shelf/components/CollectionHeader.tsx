@@ -1,5 +1,12 @@
 import { LockSimple, PencilSimple, Trash } from "@phosphor-icons/react";
-import { Body, Button, Dialog, Heading, IconButton, Tooltip } from "@read-aware/ui";
+import {
+  Body,
+  Button,
+  Dialog,
+  Heading,
+  IconButton,
+  Tooltip,
+} from "@read-aware/ui";
 import { useLocalAtom } from "@read-aware/ui/state";
 import { Trans, useTranslation } from "../../../i18n";
 import type { Collection } from "../../library/lib/library-types";
@@ -13,6 +20,7 @@ type CollectionHeaderProps = {
   onDelete: () => void;
   /** Open the folder-lock (password) management dialog. */
   onManageLock: () => void;
+  onRelock?: () => void;
 };
 
 /**
@@ -27,6 +35,7 @@ export function CollectionHeader({
   onRename,
   onDelete,
   onManageLock,
+  onRelock,
 }: CollectionHeaderProps) {
   const { t } = useTranslation("shelf");
   const [editing, setEditing] = useLocalAtom(false);
@@ -72,9 +81,19 @@ export function CollectionHeader({
                 setDraft(collection.name);
                 setEditing(true);
               }}
-              icon={<PencilSimple size={16} weight="regular" aria-hidden="true" />}
+              icon={
+                <PencilSimple size={16} weight="regular" aria-hidden="true" />
+              }
             />
           </Tooltip>
+        )}
+        {collection.passwordHash && onRelock && (
+          <IconButton
+            label={t("collection.lockNow")}
+            size="sm"
+            onClick={onRelock}
+            icon={<LockSimple size={16} />}
+          />
         )}
         <Tooltip content={t("collection.lockTooltip")} side="bottom">
           <IconButton
@@ -83,7 +102,8 @@ export function CollectionHeader({
             onClick={onManageLock}
             icon={<LockSimple size={16} weight="regular" aria-hidden="true" />}
           />
-        </Tooltip>        <Tooltip content={t("collection.deleteTooltip")} side="bottom">
+        </Tooltip>{" "}
+        <Tooltip content={t("collection.deleteTooltip")} side="bottom">
           <IconButton
             label={t("collection.deleteAction")}
             size="sm"
@@ -104,7 +124,11 @@ export function CollectionHeader({
         </Body>
       )}
 
-      <Dialog open={deleteOpen} onClose={() => setDeleteOpen(false)} title={t("collection.deleteTitle")}>
+      <Dialog
+        open={deleteOpen}
+        onClose={() => setDeleteOpen(false)}
+        title={t("collection.deleteTitle")}
+      >
         <div className="space-y-4">
           <p>
             <Trans
@@ -115,7 +139,11 @@ export function CollectionHeader({
             />
           </p>
           <div className="flex justify-end gap-2">
-            <Button variant="ghost" size="sm" onClick={() => setDeleteOpen(false)}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setDeleteOpen(false)}
+            >
               {t("actions.cancel")}
             </Button>
             <Button

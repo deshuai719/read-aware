@@ -180,6 +180,7 @@
         "tailwind-merge": "^3.5.0",
       },
       "devDependencies": {
+        "@storybook/addon-docs": "^10.2.16",
         "@storybook/react-vite": "^10.2.16",
         "@types/react": "^19.1.8",
         "@types/react-dom": "^19.1.6",

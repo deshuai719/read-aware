@@ -5,19 +5,33 @@
  * stats…), books, collections, annotations, and the original book files
  * (base64). Ids and keys are preserved, so importing is a non-destructive
  * **merge**: every row is upserted, nothing is deleted, and annotations /
- * collections / progress reconnect to their books. This is the local-first
- * backup/restore story until the encrypted sync relay lands.
+ * collections / progress reconnect to their books. This is the portable local
+ * backup path alongside the existing encrypted event/blob sync relay.
  *
- * Scope: all user data as today's projections + KV. It does not capture the
- * `domain_events` log or device identity: events are device-scoped sync state
- * (per-device HLC stamps), not portable user data. Restored rows the target
- * device's log has never seen get creation events synthesized by the boot-time
- * genesis reconciliation (platform/event-genesis.ts) on the next launch.
+ * Snapshot entities are restored through new event transactions. Original
+ * reading-time tick envelopes travel with their ids so re-import is idempotent.
+ * Device identity, credentials and the rest of the sync log are not exported.
  *
  * Scale note: the whole thing (incl. book bytes) is held in memory as one JSON
  * string. Fine for a personal shelf; a very large library would want a streamed
  * archive instead — revisit if that becomes real.
  */
+import { portableBackupKV } from "./backup-kv";
+import {
+  exportLocalFonts,
+  restoreLocalFonts,
+  type LocalReadingFont,
+} from "./local-font-store";
+import type { ReadingBookmark } from "@read-aware/core";
+import {
+  listBookmarksForBackup,
+  restoreBookmarks,
+} from "../../reader/lib/bookmark-store";
+import {
+  exportReadingTimeEvents,
+  restoreReadingTimeEvents,
+} from "../../../platform/reading-time-backup";
+import type { PlainEvent } from "../../../platform/sync-envelope";
 import { dumpLocalKV, restoreLocalKV } from "../../../platform/local-store";
 import {
   getStoredBookBlob,
@@ -27,13 +41,13 @@ import {
   restoreLibraryBook,
 } from "../../library/lib/library-db";
 import type { Collection, LibraryBook } from "../../library/lib/library-types";
-import { listAnnotations, saveAnnotation } from "../../annotations/lib/annotation-db";
+import {
+  listAnnotations,
+  saveAnnotation,
+} from "../../annotations/lib/annotation-db";
 import type { Annotation } from "../../annotations/lib/annotation-types";
 
 export const BACKUP_VERSION = 1;
-
-// Machine-local bookkeeping — never travels in a portable backup.
-const EXCLUDED_KV_KEYS = new Set(["read-aware-migrated-v1"]);
 
 type Backup = {
   app: "read-aware";
@@ -44,6 +58,10 @@ type Backup = {
   books: LibraryBook[];
   collections: Collection[];
   annotations: Annotation[];
+  /** Optional additive field: v1 backups without saved bookmarks remain valid. */
+  bookmarks?: ReadingBookmark[];
+  localFonts?: { font: LocalReadingFont; bytes: number[] }[];
+  readingTimeEvents?: PlainEvent[];
   /** bookId -> base64 of the original source file. */
   files: Record<string, string>;
 };
@@ -74,22 +92,23 @@ function base64ToBytes(base64: string): Uint8Array {
 
 /** Serialize the entire device-local database into one portable JSON string. */
 export async function exportBackup(): Promise<string> {
-  const [kvAll, books, collections, annotations] = await Promise.all([
-    dumpLocalKV(),
-    listLibraryBooks(),
-    listCollections(),
-    listAnnotations(),
-  ]);
+  const [kvAll, books, collections, annotations, bookmarks] = await Promise.all(
+    [
+      dumpLocalKV(),
+      listLibraryBooks(),
+      listCollections(),
+      listAnnotations(),
+      listBookmarksForBackup(),
+    ],
+  );
 
-  const kv: Record<string, string> = {};
-  for (const [key, value] of Object.entries(kvAll)) {
-    if (!EXCLUDED_KV_KEYS.has(key)) kv[key] = value;
-  }
+  const kv = portableBackupKV(kvAll);
 
   const files: Record<string, string> = {};
   for (const book of books) {
     const blob = await getStoredBookBlob(book.id);
-    if (blob) files[book.id] = bytesToBase64(new Uint8Array(await blob.arrayBuffer()));
+    if (blob)
+      files[book.id] = bytesToBase64(new Uint8Array(await blob.arrayBuffer()));
   }
 
   const backup: Backup = {
@@ -101,6 +120,9 @@ export async function exportBackup(): Promise<string> {
     books,
     collections,
     annotations,
+    bookmarks,
+    localFonts: await exportLocalFonts(),
+    readingTimeEvents: await exportReadingTimeEvents(),
     files,
   };
   return JSON.stringify(backup);
@@ -118,11 +140,12 @@ export async function importBackup(json: string): Promise<BackupImportResult> {
   }
 
   const files = (parsed.files ?? {}) as Record<string, string>;
-  const kv = (parsed.kv ?? {}) as Record<string, string>;
+  const kv = portableBackupKV((parsed.kv ?? {}) as Record<string, string>);
   const collections = parsed.collections ?? [];
   const annotations = parsed.annotations ?? [];
 
   await restoreLocalKV(kv);
+  if (parsed.localFonts?.length) await restoreLocalFonts(parsed.localFonts);
   // Collections first so book membership resolves against existing rows.
   for (const collection of collections) await restoreCollection(collection);
   for (const book of parsed.books) {
@@ -130,6 +153,11 @@ export async function importBackup(json: string): Promise<BackupImportResult> {
     await restoreLibraryBook(book, encoded ? base64ToBytes(encoded) : null);
   }
   for (const annotation of annotations) await saveAnnotation(annotation);
+  // Book creation must precede saved-position events in the replayable log.
+  if (parsed.bookmarks?.length) {
+    await restoreBookmarks(parsed.bookmarks);
+  }
+  await restoreReadingTimeEvents(parsed.readingTimeEvents ?? []);
 
   return {
     settings: Object.keys(kv).length,

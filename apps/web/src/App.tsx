@@ -1,3 +1,5 @@
+import { useWindowProgressDrain } from "./features/reader/hooks/useWindowProgressDrain";
+import { CreateCollectionDialog } from "./features/shelf/components/CreateCollectionDialog";
 import {
   Suspense,
   lazy,
@@ -16,6 +18,8 @@ import { DropImportOverlay } from "./features/library/components/DropImportOverl
 import { LibraryWorkspace } from "./features/library/components/LibraryWorkspace";
 import { useDropBookImport } from "./features/library/hooks/useDropBookImport";
 import { isBookInLockedCollection } from "./features/library/lib/collection-lock";
+import { LibraryFullTextDialog } from "./features/library/components/LibraryFullTextDialog";
+import { useSessionResume } from "./features/reader/hooks/useSessionResume";
 import { useExternalBookOpens } from "./features/library/hooks/useExternalBookOpens";
 import { useLibraryController } from "./features/library/hooks/useLibraryController";
 import { BOOK_FILE_ACCEPT } from "./features/library/lib/pick-book-files";
@@ -101,6 +105,8 @@ import {
 
 function App() {
   const [searchModalOpen, setSearchModalOpen] = useState(false);
+  const [librarySearchOpen, setLibrarySearchOpen] = useState(false);
+  const [createCollectionOpen, setCreateCollectionOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useAtom(settingsOpenAtom);
   const generalSettings = useAtomValue(generalSettingsAtom);
   const softwareUpdate = useSoftwareUpdate();
@@ -165,11 +171,21 @@ function App() {
     reportError: library.reportError,
   });
 
+  useWindowProgressDrain(reader.drainProgress, library.reportError);
+
   // Shelf ⇄ reader surface handoff: opaque-incoming / fading-outgoing, with
   // the open-direction fade deferred until the reader has rendered and the
   // main thread can animate again. See useSurfaceHandoff for the rules.
   const { shelfHandoff, readerExiting, openBook, closeBook } =
     useSurfaceHandoff(reader);
+  useSessionResume({
+    ready: library.libraryReady,
+    books: library.books,
+    collections: library.collections,
+    selected: reader.selectedBook,
+    loaded: !!reader.readerSource && !reader.isReaderLoading,
+    open: openBook,
+  });
 
   const createGlobalConversation = useCallback(() => {
     setActiveGlobalThreadId(newGlobalThreadId());
@@ -262,7 +278,10 @@ function App() {
   );
   const handleOpenBook = useCallback(
     (book: LibraryBook) => {
-      if (isBookInLockedCollection(book, library.collections)) { library.reportError(new Error("collection-locked")); return; }
+      if (isBookInLockedCollection(book, library.collections)) {
+        library.reportError(new Error("collection-locked"));
+        return;
+      }
       setHeldShelfBooks(library.books);
       openBook(book);
     },
@@ -275,7 +294,10 @@ function App() {
   // Password-hidden folders keep their books off every non-shelf preview
   // surface (stats, the annotations popover); the shelf itself gates internally.
   const visibleBooks = useMemo(
-    () => library.books.filter((book) => !isBookInLockedCollection(book, library.collections)),
+    () =>
+      library.books.filter(
+        (book) => !isBookInLockedCollection(book, library.collections),
+      ),
     [library.books, library.collections],
   );
 
@@ -418,11 +440,7 @@ function App() {
 
   const handleCommandOpenBook = useCallback(
     (book: LibraryBook) => {
-      if (
-        reader.selectedBook &&
-        !readerExiting &&
-        shelfHandoff === "idle"
-      ) {
+      if (reader.selectedBook && !readerExiting && shelfHandoff === "idle") {
         if (reader.selectedBook.id !== book.id) reader.openReader(book);
         return;
       }
@@ -513,9 +531,13 @@ function App() {
         >
           {/* Fallback shows only if warmup hasn't fetched the chunk yet (rare):
             a quiet paper surface, matching the reader's own pre-render state. */}
-          <FeatureErrorBoundary surface="reader" resetKey={reader.selectedBook.id}>
+          <FeatureErrorBoundary
+            surface="reader"
+            resetKey={reader.selectedBook.id}
+          >
             <Suspense fallback={<div className="h-dvh w-full bg-paper" />}>
               <ReaderWorkspace
+                key={reader.selectedBook.id}
                 selectedBook={reader.selectedBook}
                 readerSource={reader.readerSource}
                 readerLoadError={reader.readerLoadError}
@@ -568,6 +590,11 @@ function App() {
               "ra-motion-surface-exit",
           )}
         >
+          <CreateCollectionDialog
+            open={createCollectionOpen}
+            onClose={() => setCreateCollectionOpen(false)}
+            onCreate={library.handleCreateCollection}
+          />
           <AppHeader
             activeTopNav={activeTopNav}
             isImporting={library.isImporting}
@@ -583,11 +610,13 @@ function App() {
               </>
             }
             viewControl={
-              activeTopNav === "shelf" ? <ShelfManagementMenu /> : undefined
+              activeTopNav === "shelf" ? (
+                <ShelfManagementMenu
+                  onCreateCollection={() => setCreateCollectionOpen(true)}
+                />
+              ) : undefined
             }
-            actions={
-              activeTopNav === "agent" ? agentHeaderActions : undefined
-            }
+            actions={activeTopNav === "agent" ? agentHeaderActions : undefined}
           />
 
           <ScrollArea className="h-full min-h-0 flex-1">
@@ -627,7 +656,10 @@ function App() {
                 </Suspense>
               </FeatureErrorBoundary>
             ) : (
-              <FeatureErrorBoundary surface="plugin-page" resetKey={activeTopNav}>
+              <FeatureErrorBoundary
+                surface="plugin-page"
+                resetKey={activeTopNav}
+              >
                 <PluginPageHost
                   navKey={activeTopNav}
                   onExit={() => setActiveTopNav("shelf")}
@@ -643,6 +675,13 @@ function App() {
         onClose={() => setSearchModalOpen(false)}
         ctx={commandContext}
         extraItems={pluginCommandItems}
+        onFullTextSearch={() => setLibrarySearchOpen(true)}
+      />
+      <LibraryFullTextDialog
+        open={librarySearchOpen}
+        onClose={() => setLibrarySearchOpen(false)}
+        books={library.books}
+        onNavigate={(book, anchor) => reader.openReader(book, { anchor })}
       />
 
       {settingsMounted && (
@@ -654,7 +693,9 @@ function App() {
         </Suspense>
       )}
 
-      {dropImport.active && <DropImportOverlay target={dropImport.targetName} />}
+      {dropImport.active && (
+        <DropImportOverlay target={dropImport.targetName} />
+      )}
 
       <WhatsNewDialog />
 

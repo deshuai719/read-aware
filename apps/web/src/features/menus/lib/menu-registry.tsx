@@ -22,6 +22,7 @@ import {
   SlidersHorizontal,
   TextAa,
   TextUnderline,
+  Translate,
   type Icon,
 } from "@phosphor-icons/react";
 import type { MenuSurface } from "../state/menu-config";
@@ -62,6 +63,7 @@ export const CORE_MENU_ITEMS: Record<MenuSurface, CoreMenuItemMeta[]> = {
     { id: "core:underline", labelKey: "underline", Icon: TextUnderline },
     { id: "core:addNote", labelKey: "addNote", Icon: NotePencil },
     { id: "core:askAI", labelKey: "askAI", Icon: ChatCircleDots },
+    { id: "core:translate", labelKey: "translate", Icon: Translate },
   ],
 };
 

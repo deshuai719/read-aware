@@ -138,7 +138,9 @@ export const aiPreferencesAtom = atom(
   },
 );
 
-const readerPreferencesBaseAtom = atom<ReaderSettingsPreferences>(getReaderPreferences());
+const readerPreferencesBaseAtom = atom<ReaderSettingsPreferences>(
+  getReaderPreferences(),
+);
 
 export const readerPreferencesAtom = atom(
   (get) => get(readerPreferencesBaseAtom),
@@ -148,7 +150,9 @@ export const readerPreferencesAtom = atom(
   },
 );
 
-const contentTypographyBaseAtom = atom<ContentTypographySettings>(getContentTypography());
+const contentTypographyBaseAtom = atom<ContentTypographySettings>(
+  getContentTypography(),
+);
 
 // Roamed preferences landing via sync pull: the overlay already rewrote the
 // KV cache; re-seed the BASE atoms so mounted UI follows (useAppearance then
@@ -174,7 +178,10 @@ export const contentTypographyAtom = atom(
 
 /** Render-ready reader settings — the `auto` page color resolved against the app theme. */
 export const effectiveReaderSettingsAtom = atom<ReaderSettings>((get) =>
-  toEffectiveReaderSettings(get(readerPreferencesBaseAtom), get(resolvedAppThemeAtom)),
+  toEffectiveReaderSettings(
+    get(readerPreferencesBaseAtom),
+    get(resolvedAppThemeAtom),
+  ),
 );
 
 // The mode's behavior settings live in its plugin's declared-settings object;
@@ -187,7 +194,10 @@ export const effectiveReaderSettingsAtom = atom<ReaderSettings>((get) =>
 // derived atom would serve its cached pre-edit value on the next mount.
 const textUnitModeSettingsRevisionAtom = atom(0);
 onAppEvent("plugin-storage-changed", () => {
-  getDefaultStore().set(textUnitModeSettingsRevisionAtom, (current) => current + 1);
+  getDefaultStore().set(
+    textUnitModeSettingsRevisionAtom,
+    (current) => current + 1,
+  );
 });
 
 /**
@@ -211,7 +221,15 @@ const readerOverridesBaseAtom = atom<ReaderOverrides>(getReaderOverrides());
 /** Per-book appearance overrides keyed by book id. See `useReaderAppearance`. */
 export const readerOverridesAtom = atom(
   (get) => get(readerOverridesBaseAtom),
-  (_get, set, next: ReaderOverrides) => {
+  (
+    get,
+    set,
+    update: ReaderOverrides | ((current: ReaderOverrides) => ReaderOverrides),
+  ) => {
+    const next =
+      typeof update === "function"
+        ? update(get(readerOverridesBaseAtom))
+        : update;
     set(readerOverridesBaseAtom, next);
     saveReaderOverrides(next);
   },
@@ -242,7 +260,9 @@ export const readingStatsAtom = atom(
   (
     get,
     set,
-    update: ReadingStatsStore | ((prev: ReadingStatsStore) => ReadingStatsStore),
+    update:
+      | ReadingStatsStore
+      | ((prev: ReadingStatsStore) => ReadingStatsStore),
   ) => {
     const next =
       typeof update === "function" ? update(get(readingStatsBaseAtom)) : update;
@@ -263,7 +283,10 @@ export const shelfViewAtom = atom(
 /** Multi-select state for shelf batch management. Ephemeral — never persisted. */
 export type ShelfSelection = { active: boolean; ids: string[] };
 
-export const shelfSelectionAtom = atom<ShelfSelection>({ active: false, ids: [] });
+export const shelfSelectionAtom = atom<ShelfSelection>({
+  active: false,
+  ids: [],
+});
 
 /** The collection currently being viewed on the shelf, or null at the top level. */
 export const activeCollectionAtom = atom<string | null>(null);

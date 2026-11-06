@@ -7,11 +7,17 @@
  * restart re-locks every folder.
  */
 import type { Collection, LibraryBook } from "./library-types";
-import { argon2id } from "@noble/hashes/argon2.js";
+import { argon2id, argon2idAsync } from "@noble/hashes/argon2.js";
 import { randomBytes } from "@noble/hashes/utils.js";
 import { equalBytes } from "@noble/ciphers/utils.js";
 
-type StoredHash = { salt: string; hash: string; t: number; m: number; p: number };
+type StoredHash = {
+  salt: string;
+  hash: string;
+  t: number;
+  m: number;
+  p: number;
+};
 
 const utf8 = (s: string) => new TextEncoder().encode(s);
 
@@ -44,11 +50,18 @@ export function hashCollectionPassword(password: string): string {
 }
 
 /** Constant-time verification against a synced password hash. */
-export function verifyCollectionPassword(passwordHash: string, password: string): boolean {
+export function verifyCollectionPassword(
+  passwordHash: string,
+  password: string,
+): boolean {
   try {
     const stored = JSON.parse(passwordHash) as StoredHash;
     const salt = fromBase64(stored.salt);
-    const hash = argon2id(utf8(password), salt, { t: stored.t, m: stored.m, p: stored.p });
+    const hash = argon2id(utf8(password), salt, {
+      t: stored.t,
+      m: stored.m,
+      p: stored.p,
+    });
     return equalBytes(hash, fromBase64(stored.hash));
   } catch {
     return false;
@@ -56,10 +69,13 @@ export function verifyCollectionPassword(passwordHash: string, password: string)
 }
 
 /** In-memory session unlock state — a restart re-locks every folder. */
-const unlocked = new Set<string>();
+const unlocked = new Map<string, string | null>();
 
-export function unlockCollection(id: string): void {
-  unlocked.add(id);
+export function unlockCollection(
+  id: string,
+  passwordHash: string | null = null,
+): void {
+  unlocked.set(id, passwordHash);
 }
 
 export function lockCollection(id: string): void {
@@ -74,8 +90,13 @@ export function isCollectionUnlocked(id: string): boolean {
  * session has not unlocked it. Single source of truth for every preview
  * surface (tiles, internal view, search, stats, reference cards).
  */
-export function isCollectionLocked(collection: Pick<Collection, "id" | "passwordHash">): boolean {
-  return Boolean(collection.passwordHash) && !isCollectionUnlocked(collection.id);
+export function isCollectionLocked(
+  collection: Pick<Collection, "id" | "passwordHash">,
+): boolean {
+  return (
+    Boolean(collection.passwordHash) &&
+    unlocked.get(collection.id) !== collection.passwordHash
+  );
 }
 
 /**
@@ -89,4 +110,48 @@ export function isBookInLockedCollection(
   if (!book.collectionId) return false;
   const collection = collections.find((c) => c.id === book.collectionId);
   return collection ? isCollectionLocked(collection) : false;
+}
+/** Yield during the memory-hard KDF so native window controls remain responsive. */
+export async function hashCollectionPasswordAsync(
+  password: string,
+): Promise<string> {
+  const salt = randomBytes(16);
+  const hash = await argon2idAsync(utf8(password), salt, KDF_PARAMS);
+  return JSON.stringify({
+    salt: toBase64(salt),
+    hash: toBase64(hash),
+    ...KDF_PARAMS,
+  } satisfies StoredHash);
+}
+export async function verifyCollectionPasswordAsync(
+  passwordHash: string,
+  password: string,
+): Promise<boolean> {
+  try {
+    const stored = JSON.parse(passwordHash) as StoredHash;
+    if (
+      !Number.isInteger(stored.t) ||
+      stored.t < 1 ||
+      stored.t > 8 ||
+      !Number.isInteger(stored.m) ||
+      stored.m < 8 ||
+      stored.m > 131072 ||
+      stored.p !== 1
+    )
+      return false;
+    const salt = fromBase64(stored.salt),
+      expected = fromBase64(stored.hash);
+    if (salt.length < 8 || salt.length > 64 || expected.length !== 32)
+      return false;
+    return equalBytes(
+      await argon2idAsync(utf8(password), salt, {
+        t: stored.t,
+        m: stored.m,
+        p: stored.p,
+      }),
+      expected,
+    );
+  } catch {
+    return false;
+  }
 }

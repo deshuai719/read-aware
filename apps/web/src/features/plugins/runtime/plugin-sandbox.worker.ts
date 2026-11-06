@@ -78,7 +78,9 @@ function denyAmbientAuthority(name: string): void {
     Object.defineProperty(globalThis, name, {
       configurable: false,
       get() {
-        throw new Error(`${name} is unavailable in the plugin sandbox; use PluginContext`);
+        throw new Error(
+          `${name} is unavailable in the plugin sandbox; use PluginContext`,
+        );
       },
     });
   } catch {
@@ -138,8 +140,14 @@ function encode(value: unknown): unknown {
   }
   if (Array.isArray(value)) return value.map(encode);
   // Plain objects only: a Request/URL/Date must cross as itself.
-  if (value && typeof value === "object" && Object.getPrototypeOf(value) === Object.prototype) {
-    return Object.fromEntries(Object.entries(value).map(([key, entry]) => [key, encode(entry)]));
+  if (
+    value &&
+    typeof value === "object" &&
+    Object.getPrototypeOf(value) === Object.prototype
+  ) {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, entry]) => [key, encode(entry)]),
+    );
   }
   return value;
 }
@@ -174,7 +182,8 @@ function callHost(method: string, args: unknown[]): CallResult {
   result.dispose = () => {
     void promise
       .then((value) => {
-        const handle = (value as { __disposable?: string } | null)?.__disposable;
+        const handle = (value as { __disposable?: string } | null)
+          ?.__disposable;
         if (handle) post({ t: "dispose", handle });
       })
       .catch(() => {
@@ -190,7 +199,10 @@ function callHost(method: string, args: unknown[]): CallResult {
  * hand-listed, so the sandbox always exposes exactly what the host granted —
  * including nested namespaces like `books.write`.
  */
-function remoteNamespace(path: string, shape: ContextShape): Record<string, unknown> {
+function remoteNamespace(
+  path: string,
+  shape: ContextShape,
+): Record<string, unknown> {
   const api: Record<string, unknown> = {};
   for (const [key, entry] of Object.entries(shape)) {
     const method = path ? `${path}.${key}` : key;
@@ -210,7 +222,9 @@ let lifecyclePhase: PluginContext["lifecycle"]["phase"] = "activating";
 
 function assertLocalStorageWrite(): void {
   if (lifecyclePhase !== "active" && lifecyclePhase !== "migrating") {
-    throw new Error(`plugin storage writes are unavailable while plugin is ${lifecyclePhase}`);
+    throw new Error(
+      `plugin storage writes are unavailable while plugin is ${lifecyclePhase}`,
+    );
   }
 }
 
@@ -238,13 +252,19 @@ function buildContext(
   const { __collection: collectionShape = {}, ...namespaces } = shape;
 
   // Everything the host granted, proxied verbatim.
-  const ctx = remoteNamespace("", namespaces as ContextShape) as Record<string, unknown>;
+  const ctx = remoteNamespace("", namespaces as ContextShape) as Record<
+    string,
+    unknown
+  >;
 
   ctx.manifest = manifest;
   ctx.appVersion = appVersion;
   ctx.capabilities = capabilities;
   // Mirrored locally (boot + sync patches) so the read stays synchronous.
-  Object.defineProperty(ctx, "locale", { get: () => appLocale, enumerable: true });
+  Object.defineProperty(ctx, "locale", {
+    get: () => appLocale,
+    enumerable: true,
+  });
   ctx.lifecycle = {};
   Object.defineProperty(ctx.lifecycle, "phase", {
     get: () => lifecyclePhase,
@@ -296,9 +316,8 @@ function buildContext(
       void call(message);
     };
   }
-  const reading = (ctx.domains as Record<string, unknown> | undefined)?.reading as
-    | Record<string, unknown>
-    | undefined;
+  const reading = (ctx.domains as Record<string, unknown> | undefined)
+    ?.reading as Record<string, unknown> | undefined;
   const reader = reading?.commands as Record<string, unknown> | undefined;
   for (const method of ["openBook", "goTo"]) {
     if (reader && typeof reader[method] === "function") {
@@ -327,8 +346,9 @@ function buildContext(
             : input instanceof Request
               ? input.url
               : String(input);
-      const { signal, headers, ...rest } =
-        (init && typeof init === "object" ? init : {}) as RequestInit;
+      const { signal, headers, ...rest } = (
+        init && typeof init === "object" ? init : {}
+      ) as RequestInit;
       const plainInit: Record<string, unknown> = { ...rest };
       // Headers in any accepted form become one plain record.
       if (headers) {
@@ -336,7 +356,10 @@ function buildContext(
       }
 
       const call = (async () => {
-        const result = (await callHost("network.fetch", [url, plainInit])) as {
+        const result = (await callHost("services.network.fetch", [
+          url,
+          plainInit,
+        ])) as {
           status: number;
           statusText: string;
           url: string;
@@ -362,12 +385,16 @@ function buildContext(
       // while the host-side request simply runs to completion unobserved.
       if (!(signal instanceof AbortSignal)) return call;
       if (signal.aborted) {
-        throw signal.reason ?? new DOMException("The operation was aborted.", "AbortError");
+        throw (
+          signal.reason ??
+          new DOMException("The operation was aborted.", "AbortError")
+        );
       }
       return new Promise<Response>((resolve, reject) => {
         const onAbort = () =>
           reject(
-            signal.reason ?? new DOMException("The operation was aborted.", "AbortError"),
+            signal.reason ??
+              new DOMException("The operation was aborted.", "AbortError"),
           );
         signal.addEventListener("abort", onAbort, { once: true });
         call
@@ -401,19 +428,27 @@ self.onmessage = async (event: MessageEvent<HostMessage>) => {
         };
         plugin = loaded.default ?? null;
         if (!plugin || typeof plugin.activate !== "function") {
-          throw new Error("entry module must default-export an object with activate()");
+          throw new Error(
+            "entry module must default-export an object with activate()",
+          );
         }
         pluginContext = buildContext(
-            message.manifest,
-            message.appVersion,
-            message.capabilities,
-            message.shape,
-          );
+          message.manifest,
+          message.appVersion,
+          message.capabilities,
+          message.shape,
+        );
         await plugin.activate(pluginContext);
         await drainActivationCalls();
-        post({ t: "ready", hasMigration: typeof plugin.migrate === "function" });
+        post({
+          t: "ready",
+          hasMigration: typeof plugin.migrate === "function",
+        });
       } catch (error) {
-        post({ t: "failed", error: error instanceof Error ? error.message : String(error) });
+        post({
+          t: "failed",
+          error: error instanceof Error ? error.message : String(error),
+        });
       }
       return;
     }
@@ -421,7 +456,12 @@ self.onmessage = async (event: MessageEvent<HostMessage>) => {
     case "invoke": {
       const handler = handlers.get(message.handle);
       if (!handler) {
-        post({ t: "result", id: message.id, ok: false, error: `stale handle ${message.handle}` });
+        post({
+          t: "result",
+          id: message.id,
+          ok: false,
+          error: `stale handle ${message.handle}`,
+        });
         return;
       }
       try {
@@ -437,7 +477,12 @@ self.onmessage = async (event: MessageEvent<HostMessage>) => {
         // `encode` produces, and anything genuinely non-clonable throws from
         // `post` into the catch below — visibly, as an error the plugin's
         // author can act on.
-        post({ t: "result", id: message.id, ok: true, value: encode(value ?? null) });
+        post({
+          t: "result",
+          id: message.id,
+          ok: true,
+          value: encode(value ?? null),
+        });
       } catch (error) {
         post({
           t: "result",
@@ -457,7 +502,8 @@ self.onmessage = async (event: MessageEvent<HostMessage>) => {
         }
       }
       if (message.patch.locale !== undefined) appLocale = message.patch.locale;
-      if (message.patch.phase !== undefined) lifecyclePhase = message.patch.phase;
+      if (message.patch.phase !== undefined)
+        lifecyclePhase = message.patch.phase;
       return;
     }
 
@@ -478,10 +524,14 @@ self.onmessage = async (event: MessageEvent<HostMessage>) => {
     case "migrate": {
       try {
         if (lifecyclePhase !== "migrating" || !pluginContext) {
-          throw new Error("plugin migration was requested outside the migrating phase");
+          throw new Error(
+            "plugin migration was requested outside the migrating phase",
+          );
         }
         if (typeof plugin?.migrate !== "function") {
-          throw new Error("plugin data schema changed but the plugin does not export migrate()");
+          throw new Error(
+            "plugin data schema changed but the plugin does not export migrate()",
+          );
         }
         const migrationContext: PluginMigrationContext = {
           manifest: pluginContext.manifest,

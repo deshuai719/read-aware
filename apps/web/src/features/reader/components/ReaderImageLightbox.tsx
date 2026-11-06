@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type PointerEvent as ReactPointerEvent,
+} from "react";
 import {
   ArrowClockwise,
   Check,
@@ -19,6 +25,7 @@ const log = createLogger("reader");
 type ReaderImageLightboxProps = {
   src: string;
   alt: string | null;
+  brightness?: number;
   onClose: () => void;
 };
 
@@ -29,7 +36,12 @@ type ReaderImageLightboxProps = {
  * rotation, copy-to-clipboard, and close; Esc and a clean backdrop click
  * close too.
  */
-export function ReaderImageLightbox({ src, alt, onClose }: ReaderImageLightboxProps) {
+export function ReaderImageLightbox({
+  src,
+  alt,
+  onClose,
+  brightness = 100,
+}: ReaderImageLightboxProps) {
   const { t } = useTranslation("reader");
   const zoom = useZoomPan();
   const dialogRef = useRef<HTMLDivElement | null>(null);
@@ -107,8 +119,9 @@ export function ReaderImageLightbox({ src, alt, onClose }: ReaderImageLightboxPr
       return blob;
     };
     const write = isTauri()
-      ? renderPng()
-          .then(async (blob) => writeImage(new Uint8Array(await blob.arrayBuffer())))
+      ? renderPng().then(async (blob) =>
+          writeImage(new Uint8Array(await blob.arrayBuffer())),
+        )
       : navigator.clipboard.write([
           new ClipboardItem({ "image/png": renderPng() }),
         ]);
@@ -116,9 +129,13 @@ export function ReaderImageLightbox({ src, alt, onClose }: ReaderImageLightboxPr
       .then(flashCopied)
       .catch((error) => log.warn("copy image failed", error));
   }, [flashCopied, zoom.imgRef]);
-  useEffect(() => () => {
-    if (copyResetRef.current != null) window.clearTimeout(copyResetRef.current);
-  }, []);
+  useEffect(
+    () => () => {
+      if (copyResetRef.current != null)
+        window.clearTimeout(copyResetRef.current);
+    },
+    [],
+  );
 
   // The second click of an image double-click lands on the freshly-opened
   // backdrop; ignoring backdrop clicks briefly keeps "double-click to open"
@@ -129,7 +146,8 @@ export function ReaderImageLightbox({ src, alt, onClose }: ReaderImageLightboxPr
     backdropPressRef.current = event.target === event.currentTarget;
   };
   const onBackdropPointerUp = (event: ReactPointerEvent) => {
-    const eligible = backdropPressRef.current && event.target === event.currentTarget;
+    const eligible =
+      backdropPressRef.current && event.target === event.currentTarget;
     backdropPressRef.current = false;
     if (!eligible || zoom.movedRef.current) return;
     if (performance.now() - openedAtRef.current < 350) return;
@@ -175,7 +193,10 @@ export function ReaderImageLightbox({ src, alt, onClose }: ReaderImageLightboxPr
           alt={alt ?? ""}
           draggable={false}
           className="max-h-full max-w-full select-none object-contain"
-          style={zoom.style}
+          style={{
+            ...zoom.style,
+            filter: `brightness(${Math.max(30, Math.min(100, brightness)) / 100})`,
+          }}
         />
       </div>
       <div className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-col items-center gap-3 p-5">

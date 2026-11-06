@@ -13,10 +13,8 @@ import { freshStore, sampleBooks, sampleStore } from "./stats.fixtures";
  * the annotations store over Tauri IPC, which isn't there; `BookBreakdown`
  * has its own stories covering the populated case.
  *
- * Note the dev-only auto-seed inside the component: with books present and
- * under an hour of reading, it overwrites the store with generated history and
- * renders nothing for a beat. Every story below either seeds well past that
- * threshold or passes no books, so none of them trip it.
+ * Fixtures exist only in Storybook. The actual statistics surface never
+ * auto-generates reading activity; goals stay visible with zero recorded time.
  */
 const meta = {
   title: "Interface/Stats/StatsWorkspace",
@@ -34,8 +32,7 @@ export const Default: Story = {
 };
 
 /**
- * A single book read across one week. Enough to clear the auto-seed threshold,
- * little enough that the year and all-time tabs stay nearly bare.
+ * A single synthetic book read across one week.
  */
 export const SparseHistory: Story = {
   decorators: [withAtoms(seed(readingStatsAtom, freshStore))],

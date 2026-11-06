@@ -1,3 +1,7 @@
+import {
+  normalizeReaderAdvanced,
+  type ReaderAdvancedPreferences,
+} from "./reader-advanced";
 import { hasCoarsePointer } from "../../../platform/environment";
 import { localKV } from "../../../platform/local-store";
 import { isPluginRef } from "../../plugins/lib/plugin-theme";
@@ -27,24 +31,31 @@ export type ReaderThemePreference = ReaderTheme | "auto";
 export type ReaderFontFamily =
   | `curated:${string}`
   | `system:${string}`
-  | `plugin:${string}`;
+  | `plugin:${string}`
+  | `local:${string}`;
 
 export const CURATED_FONT_PREFIX = "curated:";
 export const SYSTEM_FONT_PREFIX = "system:";
 export const PLUGIN_FONT_PREFIX = "plugin:";
 
 /** True when `font` is one of the curated reading fonts. */
-export function isCuratedFont(font: ReaderFontFamily): font is `curated:${string}` {
+export function isCuratedFont(
+  font: ReaderFontFamily,
+): font is `curated:${string}` {
   return font.startsWith(CURATED_FONT_PREFIX);
 }
 
 /** True when `font` names a user-picked installed family. */
-export function isSystemFont(font: ReaderFontFamily): font is `system:${string}` {
+export function isSystemFont(
+  font: ReaderFontFamily,
+): font is `system:${string}` {
   return font.startsWith(SYSTEM_FONT_PREFIX);
 }
 
 /** True when `font` names a plugin-bundled font. */
-export function isPluginFont(font: ReaderFontFamily): font is `plugin:${string}` {
+export function isPluginFont(
+  font: ReaderFontFamily,
+): font is `plugin:${string}` {
   return font.startsWith(PLUGIN_FONT_PREFIX);
 }
 
@@ -126,7 +137,7 @@ export type FixedLayoutColor = "theme" | "original";
  * Effective, render-ready reader settings. `theme` is always concrete here —
  * the `auto` preference has already been resolved against the app theme.
  */
-export type ReaderSettings = {
+export type ReaderSettings = Partial<ReaderAdvancedPreferences> & {
   theme: ReaderTheme;
   fontFamily: ReaderFontFamily;
   fontSize: ReaderFontSize;
@@ -159,10 +170,10 @@ export const DEFAULT_READER_SETTINGS: ReaderSettings = {
   // two-page spread (the renderer already folds a spread to one column while
   // the viewport is portrait, so narrow desktop windows stay readable).
   readingMode: hasCoarsePointer() ? "paginated-single" : "paginated-double",
-  // Most fixed-layout reading is text on paper, where following the palette is
-  // the whole point of choosing one; readers of photography and art books can
-  // turn it off per book.
-  fixedLayoutColor: "theme",
+  // Keep artwork and fixed-layout colors faithful by default; an explicit
+  // theme mapping remains a per-book/global appearance choice.
+  fixedLayoutColor: "original",
+  ...normalizeReaderAdvanced(null),
 };
 
 export const DEFAULT_READER_PREFERENCES: ReaderSettingsPreferences = {
@@ -176,12 +187,19 @@ export function normalizeFontFamily(value: unknown): ReaderFontFamily {
     // Legacy presets predate the curated/system split.
     if (value === "sans") return "curated:inter";
     if (value === "serif") return "curated:literata";
-    if (value.startsWith(CURATED_FONT_PREFIX) && value.length > CURATED_FONT_PREFIX.length) {
+    if (
+      value.startsWith(CURATED_FONT_PREFIX) &&
+      value.length > CURATED_FONT_PREFIX.length
+    ) {
       return value as `curated:${string}`;
     }
-    if (value.startsWith(SYSTEM_FONT_PREFIX) && value.length > SYSTEM_FONT_PREFIX.length) {
+    if (
+      value.startsWith(SYSTEM_FONT_PREFIX) &&
+      value.length > SYSTEM_FONT_PREFIX.length
+    ) {
       return value as `system:${string}`;
     }
+    if (/^local:[a-f0-9-]{36}$/.test(value)) return value as `local:${string}`;
     if (isPluginRef(value)) return value;
   }
   return DEFAULT_READER_SETTINGS.fontFamily;
@@ -189,7 +207,12 @@ export function normalizeFontFamily(value: unknown): ReaderFontFamily {
 
 /** Coerce a persisted page-color preference to a valid value. */
 export function normalizeReaderTheme(value: unknown): ReaderThemePreference {
-  if (value === "auto" || value === "light" || value === "warm" || value === "dark") {
+  if (
+    value === "auto" ||
+    value === "light" ||
+    value === "warm" ||
+    value === "dark"
+  ) {
     return value;
   }
   if (isPluginRef(value)) return value;
@@ -224,7 +247,8 @@ const LEGACY_PX_FONT_SIZE: Record<string, ReaderFontSize> = {
 /** Coerce a persisted font size to a valid tier. */
 export function normalizeFontSize(value: unknown): ReaderFontSize {
   if (typeof value === "string") {
-    if ((FONT_SIZES as string[]).includes(value)) return value as ReaderFontSize;
+    if ((FONT_SIZES as string[]).includes(value))
+      return value as ReaderFontSize;
     if (value in LEGACY_PX_FONT_SIZE) return LEGACY_PX_FONT_SIZE[value];
   }
   return DEFAULT_READER_SETTINGS.fontSize;
@@ -232,19 +256,26 @@ export function normalizeFontSize(value: unknown): ReaderFontSize {
 
 /** Coerce a persisted page-margin preset to a valid value. */
 export function normalizePageMargins(value: unknown): ReaderPageMargins {
-  if (value === "narrow" || value === "medium" || value === "wide") return value;
+  if (value === "narrow" || value === "medium" || value === "wide")
+    return value;
   return DEFAULT_READER_SETTINGS.pageMargins;
 }
 
 /** Coerce a persisted alignment preset to a valid value. */
 export function normalizeTextAlign(value: unknown): ReaderTextAlign {
-  if (value === "book" || value === "start" || value === "justify") return value;
+  if (value === "book" || value === "start" || value === "justify")
+    return value;
   return DEFAULT_READER_SETTINGS.textAlign;
 }
 
 /** Coerce a persisted font-weight preset to a valid value. */
 export function normalizeFontWeight(value: unknown): ReaderFontWeight {
-  if (value === "light" || value === "regular" || value === "medium" || value === "bold") {
+  if (
+    value === "light" ||
+    value === "regular" ||
+    value === "medium" ||
+    value === "bold"
+  ) {
     return value;
   }
   return DEFAULT_READER_SETTINGS.fontWeight;
@@ -261,14 +292,14 @@ export function getReaderPreferences(): ReaderSettingsPreferences {
       fontSize: normalizeFontSize(parsed.fontSize),
       fontWeight: normalizeFontWeight(parsed.fontWeight),
       lineSpacing: parsed.lineSpacing ?? DEFAULT_READER_PREFERENCES.lineSpacing,
-      paragraphSpacing: parsed.paragraphSpacing ?? DEFAULT_READER_PREFERENCES.paragraphSpacing,
+      paragraphSpacing:
+        parsed.paragraphSpacing ?? DEFAULT_READER_PREFERENCES.paragraphSpacing,
       pageMargins: normalizePageMargins(parsed.pageMargins),
       textAlign: normalizeTextAlign(parsed.textAlign),
       readingMode: parsed.readingMode ?? DEFAULT_READER_PREFERENCES.readingMode,
       fixedLayoutColor:
-        parsed.fixedLayoutColor === "original"
-          ? "original"
-          : DEFAULT_READER_PREFERENCES.fixedLayoutColor,
+        parsed.fixedLayoutColor === "theme" ? "theme" : "original",
+      ...normalizeReaderAdvanced(parsed),
     };
   } catch {
     return DEFAULT_READER_PREFERENCES;

@@ -2,9 +2,17 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAtomValue } from "jotai";
 import { Body, Button, Spinner } from "@read-aware/ui";
 import { useTranslation } from "../../../i18n";
-import type { BookFormat, LibraryBook, ReaderProgress } from "../../library/lib/library-types";
+import type {
+  BookFormat,
+  LibraryBook,
+  ReaderProgress,
+} from "../../library/lib/library-types";
 import type { ReaderLoadError } from "../hooks/useReaderSession";
-import { useReaderSearch, type ReaderSearchApi } from "../hooks/useReaderSearch";
+import { useReaderNavigation } from "../hooks/useReaderNavigation";
+import {
+  useReaderSearch,
+  type ReaderSearchApi,
+} from "../hooks/useReaderSearch";
 import { useReaderFindNavigation } from "../hooks/useReaderFindNavigation";
 import { useReaderPalette } from "../../settings/hooks/useReaderPalette";
 import { useDelayedFlag } from "../hooks/useDelayedFlag";
@@ -54,7 +62,10 @@ type ReaderWorkspaceProps = {
   onToggleShell: () => void;
   onHideShell: () => void;
   onReaderPageChange: (current: number, total: number) => void;
-  onEpubProgressChange: (progress: ReaderProgress) => void;
+  onEpubProgressChange: (
+    progress: ReaderProgress,
+    sourceBookId?: string,
+  ) => void;
   onReaderFractionChange: (fraction: number) => void;
   onSeek: (fraction: number) => void;
   onTocChange: (entries: TocEntry[]) => void;
@@ -101,11 +112,17 @@ export function ReaderWorkspace({
   onProgressSuspendedChange,
 }: ReaderWorkspaceProps) {
   const { t } = useTranslation("reader");
-  const { effective: readerSettings } = useReaderAppearance(selectedBook.id);
+  const { effective: readerSettings, textEncoding } = useReaderAppearance(
+    selectedBook.id,
+  );
+  const [decoding, setDecoding] = useState<FoliateBook["decoding"]>();
   const themeBg = useReaderPalette(readerSettings.theme).bg;
   // Only surface the source loader once opening is genuinely slow, so fast opens
   // show nothing (themed background) instead of a flashed line of text.
-  const showSourceLoader = useDelayedFlag(!readerSource && !readerLoadError, 250);
+  const showSourceLoader = useDelayedFlag(
+    !readerSource && !readerLoadError,
+    250,
+  );
 
   // The engine element lives here, one level above the view that creates it:
   // the shell's search panel drives the search lifecycle through the same ref.
@@ -123,6 +140,15 @@ export function ReaderWorkspace({
   const lastFractionRef = useRef<number | null>(null);
   const [searchCanReturn, setSearchCanReturn] = useState(false);
   const [findOpen, setFindOpen] = useState(false);
+  const [engineReady, setEngineReady] = useState(0);
+  const navigationTools = useReaderNavigation({
+    viewRef,
+    ready: engineReady,
+    enabled: Boolean(readerSource) && !isReaderLoading && !findOpen,
+    entries: readerToc,
+    href: currentChapterHref,
+    onChapterSelect,
+  });
 
   const handleFractionChange = useCallback(
     (fraction: number) => {
@@ -134,7 +160,10 @@ export function ReaderWorkspace({
 
   const jumpToSearchResult = useCallback(
     (cfi: string) => {
-      if (searchOriginFractionRef.current === null && lastFractionRef.current !== null) {
+      if (
+        searchOriginFractionRef.current === null &&
+        lastFractionRef.current !== null
+      ) {
         searchOriginFractionRef.current = lastFractionRef.current;
         originAnchorRef.current = lastAnchorRef.current;
         setSearchCanReturn(true);
@@ -152,39 +181,87 @@ export function ReaderWorkspace({
     onProgressSuspendedChange?.(true);
     const anchor = originAnchorRef.current;
     returningRef.current = anchor ?? origin;
-    if (anchor) onSearchResultSelect(anchor); else onSeek(origin);
+    if (anchor) onSearchResultSelect(anchor);
+    else onSeek(origin);
   }, [onProgressSuspendedChange, onSearchResultSelect, onSeek]);
 
   const navigation = useReaderFindNavigation(search, jumpToSearchResult);
-  const handleFindOpenChange = useCallback((open: boolean) => { setFindOpen(open); if (open) onHideShell(); }, [onHideShell]);
-  const handleFindStep = useCallback((direction: -1 | 1) => { setFindOpen(true); onHideShell(); navigation.step(direction); }, [onHideShell, navigation.step]);
-  const searchApi = useMemo<ReaderSearchApi>(() => ({
-    ...search, ...navigation, canReturn: searchCanReturn, returnToPosition: returnToSearchOrigin,
-  }), [search, navigation, searchCanReturn, returnToSearchOrigin]);
+  const handleFindOpenChange = useCallback(
+    (open: boolean) => {
+      setFindOpen(open);
+      if (open) onHideShell();
+    },
+    [onHideShell],
+  );
+  const handleFindStep = useCallback(
+    (direction: -1 | 1) => {
+      setFindOpen(true);
+      onHideShell();
+      navigation.step(direction);
+    },
+    [onHideShell, navigation.step],
+  );
+  const searchApi = useMemo<ReaderSearchApi>(
+    () => ({
+      ...search,
+      ...navigation,
+      canReturn: searchCanReturn,
+      returnToPosition: returnToSearchOrigin,
+    }),
+    [search, navigation, searchCanReturn, returnToSearchOrigin],
+  );
   // Closing accepts the current landing, removes marks, and ends THIS return origin.
   // A later find starts from the later reading position rather than stale history.
   const handleSearchClosed = useCallback(() => {
     search.dismiss();
     if (returningRef.current !== null) return;
-    searchOriginFractionRef.current = null; originAnchorRef.current = null; setSearchCanReturn(false);
+    searchOriginFractionRef.current = null;
+    originAnchorRef.current = null;
+    setSearchCanReturn(false);
+    const accepted = lastAnchorRef.current;
+    if (accepted) viewRef.current?.history.replaceState(accepted);
     onProgressSuspendedChange?.(false);
   }, [onProgressSuspendedChange, search.dismiss]);
 
-  const handleNavigationSettled = useCallback((target: string | number, error: string | null) => {
-    if (returningRef.current !== null && target === returningRef.current) {
-      if (error && typeof target === "string" && searchOriginFractionRef.current !== null) {
-        returningRef.current = searchOriginFractionRef.current;
-        onSeek(searchOriginFractionRef.current); return;
-      }
-      returningRef.current = null; searchOriginFractionRef.current = null; originAnchorRef.current = null;
-      setSearchCanReturn(false); onProgressSuspendedChange?.(false);
-    } else if (error) onProgressSuspendedChange?.(false);
-  }, [onProgressSuspendedChange, onSeek]);
+  const handleNavigationSettled = useCallback(
+    (target: string | number, error: string | null) => {
+      if (returningRef.current !== null && target === returningRef.current) {
+        if (
+          error &&
+          typeof target === "string" &&
+          searchOriginFractionRef.current !== null
+        ) {
+          returningRef.current = searchOriginFractionRef.current;
+          onSeek(searchOriginFractionRef.current);
+          return;
+        }
+        returningRef.current = null;
+        searchOriginFractionRef.current = null;
+        originAnchorRef.current = null;
+        setSearchCanReturn(false);
+        onProgressSuspendedChange?.(false);
+      } else if (error) onProgressSuspendedChange?.(false);
+    },
+    [onProgressSuspendedChange, onSeek],
+  );
   useEffect(() => {
-    searchOriginFractionRef.current = null; originAnchorRef.current = null; lastAnchorRef.current = null;
-    lastFractionRef.current = null; returningRef.current = null; setSearchCanReturn(false);
+    searchOriginFractionRef.current = null;
+    originAnchorRef.current = null;
+    lastAnchorRef.current = null;
+    lastFractionRef.current = null;
+    returningRef.current = null;
+    setSearchCanReturn(false);
   }, [selectedBook.id]);
 
+  useEffect(() => {
+    search.clear();
+    setFindOpen(false);
+    setSearchCanReturn(false);
+    searchOriginFractionRef.current = null;
+    originAnchorRef.current = null;
+    returningRef.current = null;
+    setDecoding(undefined);
+  }, [textEncoding, search.clear]);
   const headerVisible = !isReaderLoading && overlayVisible;
   // Hide the native traffic lights only during true immersive reading (book
   // rendered, header dismissed). While the book is still loading or errored
@@ -203,7 +280,9 @@ export function ReaderWorkspace({
     () => readTextUnitModeState(selectedBook.id).active,
   );
   const [isFixedLayout, setIsFixedLayout] = useState(false);
-  const [readingCursor, setReadingCursor] = useState<ReadingCursor | null>(null);
+  const [readingCursor, setReadingCursor] = useState<ReadingCursor | null>(
+    null,
+  );
   useEffect(() => {
     setTextUnitModeActive(readTextUnitModeState(selectedBook.id).active);
   }, [selectedBook.id]);
@@ -220,7 +299,10 @@ export function ReaderWorkspace({
 
   // Track active reading time once the book is rendered. Reader relocate/page
   // callbacks bump activity so in-iframe reading isn't mistaken for idle.
-  const { recordActivity } = useReadingTimeTracker(selectedBook.id, !!readerSource);
+  const { recordActivity } = useReadingTimeTracker(
+    selectedBook.id,
+    !!readerSource,
+  );
   const handlePageChange = useCallback(
     (current: number, total: number) => {
       recordActivity();
@@ -229,9 +311,9 @@ export function ReaderWorkspace({
     [recordActivity, onReaderPageChange],
   );
   const handleProgressChange = useCallback(
-    (progress: ReaderProgress) => {
+    (progress: ReaderProgress, sourceBookId?: string) => {
       recordActivity();
-      onEpubProgressChange(progress);
+      onEpubProgressChange(progress, sourceBookId);
     },
     [recordActivity, onEpubProgressChange],
   );
@@ -250,6 +332,7 @@ export function ReaderWorkspace({
           selectedBook={selectedBook}
           initialBook={readerSource.data}
           readerSettings={readerSettings}
+          textEncoding={textEncoding}
           viewRef={viewRef}
           shellVisible={overlayVisible}
           onCloseReader={onCloseReader}
@@ -261,11 +344,19 @@ export function ReaderWorkspace({
           onFractionChange={handleFractionChange}
           onTocChange={onTocChange}
           onCurrentChapterChange={onCurrentChapterChange}
-          onReadingCursorChange={(cursor) => { lastAnchorRef.current = cursor.anchor ?? null; setReadingCursor(cursor); }}
+          onReadingCursorChange={(cursor) => {
+            lastAnchorRef.current = cursor.anchor ?? null;
+            setReadingCursor(cursor);
+          }}
           onNavigationSettled={handleNavigationSettled}
           findOpen={findOpen}
           onFindStep={handleFindStep}
-          onBookReady={(foliateBook) => { onBookReady(selectedBook, foliateBook); search.notifyReady(); }}
+          onBookReady={(foliateBook) => {
+            onBookReady(selectedBook, foliateBook);
+            search.notifyReady();
+            setDecoding(foliateBook.decoding);
+            setEngineReady((n) => n + 1);
+          }}
           onFixedLayoutChange={setIsFixedLayout}
           textUnitModeActive={textUnitModeActive}
           textUnitMode={textUnitMode}
@@ -300,7 +391,11 @@ export function ReaderWorkspace({
                     {t("fileMissing.reimport")}
                   </Button>
                 ) : (
-                  <Button size="sm" variant="outline" onClick={() => onRetryOpen(selectedBook)}>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => onRetryOpen(selectedBook)}
+                  >
                     {t("tryAgain")}
                   </Button>
                 )}
@@ -311,7 +406,10 @@ export function ReaderWorkspace({
             </div>
           ) : (
             showSourceLoader && (
-              <Spinner size="md" label={t("opening", { name: selectedBook.title })} />
+              <Spinner
+                size="md"
+                label={t("opening", { name: selectedBook.title })}
+              />
             )
           )}
         </div>
@@ -328,23 +426,32 @@ export function ReaderWorkspace({
         currentChapterHref={currentChapterHref}
         readingCursor={
           readingCursor ?? {
-            ...(selectedEpubProgress?.cfi ? { anchor: selectedEpubProgress.cfi } : {}),
+            ...(selectedEpubProgress?.cfi
+              ? { anchor: selectedEpubProgress.cfi }
+              : {}),
             ...(currentChapterHref ? { chapter: currentChapterHref } : {}),
-            ...(readerProgress !== undefined ? { bookProgress: readerProgress } : {}),
-            ...(totalPages > 0 ? { location: { current: currentPage, total: totalPages } } : {}),
+            ...(readerProgress !== undefined
+              ? { bookProgress: readerProgress }
+              : {}),
+            ...(totalPages > 0
+              ? { location: { current: currentPage, total: totalPages } }
+              : {}),
           }
         }
         onChapterSelect={onChapterSelect}
         onAnnotationSelect={onAnnotationSelect}
         search={searchApi}
         onSearchClosed={handleSearchClosed}
-      findOpen={findOpen}
-      onFindOpenChange={handleFindOpenChange}
+        findOpen={findOpen}
+        onFindOpenChange={handleFindOpenChange}
         onSeek={onSeek}
         textUnitMode={textUnitMode}
         textUnitModeActive={textUnitModeActive}
         onToggleTextUnitMode={toggleTextUnitMode}
         fixedLayout={isFixedLayout}
+        decoding={decoding}
+        navigation={navigationTools}
+        bookmarkEnabled={Boolean(readerSource) && !isReaderLoading && !findOpen}
       />
     </div>
   );

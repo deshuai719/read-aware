@@ -1,6 +1,6 @@
 import { TextAa } from "@phosphor-icons/react";
 import { useAtomValue } from "jotai";
-import { Caption, ChoiceGroup, Divider, Popover } from "@read-aware/ui";
+import { Caption, ChoiceGroup, Divider, Popover, Select } from "@read-aware/ui";
 import { useTranslation } from "../../../i18n";
 import {
   fixedLayoutColorOptions,
@@ -16,13 +16,18 @@ import {
 import { applyReaderThemeSelection } from "../../settings/lib/reader-theme";
 import { usePluginReaderThemeOptions } from "../../settings/hooks/usePluginReaderThemeOptions";
 import { pluginThemesAtom } from "../../plugins/state/plugin-store";
+import { AdvancedReaderFields } from "../../settings/components/AdvancedReaderFields";
 import { FontField } from "../../settings/components/FontField";
 import {
   useReaderAppearance,
   type ReaderAppearanceScope,
 } from "../hooks/useReaderAppearance";
 
+import { TEXT_ENCODINGS, type TextEncoding } from "../lib/decode-text";
+
 type ReaderAppearanceMenuProps = {
+  format?: string;
+  decoding?: import("../lib/foliate-engine").FoliateBook["decoding"];
   bookId: string;
   /**
    * The open book is fixed-layout (PDF, comic, pre-paginated EPUB): its pages
@@ -41,12 +46,15 @@ type ReaderAppearanceMenuProps = {
  */
 export function ReaderAppearanceMenu({
   bookId,
+  format,
+  decoding,
   fixedLayout = false,
   open,
   onOpenChange,
 }: ReaderAppearanceMenuProps) {
   const { t } = useTranslation("reader");
-  const { scope, prefs, setScope, updatePrefs } = useReaderAppearance(bookId);
+  const { scope, prefs, setScope, updatePrefs, textEncoding, setTextEncoding } =
+    useReaderAppearance(bookId);
   const pluginThemes = useAtomValue(pluginThemesAtom);
   const pluginThemeOptions = usePluginReaderThemeOptions();
 
@@ -80,6 +88,30 @@ export function ReaderAppearanceMenu({
           </Caption>
         </div>
 
+        {(format === "txt" || format === "html") && (
+          <div>
+            <Select
+              label={t("encoding.label")}
+              value={textEncoding}
+              options={TEXT_ENCODINGS.map((value) => ({
+                value,
+                label:
+                  value === "auto" ? t("encoding.auto") : value.toUpperCase(),
+              }))}
+              onChange={(value) => setTextEncoding(value as TextEncoding)}
+            />
+            <Caption className="mt-2 block">
+              {decoding
+                ? t("encoding.detected", { encoding: decoding.encoding })
+                : t("encoding.perBook")}
+            </Caption>
+            {decoding?.confidence === "low" && (
+              <Caption className="mt-1 block">
+                {t("encoding.ambiguous")}
+              </Caption>
+            )}
+          </div>
+        )}
         <Divider />
 
         <ChoiceGroup
@@ -104,13 +136,17 @@ export function ReaderAppearanceMenu({
                 label={t("fixedLayoutColor")}
                 value={prefs.fixedLayoutColor}
                 options={fixedLayoutColorOptions(t)}
-                onChange={(fixedLayoutColor) => updatePrefs({ ...prefs, fixedLayoutColor })}
+                onChange={(fixedLayoutColor) =>
+                  updatePrefs({ ...prefs, fixedLayoutColor })
+                }
               />
               <Caption className="mt-1.5 block text-fg-subtle">
                 {t("fixedLayoutColorHint")}
               </Caption>
             </div>
-            <Caption className="block text-fg-subtle">{t("fixedLayoutHint")}</Caption>
+            <Caption className="block text-fg-subtle">
+              {t("fixedLayoutHint")}
+            </Caption>
           </>
         ) : (
           <>
@@ -141,7 +177,9 @@ export function ReaderAppearanceMenu({
               label={t("paragraphSpacing")}
               value={prefs.paragraphSpacing}
               options={paragraphSpacingOptions(t)}
-              onChange={(paragraphSpacing) => updatePrefs({ ...prefs, paragraphSpacing })}
+              onChange={(paragraphSpacing) =>
+                updatePrefs({ ...prefs, paragraphSpacing })
+              }
             />
             <ChoiceGroup
               label={t("textAlign")}
@@ -160,6 +198,11 @@ export function ReaderAppearanceMenu({
 
         <Divider />
 
+        <AdvancedReaderFields
+          value={prefs}
+          onChange={updatePrefs}
+          fixedLayout={fixedLayout}
+        />
         <ChoiceGroup
           label={t("readingMode")}
           value={prefs.readingMode}

@@ -53,11 +53,14 @@ type TextUnitNavigatorBarProps = {
   readAloudAvailable: boolean;
   readAloudPlaying: boolean;
   onToggleReadAloud: () => void;
+  readAloudControls?: ReactNode;
 };
 
 /** Hairline divider separating action groups within the bar. */
 function BarDivider() {
-  return <span aria-hidden="true" className="mx-0.5 h-5 w-px shrink-0 bg-border" />;
+  return (
+    <span aria-hidden="true" className="mx-0.5 h-5 w-px shrink-0 bg-border" />
+  );
 }
 
 /** Icon-button-with-tooltip — every control in the bar reads the same way. */
@@ -120,6 +123,7 @@ export function TextUnitNavigatorBar({
   readAloudAvailable,
   readAloudPlaying,
   onToggleReadAloud,
+  readAloudControls,
 }: TextUnitNavigatorBarProps) {
   const { t } = useTranslation("reader");
   const locale = useLocale();
@@ -139,7 +143,9 @@ export function TextUnitNavigatorBar({
   if (!visible) return null;
 
   const activeUnit = resolveReaderModeUnit(mode, unitId);
-  const quickUnits = mode.units.filter((unit) => unit.id !== mode.defaultUnitId);
+  const quickUnits = mode.units.filter(
+    (unit) => unit.id !== mode.defaultUnitId,
+  );
   const prevStepLabel = resolvePluginText(activeUnit.previousLabel, locale);
   const nextStepLabel = resolvePluginText(activeUnit.nextLabel, locale);
   // Quiet, monochrome ghost buttons — same surface language as the selection
@@ -184,31 +190,48 @@ export function TextUnitNavigatorBar({
                 label={prevStepLabel}
                 onClick={onPrev}
                 className={actionButtonClass}
-                icon={<CaretLeft size={16} weight="regular" aria-hidden="true" />}
+                icon={
+                  <CaretLeft size={16} weight="regular" aria-hidden="true" />
+                }
               />
               {showNextStep && (
                 <BarButton
                   label={nextStepLabel}
                   onClick={onNext}
                   className={actionButtonClass}
-                  icon={<CaretRight size={16} weight="regular" aria-hidden="true" />}
+                  icon={
+                    <CaretRight size={16} weight="regular" aria-hidden="true" />
+                  }
                 />
               )}
               {readAloudAvailable && (
                 <BarButton
-                  label={readAloudPlaying ? t("readAloud.stop") : t("readAloud.start")}
+                  label={
+                    readAloudPlaying
+                      ? t("readAloud.pause")
+                      : t("readAloud.start")
+                  }
                   pressed={readAloudPlaying}
                   onClick={onToggleReadAloud}
                   className={actionButtonClass}
                   icon={
                     readAloudPlaying ? (
-                      <SpeakerSlash size={15} weight="regular" aria-hidden="true" />
+                      <SpeakerSlash
+                        size={15}
+                        weight="regular"
+                        aria-hidden="true"
+                      />
                     ) : (
-                      <SpeakerHigh size={15} weight="regular" aria-hidden="true" />
+                      <SpeakerHigh
+                        size={15}
+                        weight="regular"
+                        aria-hidden="true"
+                      />
                     )
                   }
                 />
               )}
+              {readAloudAvailable && readAloudControls}
               <BarDivider />
 
               <BarButton
@@ -216,16 +239,23 @@ export function TextUnitNavigatorBar({
                 disabled={!canReturn}
                 onClick={onReturnToCurrent}
                 className={actionButtonClass}
-                icon={<Crosshair size={14} weight="regular" aria-hidden="true" />}
+                icon={
+                  <Crosshair size={14} weight="regular" aria-hidden="true" />
+                }
               />
               {quickUnits.map((unit) => {
                 const pressed = unit.id === activeUnit.id;
                 return (
                   <BarButton
                     key={unit.id}
-                    label={resolvePluginText(unit.toggleLabel ?? unit.label, locale)}
+                    label={resolvePluginText(
+                      unit.toggleLabel ?? unit.label,
+                      locale,
+                    )}
                     pressed={pressed}
-                    onClick={() => onUnitChange(pressed ? mode.defaultUnitId : unit.id)}
+                    onClick={() =>
+                      onUnitChange(pressed ? mode.defaultUnitId : unit.id)
+                    }
                     className={actionButtonClass}
                     icon={renderPluginIcon(unit.icon, 14)}
                   />
@@ -250,7 +280,13 @@ export function TextUnitNavigatorBar({
               label={resolvePluginText(mode.copy.collapseActions, locale)}
               onClick={() => setPage(0)}
               className={actionButtonClass}
-              icon={<CaretDoubleLeft size={14} weight="regular" aria-hidden="true" />}
+              icon={
+                <CaretDoubleLeft
+                  size={14}
+                  weight="regular"
+                  aria-hidden="true"
+                />
+              }
             />
           )}
 
@@ -261,13 +297,17 @@ export function TextUnitNavigatorBar({
                 label={t("tableOfContents")}
                 onClick={() => onOpenPanel("toc")}
                 className={actionButtonClass}
-                icon={<ListBullets size={14} weight="regular" aria-hidden="true" />}
+                icon={
+                  <ListBullets size={14} weight="regular" aria-hidden="true" />
+                }
               />
               <BarButton
                 label={t("notes")}
                 onClick={() => onOpenPanel("annotations")}
                 className={actionButtonClass}
-                icon={<Notebook size={14} weight="regular" aria-hidden="true" />}
+                icon={
+                  <Notebook size={14} weight="regular" aria-hidden="true" />
+                }
               />
               <BarButton
                 label={t("readingAppearance")}
@@ -279,7 +319,9 @@ export function TextUnitNavigatorBar({
                 label={t("chat")}
                 onClick={() => onOpenPanel("chat")}
                 className={actionButtonClass}
-                icon={<ChatCircle size={14} weight="regular" aria-hidden="true" />}
+                icon={
+                  <ChatCircle size={14} weight="regular" aria-hidden="true" />
+                }
               />
 
               <BarDivider />

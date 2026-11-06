@@ -241,7 +241,6 @@ pub fn library_put_collection(collection: Collection, db: State<'_, Db>) -> Resu
 // Collection deletion has no command of its own: `collection.removed` describes
 // it, and applying that event drops the row and clears its books' membership.
 
-
 // ── Content identity (dedup) ─────────────────────────────────────────────────
 
 /// A book already holding this exact source file, if any — the import gate:
@@ -304,7 +303,10 @@ pub fn library_duplicate_book_groups(
         .query_map([], |row| {
             Ok((
                 row.get::<_, String>(0)?,
-                DuplicateBookEntry { id: row.get(1)?, created_at: row.get(2)? },
+                DuplicateBookEntry {
+                    id: row.get(1)?,
+                    created_at: row.get(2)?,
+                },
             ))
         })
         .map_err(|e| e.to_string())?;

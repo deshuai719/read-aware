@@ -81,5 +81,14 @@
   "title": "読書統計",
   "weekly": {
     "last7Days": "過去7日間"
+  },
+  "goal": {
+    "title": "毎日の読書目標",
+    "target": "一日の目標",
+    "off": "オフ",
+    "minutes": "{{count}} 分",
+    "achieved": "目標達成",
+    "remaining": "あと {{count}} 分",
+    "read": "今日 {{count}} 分読書"
   }
 }

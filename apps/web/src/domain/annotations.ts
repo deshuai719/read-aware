@@ -5,6 +5,11 @@
  * `createAsk` is actor-guarded: asks are the agent runtime's passive traces,
  * so only the "agent" origin may record them.
  */
+import {
+  listLibraryBooks,
+  listCollections,
+} from "../features/library/lib/library-db";
+import { assertBookCollectionAccess } from "../features/library/lib/collection-operations";
 import { getDefaultStore } from "jotai";
 import type {
   AnnotationItem,
@@ -16,6 +21,7 @@ import type {
   NoteItem,
 } from "@read-aware/core";
 import {
+  mutateAnnotationsBatch,
   createAsk,
   createHighlight,
   createNote,
@@ -27,7 +33,11 @@ import {
 } from "../features/annotations/lib/annotation-db";
 import type { Annotation } from "../features/annotations/lib/annotation-types";
 import { annotationsRevisionAtom } from "../features/annotations/state/annotations-revision";
-import { ANNOTATION_EVENTS, domainSubscribe, type DomainEventSubscribe } from "./events";
+import {
+  ANNOTATION_EVENTS,
+  domainSubscribe,
+  type DomainEventSubscribe,
+} from "./events";
 
 export function toAnnotationItem(annotation: Annotation): AnnotationItem {
   const anchor = annotation.cfiRange ?? undefined;
@@ -85,6 +95,14 @@ export type AnnotationQueries = {
 };
 
 export type AnnotationCommands = {
+  batch: {
+    remove: (bookId: string, ids: readonly string[]) => Promise<void>;
+    recolor: (
+      bookId: string,
+      ids: readonly string[],
+      color: HighlightColor,
+    ) => Promise<void>;
+  };
   createHighlight(input: {
     bookId: string;
     text: string;
@@ -126,7 +144,9 @@ export type AnnotationsDomain = {
   };
 };
 
-export function createAnnotationsDomain(origin: EventOrigin): AnnotationsDomain {
+export function createAnnotationsDomain(
+  origin: EventOrigin,
+): AnnotationsDomain {
   const requireHighlight = async (id: string) => {
     const existing = await getAnnotation(String(id));
     if (!existing || existing.type !== "highlight") {
@@ -153,7 +173,34 @@ export function createAnnotationsDomain(origin: EventOrigin): AnnotationsDomain 
       ).map(toAnnotationItem),
   };
 
+  async function batch(
+    bookId: string,
+    ids: readonly string[],
+    action: { kind: "remove" } | { kind: "recolor"; color: HighlightColor },
+  ) {
+    const [books, collections, marks] = await Promise.all([
+      listLibraryBooks(),
+      listCollections(),
+      listAnnotations({ bookId }),
+    ]);
+    const book = books.find((b) => b.id === bookId);
+    if (!book) throw new Error("annotation-book-not-found");
+    assertBookCollectionAccess([book], collections);
+    const unique = [...new Set(ids)];
+    if (!unique.length) return;
+    const targets = unique.map((id) => marks.find((m) => m.id === id));
+    if (targets.some((m) => !m)) throw new Error("annotation-not-found");
+    const items = targets as Annotation[];
+    if (action.kind === "recolor" && items.some((m) => m.type !== "highlight"))
+      throw new Error("annotation-not-highlight");
+    await mutateAnnotationsBatch(items, action, origin);
+    bumpAnnotationsRevision();
+  }
   const commands: AnnotationCommands = {
+    batch: {
+      remove: (id, ids) => batch(id, ids, { kind: "remove" }),
+      recolor: (id, ids, color) => batch(id, ids, { kind: "recolor", color }),
+    },
     createHighlight: async (input) => {
       const highlight = await createHighlight(
         String(input.bookId),

@@ -7,6 +7,7 @@
  * background text extractor go through here so the two never disagree about
  * how a file is read.
  */
+import type { TextEncoding } from "./decode-text";
 import type { FoliateBook } from "./foliate-engine";
 import { makeFoliateBook } from "./foliate-engine";
 import type { BookFileSource } from "./reader-types";
@@ -15,23 +16,43 @@ import { buildHtmlFoliateBook, buildPlainTextFoliateBook } from "./text-book";
 const TEXT_EXTENSIONS = [".txt", ".text"];
 const HTML_EXTENSIONS = [".html", ".htm", ".xhtml"];
 
-export async function parseBookFile(file: BookFileSource): Promise<FoliateBook> {
+export async function parseBookFile(
+  file: BookFileSource,
+  options?: { textEncoding?: TextEncoding },
+): Promise<FoliateBook> {
   const name = (file.name ?? "").toLowerCase();
   const type = file.type;
 
-  if (HTML_EXTENSIONS.some((ext) => name.endsWith(ext)) || type === "text/html") {
+  if (
+    HTML_EXTENSIONS.some((ext) => name.endsWith(ext)) ||
+    type === "text/html"
+  ) {
     const bytes = new Uint8Array(await file.arrayBuffer());
-    return buildHtmlFoliateBook(bytes, file.name ?? "") as FoliateBook;
+    return buildHtmlFoliateBook(
+      bytes,
+      file.name ?? "",
+      options?.textEncoding,
+    ) as FoliateBook;
   }
-  if (TEXT_EXTENSIONS.some((ext) => name.endsWith(ext)) || type === "text/plain") {
+  if (
+    TEXT_EXTENSIONS.some((ext) => name.endsWith(ext)) ||
+    type === "text/plain"
+  ) {
     const bytes = new Uint8Array(await file.arrayBuffer());
-    return buildPlainTextFoliateBook(bytes, file.name ?? "") as FoliateBook;
+    return buildPlainTextFoliateBook(
+      bytes,
+      file.name ?? "",
+      options?.textEncoding,
+    ) as FoliateBook;
   }
   if (name.endsWith(".cbr") || (await isRarArchive(file))) {
     // The RAR decoder is a ~1 MB WASM asset; load it only for a comic that
     // actually needs it.
     const { buildComicArchiveBook } = await import("./comic-archive");
-    const source = file instanceof File ? file : new File([file as BlobPart], file.name ?? "comic.cbr");
+    const source =
+      file instanceof File
+        ? file
+        : new File([file as BlobPart], file.name ?? "comic.cbr");
     return (await buildComicArchiveBook(source)) as FoliateBook;
   }
   return makeFoliateBook(file);

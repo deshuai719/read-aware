@@ -103,7 +103,6 @@ pub fn memory_put(memory: Memory, db: State<'_, Db>) -> Result<(), String> {
     Ok(())
 }
 
-
 // --- Chapter digests projection (book memory; book.chapterDigested) ---
 
 /// Mirrors `ChapterDigest` in packages/agent (…/src/ports.ts). `characters`
@@ -124,7 +123,10 @@ pub struct ChapterDigest {
 }
 
 #[tauri::command]
-pub fn chapter_digests_list(db: State<'_, Db>, book_id: String) -> Result<Vec<ChapterDigest>, String> {
+pub fn chapter_digests_list(
+    db: State<'_, Db>,
+    book_id: String,
+) -> Result<Vec<ChapterDigest>, String> {
     let conn = db.0.lock().map_err(|e| e.to_string())?;
     let mut stmt = conn
         .prepare(

@@ -1,8 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Button } from "@read-aware/ui";
 import { MagnifyingGlass } from "@phosphor-icons/react";
 import { cn } from "@read-aware/ui/cn";
 import { useTranslation } from "../../../i18n";
-import { buildCommands, type CommandContext, type CommandItem } from "../lib/build-commands";
+import {
+  buildCommands,
+  type CommandContext,
+  type CommandItem,
+} from "../lib/build-commands";
 import { filterCommands } from "../lib/filter-commands";
 
 type CommandPaletteProps = {
@@ -11,6 +16,7 @@ type CommandPaletteProps = {
   ctx: CommandContext;
   /** Externally contributed items (e.g. plugin actions), appended to the set. */
   extraItems?: CommandItem[];
+  onFullTextSearch?: () => void;
 };
 
 /**
@@ -18,8 +24,15 @@ type CommandPaletteProps = {
  * shelf controls. The available commands are built dynamically from the current
  * context, ranked by query relevance, and grouped into sections.
  */
-export function CommandPalette({ isOpen, onClose, ctx, extraItems }: CommandPaletteProps) {
+export function CommandPalette({
+  isOpen,
+  onClose,
+  ctx,
+  extraItems,
+  onFullTextSearch,
+}: CommandPaletteProps) {
   const { t } = useTranslation("command");
+  const { t: tReader } = useTranslation("reader");
   const [query, setQuery] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -53,7 +66,9 @@ export function CommandPalette({ isOpen, onClose, ctx, extraItems }: CommandPale
   }, [isOpen]);
 
   useEffect(() => {
-    setSelectedIndex((index) => (flat.length === 0 ? 0 : Math.min(index, flat.length - 1)));
+    setSelectedIndex((index) =>
+      flat.length === 0 ? 0 : Math.min(index, flat.length - 1),
+    );
   }, [flat.length]);
 
   const run = useCallback(
@@ -72,10 +87,14 @@ export function CommandPalette({ isOpen, onClose, ctx, extraItems }: CommandPale
         onClose();
       } else if (event.key === "ArrowDown") {
         event.preventDefault();
-        setSelectedIndex((index) => (flat.length ? (index + 1) % flat.length : 0));
+        setSelectedIndex((index) =>
+          flat.length ? (index + 1) % flat.length : 0,
+        );
       } else if (event.key === "ArrowUp") {
         event.preventDefault();
-        setSelectedIndex((index) => (flat.length ? (index - 1 + flat.length) % flat.length : 0));
+        setSelectedIndex((index) =>
+          flat.length ? (index - 1 + flat.length) % flat.length : 0,
+        );
       } else if (event.key === "Enter") {
         event.preventDefault();
         const item = flat[selectedIndex];
@@ -112,7 +131,11 @@ export function CommandPalette({ isOpen, onClose, ctx, extraItems }: CommandPale
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex items-center gap-3 border-b border-border px-4 py-3">
-          <MagnifyingGlass size={20} weight="regular" className="text-fg-subtle" />
+          <MagnifyingGlass
+            size={20}
+            weight="regular"
+            className="text-fg-subtle"
+          />
           <input
             ref={inputRef}
             type="text"
@@ -159,7 +182,12 @@ export function CommandPalette({ isOpen, onClose, ctx, extraItems }: CommandPale
                       )}
                       <span className="flex h-9 w-7 shrink-0 items-center justify-center overflow-hidden rounded-sm">
                         {item.kind === "book" && item.coverUrl ? (
-                          <img src={item.coverUrl} draggable={false} alt="" className="h-full w-full object-cover" />
+                          <img
+                            src={item.coverUrl}
+                            draggable={false}
+                            alt=""
+                            className="h-full w-full object-cover"
+                          />
                         ) : (
                           <span className="flex h-7 w-7 items-center justify-center text-fg-muted">
                             {item.icon}
@@ -177,7 +205,10 @@ export function CommandPalette({ isOpen, onClose, ctx, extraItems }: CommandPale
                         )}
                       </span>
                       {selected && (
-                        <span className="shrink-0 text-xs text-fg-subtle" aria-hidden="true">
+                        <span
+                          className="shrink-0 text-xs text-fg-subtle"
+                          aria-hidden="true"
+                        >
                           ↵
                         </span>
                       )}
@@ -191,6 +222,18 @@ export function CommandPalette({ isOpen, onClose, ctx, extraItems }: CommandPale
 
         <div className="flex items-center justify-between border-t border-border px-4 py-2 text-xs text-fg-subtle">
           <span>{t("results", { count: flat.length })}</span>
+          {onFullTextSearch && (
+            <Button
+              size="sm"
+              variant="link"
+              onClick={() => {
+                onClose();
+                onFullTextSearch();
+              }}
+            >
+              {tReader("librarySearch.title")}
+            </Button>
+          )}
           <div className="flex gap-3">
             <span>{t("footer.navigate")}</span>
             <span>{t("footer.run")}</span>

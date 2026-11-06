@@ -8,6 +8,7 @@ import { SettingsPage } from "../components/SettingsPage";
 import { SettingsRow } from "../components/SettingsRow";
 import { PendingBadge } from "../components/PendingBadge";
 import { deleteAllData } from "../lib/delete-all-data";
+import { exportTextFile } from "../../../platform/export-file";
 import { exportBackup, importBackup } from "../lib/backup-io";
 import { SyncAccountGroup } from "./SyncAccountGroup";
 
@@ -33,13 +34,12 @@ export function DataSyncPanel() {
   const handleExport = async () => {
     setBusy(true);
     try {
-      const blob = new Blob([await exportBackup()], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const anchor = document.createElement("a");
-      anchor.href = url;
-      anchor.download = BACKUP_FILENAME;
-      anchor.click();
-      URL.revokeObjectURL(url);
+      const saved = await exportTextFile({
+        filename: BACKUP_FILENAME,
+        content: await exportBackup(),
+        mimeType: "application/json",
+      });
+      if (!saved) return;
       toast({
         variant: "success",
         title: t("dataSync.noticeDone"),
@@ -68,8 +68,12 @@ export function DataSyncPanel() {
         title: t("dataSync.noticeDone"),
         description: t("dataSync.merge.summary", {
           books: t("dataSync.merge.books", { count: result.books }),
-          annotations: t("dataSync.merge.annotations", { count: result.annotations }),
-          collections: t("dataSync.merge.collections", { count: result.collections }),
+          annotations: t("dataSync.merge.annotations", {
+            count: result.annotations,
+          }),
+          collections: t("dataSync.merge.collections", {
+            count: result.collections,
+          }),
           settings: t("dataSync.merge.settings", { count: result.settings }),
         }),
       });
@@ -122,7 +126,9 @@ export function DataSyncPanel() {
           borderless
           title={t("dataSync.dataLocation.title")}
           description={
-            isTauri() ? t("dataSync.dataLocation.descTauri") : t("dataSync.dataLocation.descWeb")
+            isTauri()
+              ? t("dataSync.dataLocation.descTauri")
+              : t("dataSync.dataLocation.descWeb")
           }
           control={
             <span className="flex items-center gap-2">
@@ -153,7 +159,11 @@ export function DataSyncPanel() {
               >
                 {t("dataSync.import")}
               </Button>
-              <Button size="sm" disabled={busy} onClick={() => void handleExport()}>
+              <Button
+                size="sm"
+                disabled={busy}
+                onClick={() => void handleExport()}
+              >
                 {busy ? t("dataSync.working") : t("dataSync.export")}
               </Button>
               <input
@@ -178,7 +188,11 @@ export function DataSyncPanel() {
           title={t("dataSync.deleteAll.title")}
           description={t("dataSync.deleteAll.description")}
           control={
-            <Button variant="danger" size="sm" onClick={() => setDeleteOpen(true)}>
+            <Button
+              variant="danger"
+              size="sm"
+              onClick={() => setDeleteOpen(true)}
+            >
               {t("dataSync.deleteAll.button")}
             </Button>
           }
@@ -193,7 +207,9 @@ export function DataSyncPanel() {
         <div className="space-y-4">
           <p>{t("dataSync.deleteAll.dialogBody")}</p>
           <TextField
-            label={t("dataSync.deleteAll.confirmLabel", { phrase: DELETE_CONFIRM_PHRASE })}
+            label={t("dataSync.deleteAll.confirmLabel", {
+              phrase: DELETE_CONFIRM_PHRASE,
+            })}
             value={deleteConfirmText}
             onChange={(event) => setDeleteConfirmText(event.target.value)}
             placeholder={DELETE_CONFIRM_PHRASE}
@@ -201,7 +217,12 @@ export function DataSyncPanel() {
             spellCheck={false}
           />
           <div className="flex justify-end gap-2">
-            <Button variant="ghost" size="sm" disabled={deleting} onClick={closeDeleteDialog}>
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={deleting}
+              onClick={closeDeleteDialog}
+            >
               {t("dataSync.deleteAll.cancel")}
             </Button>
             <Button
@@ -210,7 +231,9 @@ export function DataSyncPanel() {
               disabled={!deleteArmed || deleting}
               onClick={() => void confirmDelete()}
             >
-              {deleting ? t("dataSync.deleteAll.deleting") : t("dataSync.deleteAll.button")}
+              {deleting
+                ? t("dataSync.deleteAll.deleting")
+                : t("dataSync.deleteAll.button")}
             </Button>
           </div>
         </div>

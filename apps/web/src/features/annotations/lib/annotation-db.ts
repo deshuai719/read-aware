@@ -8,13 +8,21 @@
 
 import { invoke } from "@tauri-apps/api/core";
 import type { EventOrigin } from "@read-aware/core";
-import type { Annotation, AnnotationFilters, Ask, Highlight, Note } from "./annotation-types";
+import type {
+  Annotation,
+  AnnotationFilters,
+  Ask,
+  Highlight,
+  Note,
+} from "./annotation-types";
 import { isTauri } from "../../../platform/environment";
 import { commitDomainEvents } from "../../../platform/domain-events";
 
 function assertDesktop(what: string): never | void {
   if (!isTauri()) {
-    throw new Error(`${what} is desktop-only — the browser build is a UI shell without storage.`);
+    throw new Error(
+      `${what} is desktop-only — the browser build is a UI shell without storage.`,
+    );
   }
 }
 
@@ -24,7 +32,8 @@ function filterAndSortAnnotations(
   filters?: AnnotationFilters,
 ): Annotation[] {
   let result = annotations;
-  if (filters?.bookId) result = result.filter((a) => a.bookId === filters.bookId);
+  if (filters?.bookId)
+    result = result.filter((a) => a.bookId === filters.bookId);
   if (filters?.type) result = result.filter((a) => a.type === filters.type);
   if (filters?.searchQuery) {
     const query = filters.searchQuery.toLowerCase();
@@ -41,15 +50,18 @@ function filterAndSortAnnotations(
 
 // Generic annotation operations.
 //
-// `saveAnnotation` is the raw upsert, kept for backup restore only: it writes a
-// row the log never described, which genesis reconciliation covers at next
-// boot. Every intent-level function below states its change as an event and
+// `saveAnnotation` restores a portable snapshot through typed creation/update
+// events, retaining the original ids and timestamps. Every intent below states its change as an event and
 // lets `commitDomainEvents` append + apply it in one transaction, then reads
 // the stored row back — the projection is derived, never written here.
-export async function saveAnnotation(annotation: Annotation): Promise<Annotation> {
+export async function saveAnnotation(
+  annotation: Annotation,
+): Promise<Annotation> {
   assertDesktop("Saving an annotation");
-  await invoke("annotation_put", { annotation });
-  return annotation;
+  const { restoredAnnotationEvents } =
+    await import("../../settings/lib/backup-restore-events");
+  await commitDomainEvents(...restoredAnnotationEvents(annotation));
+  return requireStored(annotation.id);
 }
 
 export async function getAnnotation(id: string): Promise<Annotation | null> {
@@ -64,20 +76,37 @@ async function requireStored(id: string): Promise<Annotation> {
   return stored;
 }
 
-export async function deleteAnnotation(id: string, origin?: EventOrigin): Promise<void> {
+export async function deleteAnnotation(
+  id: string,
+  origin?: EventOrigin,
+): Promise<void> {
   assertDesktop("Deleting an annotation");
   // Read-before-delete so the removal event carries the right variant.
   const existing = await getAnnotation(id);
   if (existing?.type === "highlight") {
-    await commitDomainEvents({ type: "highlight.removed", payload: { highlightId: id }, origin });
+    await commitDomainEvents({
+      type: "highlight.removed",
+      payload: { highlightId: id },
+      origin,
+    });
   } else if (existing?.type === "note") {
-    await commitDomainEvents({ type: "note.removed", payload: { noteId: id }, origin });
+    await commitDomainEvents({
+      type: "note.removed",
+      payload: { noteId: id },
+      origin,
+    });
   } else if (existing?.type === "ask") {
-    await commitDomainEvents({ type: "ask.removed", payload: { askId: id }, origin });
+    await commitDomainEvents({
+      type: "ask.removed",
+      payload: { askId: id },
+      origin,
+    });
   }
 }
 
-export async function listAnnotations(filters?: AnnotationFilters): Promise<Annotation[]> {
+export async function listAnnotations(
+  filters?: AnnotationFilters,
+): Promise<Annotation[]> {
   if (!isTauri()) return [];
   const query = filters?.searchQuery?.trim();
   if (query) {
@@ -179,7 +208,11 @@ export async function updateNote(
   const note = await getAnnotation(id);
   if (!note || note.type !== "note") return null;
 
-  await commitDomainEvents({ type: "note.updated", payload: { noteId: id, body: content }, origin });
+  await commitDomainEvents({
+    type: "note.updated",
+    payload: { noteId: id, body: content },
+    origin,
+  });
   return requireStored(id) as Promise<Note>;
 }
 
@@ -209,4 +242,43 @@ export async function createAsk(
     origin: "agent",
   });
   return requireStored(askId) as Promise<Ask>;
+}
+/** One transaction for an explicit set of marks; never partially delete a selection. */
+export async function mutateAnnotationsBatch(
+  items: readonly Annotation[],
+  action: { kind: "remove" } | { kind: "recolor"; color: Highlight["color"] },
+  origin: EventOrigin,
+): Promise<void> {
+  assertDesktop("Changing annotations");
+  await commitDomainEvents(
+    ...items.map((item) =>
+      action.kind === "recolor"
+        ? {
+            type: "highlight.recolored" as const,
+            payload: {
+              highlightId: item.id,
+              color: action.color,
+              style: item.type === "highlight" ? item.style : undefined,
+            },
+            origin,
+          }
+        : item.type === "highlight"
+          ? {
+              type: "highlight.removed" as const,
+              payload: { highlightId: item.id },
+              origin,
+            }
+          : item.type === "note"
+            ? {
+                type: "note.removed" as const,
+                payload: { noteId: item.id },
+                origin,
+              }
+            : {
+                type: "ask.removed" as const,
+                payload: { askId: item.id },
+                origin,
+              },
+    ),
+  );
 }

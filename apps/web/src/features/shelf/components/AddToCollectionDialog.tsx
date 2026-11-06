@@ -1,10 +1,10 @@
 import { Plus, Prohibit } from "@phosphor-icons/react";
-import { Button, Dialog, TextField } from "@read-aware/ui";
-import { useLocalAtom } from "@read-aware/ui/state";
+import { Body, Button, Dialog, TextField } from "@read-aware/ui";
+import { useCollectionCreation } from "../hooks/useCollectionCreation";
 import { useTranslation } from "../../../i18n";
 import type { Collection } from "../../library/lib/library-types";
-import { hashCollectionPassword } from "../../library/lib/collection-lock";
-import { setCollectionPassword } from "../../library/lib/library-db";
+import { isCollectionLocked } from "../../library/lib/collection-lock";
+import { useState } from "react";
 
 type AddToCollectionDialogProps = {
   open: boolean;
@@ -12,9 +12,9 @@ type AddToCollectionDialogProps = {
   collections: Collection[];
   onClose: () => void;
   /** Assign the selected books to a collection (or null to ungroup them). */
-  onAssign: (collectionId: string | null) => void;
+  onAssign: (collectionId: string | null) => void | Promise<void>;
   /** Create a new collection; returns it (or null on failure). */
-  onCreate: (name: string) => Promise<Collection | null>;
+  onCreate: (name: string, password?: string) => Promise<Collection | null>;
 };
 
 /** Pick an existing collection, ungroup, or create a new one for the selection. */
@@ -27,40 +27,52 @@ export function AddToCollectionDialog({
   onCreate,
 }: AddToCollectionDialogProps) {
   const { t } = useTranslation("shelf");
-  const [name, setName] = useLocalAtom("");
-  const [password, setPassword] = useLocalAtom("");
-  const [creating, setCreating] = useLocalAtom(false);
-
-  function assign(collectionId: string | null) {
-    onAssign(collectionId);
-    onClose();
-  }
-
-  async function createAndAssign() {
-    const trimmed = name.trim();
-    if (!trimmed || creating) return;
-    setCreating(true);
-    const collection = await onCreate(trimmed);
-    setCreating(false);
-    if (collection) {
-      const secret = password.trim();
-      if (secret) {
-        // Folder lock syncs to every device via collection.passwordChanged.
-        await setCollectionPassword(collection.id, hashCollectionPassword(secret));
-      }
-      setName("");
-      setPassword("");
-      assign(collection.id);
+  const [assigning, setAssigning] = useState(false),
+    [assignError, setAssignError] = useState<string | null>(null);
+  const form = useCollectionCreation({
+    open,
+    onCreate,
+    onCreated: async (collection) => {
+      await onAssign(collection.id);
+      onClose();
+    },
+  });
+  const {
+    name,
+    password,
+    busy: creating,
+    setName,
+    setPassword,
+    create: createAndAssign,
+  } = form;
+  async function assign(id: string | null) {
+    if (assigning || creating) return;
+    setAssigning(true);
+    setAssignError(null);
+    try {
+      await onAssign(id);
+      onClose();
+    } catch {
+      setAssignError(t("collectionDialog.assignFailed"));
+    } finally {
+      setAssigning(false);
     }
   }
 
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={() => {
+        if (!creating && !assigning) onClose();
+      }}
       title={t("collectionDialog.title", { count })}
     >
       <div className="space-y-4">
+        {(form.error || assignError) && (
+          <Body role="alert" className="text-sm text-fg-muted">
+            {form.error || assignError}
+          </Body>
+        )}
         <div className="flex items-end gap-2">
           <div className="flex-1">
             <TextField
@@ -69,7 +81,8 @@ export function AddToCollectionDialog({
               placeholder={t("collectionDialog.newPlaceholder")}
               onChange={(event) => setName(event.target.value)}
               onKeyDown={(event) => {
-                if (event.key === "Enter") void createAndAssign();
+                if (event.key === "Enter" && !event.nativeEvent.isComposing)
+                  void createAndAssign();
               }}
             />
           </div>
@@ -98,7 +111,10 @@ export function AddToCollectionDialog({
               <button
                 key={collection.id}
                 type="button"
-                onClick={() => assign(collection.id)}
+                onClick={() => void assign(collection.id)}
+                disabled={
+                  creating || assigning || isCollectionLocked(collection)
+                }
                 className="truncate rounded-md px-2 py-2 text-left font-sans text-sm text-fg transition-colors hover:bg-fg/5"
               >
                 {collection.name}
@@ -110,7 +126,8 @@ export function AddToCollectionDialog({
         <div className="-mx-1 border-t border-border pt-2">
           <button
             type="button"
-            onClick={() => assign(null)}
+            onClick={() => void assign(null)}
+            disabled={creating || assigning}
             className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left font-sans text-sm text-fg-muted transition-colors hover:bg-fg/5 hover:text-fg"
           >
             <Prohibit size={15} weight="regular" aria-hidden="true" />

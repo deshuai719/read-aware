@@ -32,6 +32,9 @@ export const LIBRARY_EVENTS = [
 
 /** Active-reading lifecycle, progress, verdicts, and recorded reading time. */
 export const READING_EVENTS = [
+  "bookmark.created",
+  "bookmark.renamed",
+  "bookmark.removed",
   "book.opened",
   "book.finished",
   "book.progressed",
@@ -57,10 +60,8 @@ export const CONVERSATION_EVENTS = [
 ] as const;
 
 /** A domain event as observers receive it (canonical type + payload + origin). */
-export type ObservedDomainEvent<K extends DomainEventType = DomainEventType> = Extract<
-  DomainEventBroadcast,
-  { type: K }
->;
+export type ObservedDomainEvent<K extends DomainEventType = DomainEventType> =
+  Extract<DomainEventBroadcast, { type: K }>;
 
 /**
  * One domain's `on`: a subscription over that domain's roster, fully typed
@@ -79,7 +80,10 @@ export function domainSubscribe<E extends DomainEventType>(
   roster: readonly E[],
   consumerLabel: string,
 ): DomainEventSubscribe<E> {
-  return ((event: DomainEventType, handler: (event: DomainEventBroadcast) => void) => {
+  return ((
+    event: DomainEventType,
+    handler: (event: DomainEventBroadcast) => void,
+  ) => {
     if (!(roster as readonly DomainEventType[]).includes(event)) {
       throw new Error(`"${event}" is not an event of this domain`);
     }

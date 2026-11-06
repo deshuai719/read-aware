@@ -91,5 +91,14 @@
   "title": "Statistiques de lecture",
   "weekly": {
     "last7Days": "7 derniers jours"
+  },
+  "goal": {
+    "title": "Objectif quotidien",
+    "target": "Objectif du jour",
+    "off": "Désactivé",
+    "minutes": "{{count}} min",
+    "achieved": "Objectif atteint",
+    "remaining": "Encore {{count}} min",
+    "read": "{{count}} min lues aujourd’hui"
   }
 }

@@ -10,8 +10,15 @@ import {
   putDesktopBlob,
   putDesktopBlobFromPath,
 } from "../../../platform/blob-store";
-import { commitDomainEvents } from "../../../platform/domain-events";
-import { assertBookCollectionAccess, assertCollectionAccess, collectionMergeEvents } from "./collection-operations";
+import {
+  commitDomainEvents,
+  commitCheckedDomainEvents,
+} from "../../../platform/domain-events";
+import {
+  assertBookCollectionAccess,
+  assertCollectionAccess,
+  collectionMergeEvents,
+} from "./collection-operations";
 import { fetchRemoteBlob } from "../../../platform/sync/sync-scheduler";
 import type {
   BookFormat,
@@ -56,13 +63,14 @@ const bookCoverKey = (bookId: string) => `cover:${bookId}`;
 // WRITES GO THROUGH EVENTS. `commitDomainEvents` appends to the log and applies
 // the projection in one SQLite transaction, then these functions read the row
 // back — the store decides what was persisted, this module does not predict it.
-// `putBookRecord` survives for the two paths that legitimately bypass the log:
-// restoring a backup verbatim (genesis synthesizes its events at next boot) and
-// the cover cache, which is object-storage-derived, not a domain fact.
+// Portable restores also use events; only the cover data-URL cache stays on
+// the derived-object-storage lane, rather than becoming a domain fact.
 
 function assertDesktop(what: string): never | void {
   if (!isTauri()) {
-    throw new Error(`${what} is desktop-only — the browser build is a UI shell without storage.`);
+    throw new Error(
+      `${what} is desktop-only — the browser build is a UI shell without storage.`,
+    );
   }
 }
 
@@ -73,12 +81,10 @@ async function getAllBookRecords(): Promise<LibraryBook[]> {
 
 async function getBookRecord(bookId: string): Promise<LibraryBook | null> {
   if (!isTauri()) return null;
-  return (await invoke<LibraryBook | null>("library_get_book", { id: bookId })) ?? null;
-}
-
-async function putBookRecord(book: LibraryBook): Promise<void> {
-  assertDesktop("Saving a book");
-  await invoke("library_put_book", { book });
+  return (
+    (await invoke<LibraryBook | null>("library_get_book", { id: bookId })) ??
+    null
+  );
 }
 
 /** Persist the cover cache. Not a domain fact — see the note above. */
@@ -88,7 +94,11 @@ async function putBookCover(
   coverChecked: boolean,
 ): Promise<void> {
   if (!isTauri()) return;
-  await invoke("library_set_book_cover", { id: bookId, coverUrl, coverChecked });
+  await invoke("library_set_book_cover", {
+    id: bookId,
+    coverUrl,
+    coverChecked,
+  });
 }
 
 /**
@@ -102,7 +112,10 @@ async function putBookCover(
 async function stageCoverExtracted(
   bookId: string,
   coverDataUrl: string,
-): Promise<{ type: "book.coverExtracted"; payload: { bookId: string; status: "ready"; coverBlobKey: string } } | null> {
+): Promise<{
+  type: "book.coverExtracted";
+  payload: { bookId: string; status: "ready"; coverBlobKey: string };
+} | null> {
   const decoded = dataUrlToBytes(coverDataUrl);
   if (!decoded) return null;
   await putDesktopBlob(bookCoverKey(bookId), decoded.bytes, decoded.mimeType);
@@ -123,17 +136,18 @@ async function storeImportedBook(
   origin?: EventOrigin,
 ): Promise<BookImportCommit> {
   assertDesktop("Importing a book");
-  const { sha256 } = source.kind === "native-path"
-    ? await putDesktopBlobFromPath(
-        bookFileKey(book.id),
-        source.path,
-        book.mimeType || undefined,
-      )
-    : await putDesktopBlob(
-        bookFileKey(book.id),
-        new Uint8Array(await source.file.arrayBuffer()),
-        book.mimeType || undefined,
-      );
+  const { sha256 } =
+    source.kind === "native-path"
+      ? await putDesktopBlobFromPath(
+          bookFileKey(book.id),
+          source.path,
+          book.mimeType || undefined,
+        )
+      : await putDesktopBlob(
+          bookFileKey(book.id),
+          new Uint8Array(await source.file.arrayBuffer()),
+          book.mimeType || undefined,
+        );
   // Content gate: the hash knows what the metadata dedupe can't — the same
   // file re-imported under a different title, or a copy that synced in from
   // another device (its manifest row carries the sha before any bytes do).
@@ -146,41 +160,62 @@ async function storeImportedBook(
     // bytes the user just handed us are exactly what it was missing.
     if (!(await getDesktopBlobInfo(bookFileKey(existingId)))) {
       const bytes = await getDesktopBlob(bookFileKey(book.id));
-      if (bytes) await putDesktopBlob(bookFileKey(existingId), bytes, book.mimeType || undefined);
+      if (bytes)
+        await putDesktopBlob(
+          bookFileKey(existingId),
+          bytes,
+          book.mimeType || undefined,
+        );
     }
     await deleteDesktopBlob(bookFileKey(book.id));
     return { status: "duplicate", existingId };
   }
-  const coverEvent = book.coverUrl ? await stageCoverExtracted(book.id, book.coverUrl) : null;
-  await commitDomainEvents({
-    type: "book.imported",
-    payload: {
-      bookId: book.id,
-      title: book.title,
-      author: book.author,
-      format: book.format,
-      fileName: book.fileName,
-      mimeType: book.mimeType || undefined,
-      fileSize: book.fileSize,
-      sourceBlobKey: bookFileKey(book.id),
-      sourceSha256: sha256,
+  const coverEvent = book.coverUrl
+    ? await stageCoverExtracted(book.id, book.coverUrl)
+    : null;
+  await commitDomainEvents(
+    {
+      type: "book.imported",
+      payload: {
+        bookId: book.id,
+        title: book.title,
+        author: book.author,
+        format: book.format,
+        fileName: book.fileName,
+        mimeType: book.mimeType || undefined,
+        fileSize: book.fileSize,
+        sourceBlobKey: bookFileKey(book.id),
+        sourceSha256: sha256,
+      },
+      origin,
     },
-    origin,
-  }, ...(coverEvent ? [{ ...coverEvent, origin }] : []));
+    ...(coverEvent ? [{ ...coverEvent, origin }] : []),
+  );
   // The data-URL copy still rides the local cache lane for synchronous paint.
   if (book.coverUrl || book.coverChecked) {
-    await putBookCover(book.id, book.coverUrl ?? null, Boolean(book.coverChecked));
+    await putBookCover(
+      book.id,
+      book.coverUrl ?? null,
+      Boolean(book.coverChecked),
+    );
   }
   return { status: "imported" };
 }
 
-async function deleteBookRecords(bookIds: string[], origin?: EventOrigin): Promise<void> {
+async function deleteBookRecords(
+  bookIds: string[],
+  origin?: EventOrigin,
+): Promise<void> {
   if (bookIds.length === 0) return;
   assertDesktop("Removing books");
   // `book.removed` drops the row and its annotations on apply; the blob is
   // object-storage content and is released separately.
   await commitDomainEvents(
-    ...bookIds.map((bookId) => ({ type: "book.removed" as const, payload: { bookId }, origin })),
+    ...bookIds.map((bookId) => ({
+      type: "book.removed" as const,
+      payload: { bookId },
+      origin,
+    })),
   );
   await invoke("library_release_book_files", { ids: bookIds });
   for (const bookId of bookIds) emitAppEvent("book-removed", { bookId });
@@ -191,27 +226,30 @@ async function getAllCollectionRecords(): Promise<Collection[]> {
   return invoke<Collection[]>("library_list_collections");
 }
 
-async function putCollectionRecord(collection: Collection): Promise<void> {
-  assertDesktop("Saving a collection");
-  await invoke("library_put_collection", { collection });
-}
-
 // --- Pure helpers (backend-agnostic) ----------------------------------------
 
 function sourceFileInfo(source: BookImportSource) {
   return source.kind === "native-path"
     ? { name: source.name, size: source.size, type: "" }
-    : { name: source.file.name, size: source.file.size, type: source.file.type };
+    : {
+        name: source.file.name,
+        size: source.file.size,
+        type: source.file.type,
+      };
 }
 
-async function detectBookFormat(source: BookImportSource, t: TFunction<"shelf">): Promise<BookFormat> {
+async function detectBookFormat(
+  source: BookImportSource,
+  t: TFunction<"shelf">,
+): Promise<BookFormat> {
   const info = sourceFileInfo(source);
   const name = info.name.toLowerCase();
   const type = info.type;
   if (name.endsWith(".epub") || type === "application/epub+zip") return "epub";
   if (name.endsWith(".pdf") || type === "application/pdf") return "pdf";
   if (name.endsWith(".mobi") || name.endsWith(".prc")) return "mobi";
-  if (name.endsWith(".azw3") || name.endsWith(".azw") || name.endsWith(".kf8")) return "azw3";
+  if (name.endsWith(".azw3") || name.endsWith(".azw") || name.endsWith(".kf8"))
+    return "azw3";
   if (
     name.endsWith(".fb2") ||
     name.endsWith(".fb2.zip") ||
@@ -220,9 +258,12 @@ async function detectBookFormat(source: BookImportSource, t: TFunction<"shelf">)
   ) {
     return "fb2";
   }
-  if (name.endsWith(".cbz") || type === "application/vnd.comicbook+zip") return "cbz";
-  if (name.endsWith(".cbr") || type === "application/vnd.comicbook-rar") return "cbr";
-  if (name.endsWith(".txt") || name.endsWith(".text") || type === "text/plain") return "txt";
+  if (name.endsWith(".cbz") || type === "application/vnd.comicbook+zip")
+    return "cbz";
+  if (name.endsWith(".cbr") || type === "application/vnd.comicbook-rar")
+    return "cbr";
+  if (name.endsWith(".txt") || name.endsWith(".text") || type === "text/plain")
+    return "txt";
   if (
     name.endsWith(".html") ||
     name.endsWith(".htm") ||
@@ -374,7 +415,9 @@ export async function listLibraryBooks() {
 }
 
 /** Identity used to spot a re-import: same title + author + byte size. */
-function bookDedupeKey(book: Pick<LibraryBook, "title" | "author" | "fileSize">): string {
+function bookDedupeKey(
+  book: Pick<LibraryBook, "title" | "author" | "fileSize">,
+): string {
   return `${book.title.trim().toLowerCase()}|${book.author.trim().toLowerCase()}|${book.fileSize}`;
 }
 
@@ -408,11 +451,14 @@ export async function prepareBookImport(
   // sources (mobile picks, plugin importBook) are already in-memory bytes,
   // so the engine parses them directly — either way the shelf entry lands
   // with its real title, author, and cover instead of waiting for first open.
-  const metadata = source.kind === "native-path"
-    ? await extractNativeBookMetadata(format, source.path)
-    : await extractImportedFileMetadata(source.file, format);
+  const metadata =
+    source.kind === "native-path"
+      ? await extractNativeBookMetadata(format, source.path)
+      : await extractImportedFileMetadata(source.file, format);
   const book = createLibraryBook(source, format, metadata);
-  const byMetadata = existing.find((entry) => bookDedupeKey(entry) === bookDedupeKey(book));
+  const byMetadata = existing.find(
+    (entry) => bookDedupeKey(entry) === bookDedupeKey(book),
+  );
   if (byMetadata) return { status: "duplicate", book: byMetadata };
   return { status: "prepared", book };
 }
@@ -436,14 +482,20 @@ export async function enrichOpenedBook(
   imported: LibraryBook,
   foliateBook: FoliateBook,
 ): Promise<EnrichBookResult> {
-  return enrichParsedBook(imported, await extractOpenedBookMetadata(foliateBook));
+  return enrichParsedBook(
+    imported,
+    await extractOpenedBookMetadata(foliateBook),
+  );
 }
 
 async function enrichParsedBook(
   imported: LibraryBook,
-  metadata: { title: string | null; author: string | null; coverUrl: string | null },
+  metadata: {
+    title: string | null;
+    author: string | null;
+    coverUrl: string | null;
+  },
 ): Promise<EnrichBookResult> {
-
   // Re-read after the (long) parse so lastOpenedAt/progress written meanwhile
   // survive the merge — and so a mid-parse delete stays deleted.
   const current = await getBookRecord(imported.id);
@@ -458,9 +510,10 @@ async function enrichParsedBook(
     // blank leading page exceeds that budget, keep it eligible for a later
     // open: by then the reader may already have a meaningful page canvas that
     // the PDF adapter can reuse at effectively zero cost.
-    coverChecked: imported.format === "pdf" && !metadata.coverUrl
-      ? current.coverChecked
-      : true,
+    coverChecked:
+      imported.format === "pdf" && !metadata.coverUrl
+        ? current.coverChecked
+        : true,
     updatedAt: new Date().toISOString(),
   };
 
@@ -484,23 +537,38 @@ async function enrichParsedBook(
       payload: {
         bookId: imported.id,
         ...(enriched.title !== current.title ? { title: enriched.title } : {}),
-        ...(enriched.author !== current.author ? { author: enriched.author } : {}),
+        ...(enriched.author !== current.author
+          ? { author: enriched.author }
+          : {}),
       },
       // Parsed-metadata enrichment is app machinery, not a user edit.
       origin: "system" as const,
     });
   }
   if (metadata.coverUrl && metadata.coverUrl !== current.coverUrl) {
-    const coverEvent = await stageCoverExtracted(imported.id, metadata.coverUrl);
+    const coverEvent = await stageCoverExtracted(
+      imported.id,
+      metadata.coverUrl,
+    );
     if (coverEvent) events.push({ ...coverEvent, origin: "system" as const });
   }
   if (events.length > 0) {
     await commitDomainEvents(...events);
   }
-  if (enriched.coverUrl !== current.coverUrl || enriched.coverChecked !== current.coverChecked) {
-    await putBookCover(imported.id, enriched.coverUrl ?? null, Boolean(enriched.coverChecked));
+  if (
+    enriched.coverUrl !== current.coverUrl ||
+    enriched.coverChecked !== current.coverChecked
+  ) {
+    await putBookCover(
+      imported.id,
+      enriched.coverUrl ?? null,
+      Boolean(enriched.coverChecked),
+    );
   }
-  return { status: "enriched", book: (await getBookRecord(imported.id)) ?? enriched };
+  return {
+    status: "enriched",
+    book: (await getBookRecord(imported.id)) ?? enriched,
+  };
 }
 
 /**
@@ -511,7 +579,9 @@ async function enrichParsedBook(
  * the same data-URL cache lane an import fills, and `coverChecked` flips so
  * this runs once per book. Null when there is nothing to do.
  */
-export async function hydrateSyncedCover(book: LibraryBook): Promise<LibraryBook | null> {
+export async function hydrateSyncedCover(
+  book: LibraryBook,
+): Promise<LibraryBook | null> {
   if (!isTauri() || book.coverUrl || book.coverChecked) return null;
   const key = bookCoverKey(book.id);
   if (!(await desktopBlobManifestExists(key))) return null;
@@ -551,7 +621,9 @@ export type StoredBookFileResult =
 
 /** Pull a book's bytes off the relay into the local store, mapping the typed
  *  fetch outcome onto the reader-facing missing reasons. */
-async function fetchBookFile(bookId: string): Promise<{ ok: true } | { ok: false; reason: BookFileMissingReason }> {
+async function fetchBookFile(
+  bookId: string,
+): Promise<{ ok: true } | { ok: false; reason: BookFileMissingReason }> {
   const fetched = await fetchRemoteBlob(bookFileKey(bookId));
   switch (fetched.outcome) {
     case "fetched":
@@ -597,10 +669,13 @@ export async function getStoredBookBlob(bookId: string): Promise<Blob | null> {
  * EPUB — and, before that, crash on `name.endsWith`.
  */
 export async function resolveStoredBookFile(
-  bookOrId: Pick<LibraryBook, "id" | "format" | "fileName" | "mimeType"> | string,
+  bookOrId:
+    | Pick<LibraryBook, "id" | "format" | "fileName" | "mimeType">
+    | string,
 ): Promise<StoredBookFileResult> {
   if (!isTauri()) return { status: "missing", reason: "no-sync" };
-  const book = typeof bookOrId === "string" ? await getBookRecord(bookOrId) : bookOrId;
+  const book =
+    typeof bookOrId === "string" ? await getBookRecord(bookOrId) : bookOrId;
   if (!book) return { status: "missing", reason: "no-sync" };
   const openLocal = async (): Promise<BookFileSource | null> => {
     if (book.format === "pdf") {
@@ -629,17 +704,24 @@ export async function resolveStoredBookFile(
 }
 
 export async function getStoredBookFile(
-  bookOrId: Pick<LibraryBook, "id" | "format" | "fileName" | "mimeType"> | string,
+  bookOrId:
+    | Pick<LibraryBook, "id" | "format" | "fileName" | "mimeType">
+    | string,
 ): Promise<BookFileSource | null> {
   const resolved = await resolveStoredBookFile(bookOrId);
   return resolved.status === "ok" ? resolved.file : null;
 }
 
-export async function updateLibraryBookProgress(bookId: string, progress: BookProgress) {
+export async function updateLibraryBookProgress(
+  bookId: string,
+  progress: BookProgress,
+) {
   const existingBook = await getBookRecord(bookId);
   if (!existingBook) return null;
 
-  const progressPercent = progress ? clampProgressPercent(progress.progressPercent) : existingBook.progressPercent;
+  const progressPercent = progress
+    ? clampProgressPercent(progress.progressPercent)
+    : existingBook.progressPercent;
   await commitDomainEvents({
     type: "book.progressed",
     payload: {
@@ -648,6 +730,7 @@ export async function updateLibraryBookProgress(bookId: string, progress: BookPr
       chapterHref: progress?.href ?? undefined,
       currentLocation: progress?.currentLocation,
       totalLocations: progress?.totalLocations,
+      recovery: progress?.recovery,
       progressPercent,
       status: getReadingStatus(progressPercent),
     },
@@ -678,15 +761,22 @@ export async function updateBookMetadata(
     updatedAt: new Date().toISOString(),
   };
 
-  if (nextBook.title === existingBook.title && nextBook.author === existingBook.author) {
+  if (
+    nextBook.title === existingBook.title &&
+    nextBook.author === existingBook.author
+  ) {
     return existingBook;
   }
   await commitDomainEvents({
     type: "book.metadataEdited",
     payload: {
       bookId,
-      ...(nextBook.title !== existingBook.title ? { title: nextBook.title } : {}),
-      ...(nextBook.author !== existingBook.author ? { author: nextBook.author } : {}),
+      ...(nextBook.title !== existingBook.title
+        ? { title: nextBook.title }
+        : {}),
+      ...(nextBook.author !== existingBook.author
+        ? { author: nextBook.author }
+        : {}),
     },
     origin,
   });
@@ -708,7 +798,11 @@ export async function setLibraryBookFinished(
   const existingBook = await getBookRecord(bookId);
   if (!existingBook) return null;
 
-  await commitDomainEvents({ type: "book.finished", payload: { bookId, finished }, origin });
+  await commitDomainEvents({
+    type: "book.finished",
+    payload: { bookId, finished },
+    origin,
+  });
   return getBookRecord(bookId);
 }
 
@@ -720,7 +814,11 @@ export async function setLibraryBookStarred(
   const existingBook = await getBookRecord(bookId);
   if (!existingBook) return null;
 
-  await commitDomainEvents({ type: "book.starred", payload: { bookId, starred }, origin });
+  await commitDomainEvents({
+    type: "book.starred",
+    payload: { bookId, starred },
+    origin,
+  });
   return getBookRecord(bookId);
 }
 
@@ -729,17 +827,36 @@ export async function listCollections() {
   return collections.sort((a, b) => a.name.localeCompare(b.name));
 }
 
-export async function createCollection(name: string, origin?: EventOrigin): Promise<Collection> {
+export async function createCollection(
+  name: string,
+  origin?: EventOrigin,
+  options?: { passwordHash?: string | null },
+): Promise<Collection> {
   const collection: Collection = {
     id: crypto.randomUUID(),
     name: name.trim() || "Untitled collection",
+    passwordHash: options?.passwordHash ?? null,
     createdAt: new Date().toISOString(),
   };
-  await commitDomainEvents({
-    type: "collection.created",
-    payload: { collectionId: collection.id, name: collection.name },
-    origin,
-  });
+  await commitDomainEvents(
+    {
+      type: "collection.created",
+      payload: { collectionId: collection.id, name: collection.name },
+      origin,
+    },
+    ...(collection.passwordHash
+      ? [
+          {
+            type: "collection.passwordChanged" as const,
+            payload: {
+              collectionId: collection.id,
+              passwordHash: collection.passwordHash,
+            },
+            origin,
+          },
+        ]
+      : []),
+  );
   return collection;
 }
 
@@ -771,12 +888,16 @@ export async function setCollectionPassword(
   id: string,
   passwordHash: string | null,
   origin?: EventOrigin,
+  expectedHash?: string | null,
 ): Promise<void> {
-  await commitDomainEvents({
-    type: "collection.passwordChanged",
-    payload: { collectionId: id, passwordHash },
-    origin,
-  });
+  await commitCheckedDomainEvents(
+    expectedHash === undefined ? null : { collectionId: id, expectedHash },
+    {
+      type: "collection.passwordChanged",
+      payload: { collectionId: id, passwordHash },
+      origin,
+    },
+  );
 }
 export async function deleteCollection(id: string, origin?: EventOrigin) {
   assertDesktop("Deleting a collection");
@@ -797,7 +918,9 @@ export async function setBooksCollection(
   if (bookIds.length === 0) return;
   const idSet = new Set(bookIds);
   const all = await getAllBookRecords();
-  const affected = all.filter((book) => idSet.has(book.id) && book.collectionId !== collectionId);
+  const affected = all.filter(
+    (book) => idSet.has(book.id) && book.collectionId !== collectionId,
+  );
   const collections = await getAllCollectionRecords();
   assertCollectionAccess(collections, [collectionId]);
   assertBookCollectionAccess(affected, collections);
@@ -812,20 +935,37 @@ export async function setBooksCollection(
         : {
             type: "book.removedFromCollection" as const,
             // Ungrouping: the membership being removed is the book's current one.
-            payload: { bookId: book.id, collectionId: book.collectionId as string },
+            payload: {
+              bookId: book.id,
+              collectionId: book.collectionId as string,
+            },
             origin,
           },
     ),
   );
 }
 
-export async function mergeCollections(sourceId: string, targetId: string, origin?: EventOrigin): Promise<void> {
+export async function mergeCollections(
+  sourceId: string,
+  targetId: string,
+  origin?: EventOrigin,
+): Promise<void> {
   assertDesktop("Merging collections");
-  const [books, collections] = await Promise.all([getAllBookRecords(), getAllCollectionRecords()]);
-  await commitDomainEvents(...collectionMergeEvents(books, collections, sourceId, targetId).map(event => ({ ...event, origin })));
+  const [books, collections] = await Promise.all([
+    getAllBookRecords(),
+    getAllCollectionRecords(),
+  ]);
+  await commitDomainEvents(
+    ...collectionMergeEvents(books, collections, sourceId, targetId).map(
+      (event) => ({ ...event, origin }),
+    ),
+  );
 }
 
-export async function removeLibraryBooks(bookIds: string[], origin?: EventOrigin) {
+export async function removeLibraryBooks(
+  bookIds: string[],
+  origin?: EventOrigin,
+) {
   await deleteBookRecords(bookIds, origin);
 }
 
@@ -843,26 +983,44 @@ export async function removeLibraryBook(bookId: string, origin?: EventOrigin) {
 
 // --- Restore (import a previously-exported bundle; ids preserved) ------------
 
-async function putBookFileBytes(bookId: string, bytes: Uint8Array): Promise<void> {
+async function putBookFileBytes(
+  bookId: string,
+  bytes: Uint8Array,
+): Promise<void> {
   assertDesktop("Restoring a book file");
   await putDesktopBlob(bookFileKey(bookId), bytes);
 }
 
 /**
  * Upsert a book record verbatim (id preserved) and, if given, its file bytes.
- * Restores deliberately emit no events: rows a backup brings in that the log
- * has never seen get their creation events synthesized by the boot-time
- * genesis reconciliation (platform/event-genesis.ts) on the next launch.
+ * Every restored field is described by new intents in the event log. IDs and
+ * historical timestamps remain intact; replay now reproduces the restore.
  */
 export async function restoreLibraryBook(
   book: LibraryBook,
   fileBytes: Uint8Array | null,
 ): Promise<void> {
-  await putBookRecord(book);
   if (fileBytes) await putBookFileBytes(book.id, fileBytes);
+  const { restoredBookEvents } =
+    await import("../../settings/lib/backup-restore-events");
+  const source = await getDesktopBlobInfo(bookFileKey(book.id));
+  const previous = await getBookRecord(book.id);
+  await commitDomainEvents(
+    ...restoredBookEvents(book, source?.sha256, previous?.collectionId),
+  );
+  if (book.coverUrl) {
+    const cover = await stageCoverExtracted(book.id, book.coverUrl);
+    if (cover) await commitDomainEvents(cover);
+  } else if (book.coverChecked)
+    await commitDomainEvents({
+      type: "book.coverExtracted",
+      payload: { bookId: book.id, status: "none" },
+    });
 }
 
 /** Upsert a collection record verbatim (id preserved). */
 export async function restoreCollection(collection: Collection): Promise<void> {
-  await putCollectionRecord(collection);
+  const { restoredCollectionEvents } =
+    await import("../../settings/lib/backup-restore-events");
+  await commitDomainEvents(...restoredCollectionEvents(collection));
 }

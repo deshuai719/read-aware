@@ -50,7 +50,11 @@ const DESKTOP_RAW_CHUNK_BYTES = 4 * 1024 * 1024;
 
 /** What the Rust side recorded about the stored payload. */
 export type BlobPutResult = { sha256: string; byteSize: number };
-type BlobInfo = { byteSize: number; mimeType: string | null };
+type BlobInfo = {
+  byteSize: number;
+  mimeType: string | null;
+  sha256?: string | null;
+};
 
 /** Blob-compatible random-access source backed by a managed desktop file. */
 export interface DesktopBlobFile {
@@ -61,10 +65,18 @@ export interface DesktopBlobFile {
   slice(start?: number, end?: number, contentType?: string): DesktopBlobFile;
 }
 
-function sliceIndex(value: number | undefined, size: number, fallback: number): number {
+function sliceIndex(
+  value: number | undefined,
+  size: number,
+  fallback: number,
+): number {
   if (value === undefined) return fallback;
   if (Number.isNaN(value)) return 0;
-  const integer = Number.isFinite(value) ? Math.trunc(value) : value < 0 ? -size : size;
+  const integer = Number.isFinite(value)
+    ? Math.trunc(value)
+    : value < 0
+      ? -size
+      : size;
   return integer < 0 ? Math.max(size + integer, 0) : Math.min(integer, size);
 }
 
@@ -161,7 +173,10 @@ async function putBlobChunked(
   } catch (error) {
     // Failed cleanup leaks a native write session — worth a trace, never a throw.
     void invoke("blob_write_abort", { key }).catch((abortError: unknown) => {
-      log.warn("blob_write_abort failed; native write session may leak", abortError);
+      log.warn(
+        "blob_write_abort failed; native write session may leak",
+        abortError,
+      );
     });
     throw error;
   }
@@ -226,10 +241,18 @@ async function putBlobChunkedRaw(
 ): Promise<BlobPutResult> {
   await invoke("blob_write_open", { key });
   try {
-    for (let offset = 0; offset < data.length; offset += DESKTOP_RAW_CHUNK_BYTES) {
-      await invoke("blob_write_chunk_raw", data.subarray(offset, offset + DESKTOP_RAW_CHUNK_BYTES), {
-        headers: { [BLOB_KEY_HEADER]: key },
-      });
+    for (
+      let offset = 0;
+      offset < data.length;
+      offset += DESKTOP_RAW_CHUNK_BYTES
+    ) {
+      await invoke(
+        "blob_write_chunk_raw",
+        data.subarray(offset, offset + DESKTOP_RAW_CHUNK_BYTES),
+        {
+          headers: { [BLOB_KEY_HEADER]: key },
+        },
+      );
     }
     return await invoke<BlobPutResult>("blob_write_commit", {
       key,
@@ -238,7 +261,10 @@ async function putBlobChunkedRaw(
   } catch (error) {
     // Failed cleanup leaks a native write session — worth a trace, never a throw.
     void invoke("blob_write_abort", { key }).catch((abortError: unknown) => {
-      log.warn("blob_write_abort failed; native write session may leak", abortError);
+      log.warn(
+        "blob_write_abort failed; native write session may leak",
+        abortError,
+      );
     });
     throw error;
   }
@@ -258,32 +284,54 @@ export type DesktopBlobWriter = {
   abort(): Promise<void>;
 };
 
-export async function openDesktopBlobWriter(key: string): Promise<DesktopBlobWriter> {
+export async function openDesktopBlobWriter(
+  key: string,
+): Promise<DesktopBlobWriter> {
   await invoke("blob_write_open", { key });
   const mobile = isMobileOS();
   return {
     async append(bytes) {
       if (mobile) {
-        for (let offset = 0; offset < bytes.length; offset += BLOB_CHUNK_BYTES) {
+        for (
+          let offset = 0;
+          offset < bytes.length;
+          offset += BLOB_CHUNK_BYTES
+        ) {
           await invoke("blob_write_chunk", {
             key,
-            chunkBase64: toBase64(bytes.subarray(offset, offset + BLOB_CHUNK_BYTES)),
+            chunkBase64: toBase64(
+              bytes.subarray(offset, offset + BLOB_CHUNK_BYTES),
+            ),
           });
         }
         return;
       }
-      for (let offset = 0; offset < bytes.length; offset += DESKTOP_RAW_CHUNK_BYTES) {
-        await invoke("blob_write_chunk_raw", bytes.subarray(offset, offset + DESKTOP_RAW_CHUNK_BYTES), {
-          headers: { [BLOB_KEY_HEADER]: key },
-        });
+      for (
+        let offset = 0;
+        offset < bytes.length;
+        offset += DESKTOP_RAW_CHUNK_BYTES
+      ) {
+        await invoke(
+          "blob_write_chunk_raw",
+          bytes.subarray(offset, offset + DESKTOP_RAW_CHUNK_BYTES),
+          {
+            headers: { [BLOB_KEY_HEADER]: key },
+          },
+        );
       }
     },
     commit(mimeType) {
-      return invoke<BlobPutResult>("blob_write_commit", { key, mimeType: mimeType ?? null });
+      return invoke<BlobPutResult>("blob_write_commit", {
+        key,
+        mimeType: mimeType ?? null,
+      });
     },
     async abort() {
       await invoke("blob_write_abort", { key }).catch((abortError: unknown) => {
-        log.warn("blob_write_abort failed; native write session may leak", abortError);
+        log.warn(
+          "blob_write_abort failed; native write session may leak",
+          abortError,
+        );
       });
     },
   };
@@ -296,7 +344,8 @@ export async function putDesktopBlob(
   mimeType?: string,
 ): Promise<BlobPutResult> {
   if (isMobileOS()) return putBlobChunked(key, data, mimeType);
-  if (data.length > DESKTOP_ONESHOT_MAX_BYTES) return putBlobChunkedRaw(key, data, mimeType);
+  if (data.length > DESKTOP_ONESHOT_MAX_BYTES)
+    return putBlobChunkedRaw(key, data, mimeType);
   return invoke<BlobPutResult>("put_blob", data, {
     headers: {
       [BLOB_KEY_HEADER]: key,
